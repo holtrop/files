@@ -1,0 +1,11 @@
+#!/usr/bin/perl -w
+
+use strict;
+
+foreach my $arg (@ARGV)
+{
+	my $out = $arg;
+	$out =~ s/\....$//;
+	system('oggenc', '-b', '192', '-o', "$out.ogg", $arg);
+}
+
