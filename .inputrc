@@ -1,0 +1,13 @@
+$include /etc/inputrc
+
+# These two lines allow page-up and page-down to
+# search through the history matching previously
+# executed commands that start with the prefix that
+# the user has currently typed into the input buffer
+"\e[5~": history-search-backward
+"\e[6~": history-search-forward
+
+# F1 -> clear screen
+"\eOP": "clear\n"
+# F4
+"\eOS": "{h,cc}"
