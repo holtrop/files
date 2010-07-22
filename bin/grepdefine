@@ -1,0 +1,4 @@
+#!/bin/sh
+
+define="$1"
+exec grep --exclude-dir .svn --color=auto -R "define *\\<${define}\\>" .
