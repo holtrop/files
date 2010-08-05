@@ -128,6 +128,8 @@ map ,T :tabp
 map ,s mz:%s/\v\s+$//'z
 map ,f :set ts=8:retab:set ts=4
 map ,C ggVGc
+" jump to tag in a new tab
+map  :tab :tag 
 
 " highlight characters past column 80
 map ,L :highlight TooLong guibg=lightyellow:match TooLong '\%>80v.*.$'
