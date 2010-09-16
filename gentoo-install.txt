@@ -1,0 +1,50 @@
+# Josh's Gentoo Install Guide
+# Last Updated 2010-07-15; last run July 2010
+
+network: [modprobe], [pcmcia start], [net-setup]
+[/etc/init.d/sshd start; passwd; screen] # ssh in, screen -xr to remote setup
+fdisk, mkfs.ext2 for boot, mkfs.ext4 for root/home, mkswap, swapon
+mount root, boot, [home]
+date MMDDhhmmYYYY
+cd /mnt/gentoo
+links2 http://www.gentoo.org/main/en/mirrors.xml; #get stage3*bz2
+tar -xvjpf stage?-*.tar.bz2
+[cd /mnt/gentoo/usr]                    # speed up first rsync with
+[tar -xvjpf portage-*.tar.bz2]          # snapshot if slow connection
+nano /mnt/gentoo/etc/make.conf          # FEATURES="parallel-fetch"
+cp /etc/resolv.conf /mnt/gentoo/etc
+mount -t proc none /mnt/gentoo/proc
+cd /; chroot /mnt/gentoo /bin/bash
+env-update
+source /etc/profile
+emerge --sync
+[emerge ufed; ufed]                     # optional
+ln -sf /usr/share/zoneinfo/America/Detroit /etc/localtime
+emerge -av gentoo-sources syslog-ng vixie-cron grub [slocate] [dhcpcd] [vim]
+cd /usr/src/linux
+make menuconfig
+make && make modules_install
+cp arch/i386/boot/bzImage .config /boot
+vim /etc/fstab
+vim /etc/conf.d/hostname
+vim /etc/conf.d/net                # config_eth0=("dhcp") \n dhcpcd_eth0="-N"
+vim /etc/hosts                          # add hostname after localhost
+vim /etc/rc.conf
+vim /etc/modules.autoload.d/kernel-2.6
+vim /etc/conf.d/clock
+[cd /etc/init.d; ln -s net.lo net.eth1] # if you have a second NIC
+rc-update show -v
+rc-update add net.eth0 default          # [net.eth1] also for a second NIC
+rc-update add syslog-ng default
+rc-update add vixie-cron default
+rc-update add numlock default           # unless you're on a laptop :)
+[rc-update add sshd default]            # if you want remote access
+vim /boot/grub/grub.conf
+grub                                    # (root (hd0,0) \n setup (hd0) \n quit)
+useradd -m -s /bin/bash john            # omit -m if you have a homedir already
+passwd
+passwd john
+vim /etc/group
+exit
+cd /; umount /mnt/gentoo{/proc,/boot,}
+reboot
