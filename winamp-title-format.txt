@@ -1,0 +1,1 @@
+[%artist%]$if(%album%%tracknumber%,' ['$if(%album%,%album%' - ',)%tracknumber%']',) - $if2(%title%,$filepart(%filename%))

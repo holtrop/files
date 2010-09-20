@@ -1,0 +1,53 @@
+#!/usr/bin/perl -w
+# Josh Holtrop
+# 2006-04-27
+
+use strict;
+
+sub usage
+{
+	print "Usage: $0 [-i interval] [-c] cmd [args]\n";
+	print "\tinterval: number of seconds to wait between each execution of <cmd> (default 1)\n";
+	print "\t-c        clear the screen between invocation of each command\n";
+	exit(42);
+}
+
+my $interval = 1;
+my $clear = 0;
+my @command = ();
+for (my $i = 0; $i <= $#ARGV; $i++)
+{
+	usage() if ($ARGV[$i] eq '--help');
+	if ($ARGV[$i] =~ /^-i(.*)$/)
+	{
+		if (length($1) > 0)
+		{
+			$interval = $1;
+		}
+		else
+		{
+			usage() if ($i == $#ARGV);
+			$interval = $ARGV[++$i];
+		}
+	}
+	elsif ($ARGV[$i] eq '-c')
+	{
+		$clear = 1;
+	}
+	else
+	{
+		# Got to the command
+		@command = splice(@ARGV, $i);
+		last;
+	}
+}
+
+usage() if ($#command < 0);
+
+for (;;)
+{
+	system('clear') if ($clear);
+	system(@command);
+	sleep $interval;
+}
+

@@ -1,0 +1,13 @@
+! Key definitions
+! Menu key is a compose key
+keycode 117 = Multi_key
+! Pause/Break is Caps Lock
+keycode 110 = Caps_Lock
+! Caps Lock is Control
+keycode 66 = Control_L
+keycode 37 = Control_L
+
+! Modifier definitions
+clear Lock
+add Lock = Caps_Lock
+add Control = Control_L

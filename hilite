@@ -1,0 +1,29 @@
+#!/usr/bin/perl -w
+
+use strict;
+use Getopt::Long;
+
+my %COLORS = (	'red' => "\033[1;31m",
+		'green' => "\033[1;32m",
+		'yellow' => "\033[1;33m",
+		'blue' => "\033[1;34m",
+		'magenta' => "\033[1;35m"
+);
+
+my $color = 'red';
+GetOptions("color=s" => \$color);
+my $search = shift;
+die "Usage: hilite <pattern>" unless(defined($search));
+my $cstart = exists($COLORS{$color}) ? $COLORS{$color} : $COLORS{'red'};
+my $cend = "\033[0m";
+
+while (my $line = <>)
+{
+	chomp($line);
+	my $match = $line;
+	$match =~ s/($search)/$cstart$1$cend/og;
+	print "$match\n";
+}
+
+exit(0);
+
