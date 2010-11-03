@@ -1,0 +1,4 @@
+#!/bin/sh
+
+id="$1"
+exec grep --exclude-dir .svn --color=auto -R '\<'"${id}"'\>' .
