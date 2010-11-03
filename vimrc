@@ -109,10 +109,14 @@ set background=dark
 set showtabline=2
 
 if has("gui_running")
+    colorscheme ir_black
     runtime ftplugin/man.vim
     nmap K :Man <cword><CR>
     set lines=38
     map ,w :winpos 769 153
+    if &diff
+        set columns=175
+    endif
 endif
 
 " mappings
@@ -141,9 +145,9 @@ set nomousehide
 
 if has("autocmd")
   autocmd FileType text setlocal noautoindent
-  autocmd FileType c match error /\v\s+$/
-  autocmd FileType c 2match error /\t/
-  autocmd FileType cpp 2match error /\t/
+"  autocmd FileType c match error /\v\s+$/
+"  autocmd FileType c 2match error /\t/
+"  autocmd FileType cpp 2match error /\t/
   autocmd FileType c syn match Constant display "\<_*[A-Z][A-Z0-9_]*\>"
   autocmd FileType cpp syn match Constant display "\<_*[A-Z][A-Z0-9_]*\>"
   autocmd FileType dosbatch syn match Comment "^@rem\($\|\s.*$\)"lc=4 contains=dosbatchTodo,@dosbatchNumber,dosbatchVariable,dosbatchArgument
