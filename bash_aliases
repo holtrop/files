@@ -1,5 +1,9 @@
 # vim:syntax=sh
-PS1='\[\033[32;1m\]\u@\H\[\033[31;1m\] [\w]\[\033[35;1m\] \d \t \[\033[34;1m\](\j)\n\$ \[\033[0m\]'
+if [[ "`whoami`" == "root" ]]; then
+    PS1='\[\033[31;1m\]\u@\H\[\033[32;1m\] [\w]\[\033[35;1m\] \d \t \[\033[34;1m\](\j)\n\$ \[\033[0m\]'
+else
+    PS1='\[\033[32;1m\]\u@\H\[\033[31;1m\] [\w]\[\033[35;1m\] \d \t \[\033[34;1m\](\j)\n\$ \[\033[0m\]'
+fi
 # alternate PS1:
 # PS1='[\[\033[31;1m\]\u@\H\[\033[34;1m\] \w\[\033[0m\]]\$ \[\033[0m\]'
 case "$TERM" in
@@ -32,5 +36,7 @@ function svn-merge-branch()
     branch_rev=$(svn log --stop-on-copy `svn-root`/branches/"$branch_name" | egrep -A1 -- '-{50}' | egrep '^r[0-9]+' | tail -n 1 | sed -re 's/^r([0-9]+).*/\1/')
     svn merge -r${branch_rev}:HEAD `svn-root`/branches/"$branch_name" "$@"
 }
+alias cribbage='cribbage -r'
+alias backgammon='backgammon -r -pb'
 # put 'cattodo' in $PROMPT_COMMAND to use
 alias cattodo='if [[ $LAST_WD != $PWD ]]; then if [[ -r .todo ]]; then cat .todo; fi; LAST_WD=$PWD; fi'
