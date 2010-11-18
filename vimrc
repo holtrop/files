@@ -2,59 +2,6 @@
 " This must be first, because it changes other options as a side effect.
 set nocompatible
 
-if has("unix")
-
-    if has("gui_running")
-"        colorscheme elflord
-        colorscheme ir_black
-        set lines=40
-    endif
-
-else " Windows GUI settings
-
-    source $VIMRUNTIME/vimrc_example.vim
-    source $VIMRUNTIME/mswin.vim
-    behave mswin
-
-    set diffexpr=MyDiff()
-    function MyDiff()
-      let opt = '-a --binary '
-      if &diffopt =~ 'icase' | let opt = opt . '-i ' | endif
-      if &diffopt =~ 'iwhite' | let opt = opt . '-b ' | endif
-      let arg1 = v:fname_in
-      if arg1 =~ ' ' | let arg1 = '"' . arg1 . '"' | endif
-      let arg2 = v:fname_new
-      if arg2 =~ ' ' | let arg2 = '"' . arg2 . '"' | endif
-      let arg3 = v:fname_out
-      if arg3 =~ ' ' | let arg3 = '"' . arg3 . '"' | endif
-      let eq = ''
-      if $VIMRUNTIME =~ ' '
-        if &sh =~ '\<cmd'
-          let cmd = '""' . $VIMRUNTIME . '\diff"'
-          let eq = '"'
-        else
-          let cmd = substitute($VIMRUNTIME, ' ', '" ', '') . '\diff"'
-        endif
-      else
-        let cmd = $VIMRUNTIME . '\diff'
-      endif
-      silent execute '!' . cmd . ' ' . opt . arg1 . ' ' . arg2 . ' > ' . arg3 . eq
-    endfunction
-
-    " Josh's
-    if has("gui_running")
-        set lines=53
-        set columns=85
-        colorscheme ir_black
-        set guifont=Courier:h10
-        map ,w :winpos 735 12
-        map ,W :winpos 1436 46
-    endif
-    set backupdir=C:\WINDOWS\Temp\vim
-    set directory=C:\WINDOWS\Temp\vim
-
-endif " has("unix")
-
 " Only do this part when compiled with support for autocommands.
 if has("autocmd")
 
@@ -87,7 +34,6 @@ else
 
 endif " has("autocmd")
 
-"""" BELOW HERE CAN BE THE SAME IN _vimrc """"
 set ruler
 set expandtab
 set tabstop=4
@@ -98,7 +44,6 @@ set copyindent
 set cindent
 set backspace=indent,eol,start
 set mouse=a
-set scrolloff=8
 syntax on
 set hlsearch
 set showmatch
@@ -107,16 +52,20 @@ set incsearch
 " GUI settings
 set background=dark
 set showtabline=2
+set nomousehide
 
 if has("gui_running")
     colorscheme ir_black
     runtime ftplugin/man.vim
     nmap K :Man <cword><CR>
-    set lines=38
+    set lines=40
     map ,w :winpos 769 153
+    set scrolloff=8
     if &diff
         set columns=175
     endif
+else
+    set scrolloff=4
 endif
 
 " mappings
@@ -140,8 +89,6 @@ map ,L :highlight TooLong guibg=lightyellow:match TooLong '\%>80v.*.$'
 
 " flag more than 80 characters in a row as an error
 " 3match error '\%>80v.\+'
-
-set nomousehide
 
 if has("autocmd")
   autocmd FileType text setlocal noautoindent
