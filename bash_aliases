@@ -13,7 +13,6 @@ case "$TERM" in
 *)
     ;;
 esac
-export LESS='-i'
 alias grepnosvn='grep --exclude-dir=".svn"'
 alias egrepnosvn='egrep --exclude-dir=".svn"'
 alias gvim='gvim --remote-tab-silent'
@@ -40,3 +39,4 @@ alias cribbage='cribbage -r'
 alias backgammon='backgammon -r -pb'
 # put 'cattodo' in $PROMPT_COMMAND to use
 alias cattodo='if [[ $LAST_WD != $PWD ]]; then if [[ -r .todo ]]; then cat .todo; fi; LAST_WD=$PWD; fi'
+export LESS='Ri'
