@@ -48,6 +48,8 @@ syntax on
 set hlsearch
 set showmatch
 set incsearch
+set tags=./tags;/
+let Tlist_WinWidth = 40
 
 " GUI settings
 set background=dark
@@ -58,7 +60,7 @@ if has("gui_running")
     colorscheme ir_black
     runtime ftplugin/man.vim
     nmap K :Man <cword><CR>
-    set lines=40
+    set lines=50
     map ,w :winpos 769 153
     set scrolloff=8
     if &diff
@@ -82,7 +84,8 @@ map ,s mz:%s/\v\s+$//'z
 map ,f :set ts=8:retab:set ts=4
 map ,C ggVGc
 " jump to tag in a new tab
-map  :tab :tag 
+"map  :tab :tag 
+nnoremap <silent> <F8> :TlistToggle<CR>
 
 " highlight characters past column 80
 map ,L :highlight TooLong guibg=lightyellow:match TooLong '\%>80v.*.$'
@@ -100,4 +103,6 @@ if has("autocmd")
   autocmd FileType dosbatch syn match Comment "^@rem\($\|\s.*$\)"lc=4 contains=dosbatchTodo,@dosbatchNumber,dosbatchVariable,dosbatchArgument
   au BufRead,BufNewFile *.dxl set filetype=dxl
   autocmd FileType dxl set syntax=cpp
+  " open all buffers in a new tab
+  au BufAdd,BufNewFile * nested tab sball
 endif " has("autocmd")
