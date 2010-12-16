@@ -13,8 +13,9 @@ case "$TERM" in
 *)
     ;;
 esac
-alias grepnosvn='grep --exclude-dir=".svn"'
-alias egrepnosvn='egrep --exclude-dir=".svn"'
+alias grep='grep --color=auto'
+alias grepnosvn='grep --color=auto --exclude-dir=".svn"'
+alias egrepnosvn='egrep --color=auto --exclude-dir=".svn"'
 alias gvim='gvim --remote-tab-silent'
 alias svnst='svn st | grep -v "^X" | grep -v "^\$"'
 alias svn-root="svn info | grep '^URL: ' | sed -e 's/^URL: //' -re 's/\/(trunk|tags|branches)\>.*//'"
@@ -39,4 +40,55 @@ alias cribbage='cribbage -r'
 alias backgammon='backgammon -r -pb'
 # put 'cattodo' in $PROMPT_COMMAND to use
 alias cattodo='if [[ $LAST_WD != $PWD ]]; then if [[ -r .todo ]]; then cat .todo; fi; LAST_WD=$PWD; fi'
+alias ls='ls --color=auto'
 export LESS='Ri'
+function mark()
+{
+    MARKS_FILE=${HOME}/.marks
+    param="$1"
+    if [[ ! -f ${MARKS_FILE} ]]; then
+        touch ${MARKS_FILE}
+    fi
+    case "$param" in
+    -g)
+        mark_name="$2"
+        mark_dir=$(grep "^$mark_name:" ${MARKS_FILE} | sed -e 's/[^:]*://')
+        if [[ "$mark_dir" != "" ]]; then
+            cd "$mark_dir"
+        fi
+        ;;
+    -s)
+        mark_name="$2"
+        mark_dir=$(grep "^$mark_name:" ${MARKS_FILE} | sed -e 's/[^:]*://')
+        echo "$mark_dir"
+        ;;
+    -h)
+        echo "mark <name> [<dir>]: mark <dir> (default \$PWD) as <name>"
+        echo "mark -g <name>     : goto mark <name>"
+        echo "mark -s <name>     : show mark <name>"
+        echo "mark -d <name>     : delete mark <name>"
+        echo "mark -l            : list all marks"
+        ;;
+    -l)
+        cat ${MARKS_FILE}
+        ;;
+    -d)
+        mark_name="$2"
+        grep -v "^$mark_name:" ${MARKS_FILE} > ${MARKS_FILE}.tmp
+        mv ${MARKS_FILE}.tmp ${MARKS_FILE}
+        ;;
+    -*)
+        echo "Unrecognized option"
+        ;;
+    *)
+        mark_name="$1"
+        mark_dir="$2"
+        if [[ "$mark_dir" == "" ]]; then
+            mark_dir=`pwd`
+        fi
+        grep -v "^$mark_name:" ${MARKS_FILE} > ${MARKS_FILE}.tmp
+        mv ${MARKS_FILE}.tmp ${MARKS_FILE}
+        echo "$mark_name:$mark_dir" >> ${MARKS_FILE}
+        ;;
+    esac
+}
