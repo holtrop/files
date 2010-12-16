@@ -104,5 +104,5 @@ if has("autocmd")
   au BufRead,BufNewFile *.dxl set filetype=dxl
   autocmd FileType dxl set syntax=cpp
   " open all buffers in a new tab
-  au BufAdd,BufNewFile * nested tab sball
+"  au BufAdd,BufNewFile * nested tab sball
 endif " has("autocmd")
