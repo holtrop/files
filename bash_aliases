@@ -92,3 +92,4 @@ function mark()
         ;;
     esac
 }
+alias gitdc='git diff --cached'
