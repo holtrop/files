@@ -93,3 +93,15 @@ function mark()
     esac
 }
 alias gitdc='git diff --cached'
+export EDITOR=vim
+function git-config-joshs()
+{
+    git config --global user.name 'Josh Holtrop'
+    git config --global user.email 'jholtrop+git@gmail.com'
+    git config --global push.default matching
+    git config --global color.ui true
+    git config --global core.excludesfile ${HOME}/.gitignore
+    git config --global core.pager 'less -FRXi'
+}
+
+# local
