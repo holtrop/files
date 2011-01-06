@@ -29,12 +29,12 @@ function svn-branch()
 }
 function svn-merge-branch()
 {
-    # assumes you are in the working copy "trunk" directory
-    # usage: svn-merge-branch branch-name -m "comment"
+    # usage: svn-merge-branch branch-name branch-dir -m "comment"
     branch_name="$1"
-    shift 1
+    branch_dir="$2"
+    shift 2
     branch_rev=$(svn log --stop-on-copy `svn-root`/branches/"$branch_name" | egrep -A1 -- '-{50}' | egrep '^r[0-9]+' | tail -n 1 | sed -re 's/^r([0-9]+).*/\1/')
-    svn merge -r${branch_rev}:HEAD `svn-root`/branches/"$branch_name" "$@"
+    svn merge -r${branch_rev}:HEAD `svn-root`/branches/"$branch_name""$branch_dir" "$@"
 }
 alias cribbage='cribbage -r'
 alias backgammon='backgammon -r -pb'
