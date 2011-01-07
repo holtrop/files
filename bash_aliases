@@ -107,5 +107,25 @@ function svndiff()
 {
     svn diff "$@" | colordiff
 }
+function svn()
+{
+    subcommand="$1"
+    realsvn=$(which svn)
+    colorsvn=$(which colorsvn)
+    colordiff=$(which colordiff)
+    if [[ "$realsvn" == "" ]]; then
+        echo "Subversion not found in \$PATH"
+        return
+    fi
+    if [[ "$subcommand" == "diff" && "$colordiff" != "" ]]; then
+        ${realsvn} "$@" | ${colordiff}
+        return
+    fi
+    if [[ "$colorsvn" != "" ]]; then
+        ${colorsvn} "$@"
+        return
+    fi
+    ${realsvn} "$@"
+}
 
 # local
