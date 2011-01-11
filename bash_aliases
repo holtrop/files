@@ -104,10 +104,6 @@ function git-config-joshs()
     git config --global core.excludesfile ${HOME}/.gitignore
     git config --global core.pager 'less -FRXi'
 }
-function svndiff()
-{
-    svn diff "$@" | colordiff
-}
 function svn()
 {
     subcommand="$1"
