@@ -110,9 +110,9 @@ function svndiff()
 function svn()
 {
     subcommand="$1"
-    realsvn=$(which svn)
-    colorsvn=$(which colorsvn)
-    colordiff=$(which colordiff)
+    realsvn=$(which svn 2>/dev/null)
+    colorsvn=$(which colorsvn 2>/dev/null)
+    colordiff=$(which colordiff 2>/dev/null)
     if [[ "$realsvn" == "" ]]; then
         echo "Subversion not found in \$PATH"
         return
