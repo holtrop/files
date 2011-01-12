@@ -124,5 +124,9 @@ function svn()
     fi
     ${realsvn} "$@"
 }
+function svn-contributors()
+{
+    svn log -q "$@" | grep -Ev '^-{30}' | cut -d '|' -f2 | awk '{ print $1 }' | sort | uniq -c | sort -n
+}
 
 # local
