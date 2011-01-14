@@ -17,25 +17,6 @@ alias grep='grep --color=auto'
 alias grepnosvn='grep --color=auto --exclude-dir=".svn"'
 alias egrepnosvn='egrep --color=auto --exclude-dir=".svn"'
 alias gvim='gvim --remote-tab-silent'
-alias svnst='svn st | grep -v "^X" | grep -v "^\$"'
-alias svn-root="svn info | grep '^URL: ' | sed -e 's/^URL: //' -re 's/\/(trunk|tags|branches)\>.*//'"
-function svn-branch()
-{
-    # do from anywhere in a working copy of the repository
-    # usage: svn-branch branch-name -m "comment"
-    local branch_name="$1"
-    shift 1
-    svn copy `svn-root`/trunk `svn-root`/branches/"$branch_name" "$@"
-}
-function svn-merge-branch()
-{
-    # usage: svn-merge-branch branch-name branch-dir -m "comment"
-    local branch_name="$1"
-    local branch_dir="$2"
-    shift 2
-    local branch_rev=$(svn log --stop-on-copy `svn-root`/branches/"$branch_name" | egrep -A1 -- '-{50}' | egrep '^r[0-9]+' | tail -n 1 | sed -re 's/^r([0-9]+).*/\1/')
-    svn merge -r${branch_rev}:HEAD `svn-root`/branches/"$branch_name""$branch_dir" "$@"
-}
 alias cribbage='cribbage -r'
 alias backgammon='backgammon -r -pb'
 # put 'cattodo' in $PROMPT_COMMAND to use
@@ -104,29 +85,12 @@ function git-config-joshs()
     git config --global core.excludesfile ${HOME}/.gitignore
     git config --global core.pager 'less -FRXi'
 }
-function svn()
-{
-    local subcommand="$1"
-    local realsvn=$(which svn 2>/dev/null)
-    local colorsvn=$(which colorsvn 2>/dev/null)
-    local colordiff=$(which colordiff 2>/dev/null)
-    if [[ "$realsvn" == "" ]]; then
-        echo "Subversion not found in \$PATH"
-        return
-    fi
-    if [[ "$subcommand" == "diff" && "$colordiff" != "" ]]; then
-        ${realsvn} "$@" | ${colordiff}
-        return
-    fi
-    if [[ "$colorsvn" != "" ]]; then
-        ${colorsvn} "$@"
-        return
-    fi
-    ${realsvn} "$@"
-}
 function svn-contributors()
 {
     svn log -q "$@" | grep -Ev '^-{30}' | cut -d '|' -f2 | awk '{ print $1 }' | sort | uniq -c | sort -n
 }
+if [[ "$(which jsvn)" != "" ]]; then
+    alias svn='jsvn'
+fi
 
 # local
