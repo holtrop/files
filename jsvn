@@ -38,7 +38,7 @@ def findInPath(cmd):
 
 def getSVNURL(svn):
     for line in Popen([svn, 'info'], stdout=PIPE).communicate()[0].split('\n'):
-        m = re.match('^URL:\s*(.*?)\s*$', line)
+        m = re.match(r'^URL:\s*(.*?)\s*$', line)
         if m is not None:
             return m.group(1)
     return ''
