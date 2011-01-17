@@ -18,6 +18,9 @@
 #   - switch to 'trunk', branch name, or tag name without having to specify
 #     the full URL
 #   - falls back to Subversion "switch" if <short_name> doesn't exist
+#  merge <branch>
+#   - merge branch <branch> into the current WC path
+#   - falls back to Subversion "merge" if <branch> doesn't exist
 
 import sys
 import os
@@ -109,7 +112,7 @@ def tags(argv, svn):
         sys.stdout.write(t + '\n')
     return 0
 
-def switch(argv, svn, colorsvn):
+def switch(argv, svn):
     if len(argv) < 2:
         return -1
     root = getSVNRoot(svn)
@@ -127,6 +130,27 @@ def switch(argv, svn, colorsvn):
         return 0
     return -2
 
+def merge(argv, svn):
+    if len(argv) < 2:
+        return -1
+    root = getSVNRoot(svn)
+    branches = getSVNBranchList(svn)
+    if not argv[1] in branches:
+        return -3
+    lines = Popen([svn, 'log', '--stop-on-copy', root + '/branches/' + argv[1]])
+    rev = 0
+    for line in lines:
+        m = re.match(r'^r(\d+)\s', line)
+        if m is not None:
+            rev = m.group(1)
+    if rev == 0:
+        sys.stderr.write('Could not get first branch revision\n')
+        return -4
+    path = getSVNRelPath(svn)
+    Popen([svn, 'merge', '-r%s:HEAD' % rev,
+        root + '/branches/' + argv[1] + path, '.']).wait()
+    return -2
+
 def main(argv):
     realsvn = findInPath('svn')
     colorsvn = findInPath('colorsvn')
@@ -141,7 +165,12 @@ def main(argv):
             return branch(argv, realsvn)
 
         if argv[0] == "switch":
-            r = switch(argv, realsvn, colorsvn)
+            r = switch(argv, realsvn)
+            if r >= 0:
+                return r
+
+        if argv[0] == "merge":
+            r = merge(argv, realsvn)
             if r >= 0:
                 return r
 
@@ -154,8 +183,7 @@ def main(argv):
             return 0
 
     if colorsvn != '':
-        Popen([colorsvn] + argv).wait()
-        return 0
+        realsvn = colorsvn
 
     Popen([realsvn] + argv).wait()
     return 0
