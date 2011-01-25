@@ -137,7 +137,8 @@ def merge(argv, svn):
     branches = getSVNBranchList(svn)
     if not argv[1] in branches:
         return -3
-    lines = Popen([svn, 'log', '--stop-on-copy', root + '/branches/' + argv[1]])
+    lines = Popen([svn, 'log', '--stop-on-copy', root + '/branches/' + argv[1]],
+            stdout=PIPE).communicate()[0].split('\n')
     rev = 0
     for line in lines:
         m = re.match(r'^r(\d+)\s', line)
@@ -149,7 +150,7 @@ def merge(argv, svn):
     path = getSVNRelPath(svn)
     Popen([svn, 'merge', '-r%s:HEAD' % rev,
         root + '/branches/' + argv[1] + path, '.']).wait()
-    return -2
+    return 0
 
 def main(argv):
     realsvn = findInPath('svn')
@@ -182,6 +183,10 @@ def main(argv):
         if argv[0] == "diff" and colordiff != '':
             diff_out = Popen([realsvn] + argv, stdout=PIPE).stdout
             Popen([colordiff], stdin=diff_out).wait()
+            return 0
+
+        if argv[0] == "root":
+            sys.stdout.write(getSVNRoot(realsvn) + '\n')
             return 0
 
     if colorsvn != '':
