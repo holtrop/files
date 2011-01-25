@@ -9,9 +9,10 @@
 # appropriate subcommands if so.
 #
 # Implemented subcommands:
-#  branch[es] <branch_name>
+#  branch[es] [[-d] <branch_name>]
 #   - with no arguments, list branches with '*' by the current one
-#   - with an argument, create a new branch from the current one
+#   - with -d, delete <branch>
+#   - otherwise, create a new branch from the current one
 #  tags
 #   - list tags
 #  switch <short_name>
@@ -21,6 +22,8 @@
 #  merge <branch>
 #   - merge branch <branch> into the current WC path
 #   - falls back to Subversion "merge" if <branch> doesn't exist
+#  root
+#   - output root URL (for use on shell such as "svn log $(svn root)/tags")
 
 import sys
 import os
@@ -95,9 +98,14 @@ def branch(argv, svn):
             sys.stdout.write('*' if b == current else ' ')
             sys.stdout.write(b + '\n')
         return 0
-    branch_name = argv[1]
+    branch_name = argv[-1]
     origin = getSVNTopLevel(svn)
     root = getSVNRoot(svn)
+    if len(argv) >= 3 and argv[1] == "-d":
+        # delete branch in argv[2]
+        Popen([svn, 'rm', root + '/branches/' + argv[2], '-m',
+            "Removed branch '%s'" % branch_name]).wait()
+        return 0
     if origin == '' or root == '':
         sys.stderr.write("Could not determine origin/root URL\n")
         return 1
