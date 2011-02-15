@@ -1,0 +1,39 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+sub usage
+{
+    print STDERR "Usage: $0 <file>\n";
+    exit(42);
+}
+
+usage() unless ($#ARGV >= 0);
+my $fname = shift(@ARGV);
+my $dfname = $fname;
+$dfname =~ s/\.gpg$//i;
+
+my $result = system('gpg', '--decrypt', '--output', $dfname, $fname);
+if ($result != 0)
+{
+    print STDERR "Error decrypting: exiting.\n";
+    exit(1);
+}
+
+my $editor = $ENV{'EDITOR'};
+$editor = 'vim' if ($editor =~ /^\s*$/);
+
+system($editor, $dfname);
+
+my $recipient = $ENV{'GPGEDIT_RECIPIENT'};
+my @cmd = ('gpg', '--encrypt');
+if ($recipient !~ /^\s*$/)
+{
+    push(@cmd, '--recipient', $recipient);
+}
+push(@cmd, $dfname);
+
+system('mv', $fname, "$fname~");
+system(@cmd);
+unlink($dfname);
