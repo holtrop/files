@@ -176,7 +176,8 @@ def main(argv):
         if argv[0] == "switch":
             r = switch(argv, realsvn)
             if r == 0:
-                Popen(realsvn + ' info | grep --color=none "^URL:"', shell = True).wait()
+                Popen(realsvn + ' info | grep --color=none "^URL:"',
+                        shell = True).wait()
             if r >= 0:
                 return r
 
