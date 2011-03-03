@@ -13,8 +13,10 @@
 #   - with no arguments, list branches with '*' by the current one
 #   - with -d, delete <branch>
 #   - otherwise, create a new branch from the current one
-#  tags
-#   - list tags
+#  tag[s] [[-d] <tag_name>]
+#   - with no arguments, list tags
+#   - with -d, delete <tag>
+#   - otherwise, create a new tag from the current branch
 #  switch <short_name>
 #   - switch to 'trunk', branch name, or tag name without having to specify
 #     the full URL
@@ -94,6 +96,7 @@ def branch(argv, svn):
     if len(argv) < 2:
         bl = ['trunk'] + getSVNBranchList(svn)
         current = getSVNTopLevel(svn).split('/')[-1]
+        bl.sort()
         for b in bl:
             sys.stdout.write('*' if b == current else ' ')
             sys.stdout.write(b + '\n')
@@ -114,10 +117,27 @@ def branch(argv, svn):
     Popen([svn, 'copy', origin, branch_path, '-m', comment]).wait()
     return 0
 
-def tags(argv, svn):
-    tl = getSVNTagList(svn)
-    for t in tl:
-        sys.stdout.write(t + '\n')
+def tag(argv, svn):
+    if len(argv) < 2:
+        tl = getSVNTagList(svn)
+        tl.sort()
+        for t in tl:
+            sys.stdout.write(t + '\n')
+        return 0
+    tag_name = argv[-1]
+    origin = getSVNTopLevel(svn)
+    root = getSVNRoot(svn)
+    if len(argv) >= 3 and argv[1] == "-d":
+        # delete tag in argv[2]
+        Popen([svn, 'rm', root + '/tags/' + argv[2], '-m',
+            "Removed tag '%s'" % tag_name]).wait()
+        return 0
+    if origin == '' or root == '':
+        sys.stderr.write("Could not determine origin/root URL\n")
+        return 1
+    comment = "Created '%s' tag" % tag_name
+    tag_path = root + '/tags/' + tag_name
+    Popen([svn, 'copy', origin, tag_path, '-m', comment]).wait()
     return 0
 
 def switch(argv, svn):
@@ -186,8 +206,8 @@ def main(argv):
             if r >= 0:
                 return r
 
-        if argv[0] == "tags":
-            return tags(argv, realsvn)
+        if argv[0] == "tag" or argv[0] == "tags":
+            return tag(argv, realsvn)
 
         if argv[0] == "diff" and colordiff != '':
             diff_out = Popen([realsvn] + argv, stdout=PIPE).stdout
