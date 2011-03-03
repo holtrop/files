@@ -1,5 +1,9 @@
 #!/usr/bin/perl
 
+# Author: Josh Holtrop
+# Purpose: edit a file encrypted by gpg
+# Set environment variable GPGEDIT_RECIPIENT to specify the recipient
+
 use strict;
 use warnings;
 
