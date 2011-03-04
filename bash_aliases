@@ -36,6 +36,8 @@ function mark()
         local mark_dir=$(grep "^$mark_name:" ${MARKS_FILE} | sed -e 's/[^:]*://')
         if [[ "$mark_dir" != "" ]]; then
             cd "$mark_dir"
+        else
+            echo "\`$mark_name' is NOT in mark list!"
         fi
         ;;
     -s)
