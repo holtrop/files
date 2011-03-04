@@ -1,4 +1,8 @@
-#!/bin/sh
+#!/bin/bash
 
 define="$1"
-exec grep --exclude-dir .svn --color=auto -R "define *\\<${define}\\>" .
+where="$2"
+if [[ "x$where" == "x" ]]; then
+    where=.
+fi
+exec grep --exclude-dir .svn --color=auto -R "define *\\<${define}\\>" ${where}
