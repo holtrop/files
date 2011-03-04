@@ -1,4 +1,8 @@
-#!/bin/sh
+#!/bin/bash
 
 id="$1"
-exec grep --exclude-dir .svn --color=auto -R '\<'"${id}"'\>' .
+where="$2"
+if [[ "$where" == "" ]]; then
+    where=.
+fi
+exec grep --exclude-dir .svn --color=auto -R '\<'"${id}"'\>' ${where}
