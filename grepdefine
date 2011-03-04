@@ -5,4 +5,4 @@ where="$2"
 if [[ "x$where" == "x" ]]; then
     where=.
 fi
-exec grep --exclude-dir .svn --color=auto -R "define *\\<${define}\\>" ${where}
+exec grep --exclude-dir .svn --color=auto -RI "define *\\<${define}\\>" ${where}
