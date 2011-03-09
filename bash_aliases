@@ -45,7 +45,7 @@ function mark()
         local mark_dir=$(grep "^$mark_name:" ${MARKS_FILE} | sed -e 's/[^:]*://')
         echo "$mark_dir"
         ;;
-    -h)
+    -h|--help)
         echo "mark <name> [<dir>]: mark <dir> (default \$PWD) as <name>"
         echo "mark -g <name>     : goto mark <name>"
         echo "mark -s <name>     : show mark <name>"
