@@ -94,4 +94,9 @@ if [[ "$(which jsvn)" != "" ]]; then
     alias svn='jsvn'
 fi
 
-# local
+# source any machine-local aliases
+# this way ~/.bash_aliases can be a symlink to a version-controlled
+# aliases file
+if [ -f ~/.bash_aliases.local ]; then
+    . ~/.bash_aliases.local
+fi
