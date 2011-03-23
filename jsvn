@@ -218,7 +218,8 @@ def main(argv):
             sys.stdout.write(getSVNRoot(realsvn) + '\n')
             return 0
 
-        if argv[0] in ('st', 'status', 'log', 'up', 'update') and colorsvn != '':
+        if argv[0] in ('st', 'status', 'log', 'up', 'update') \
+            and colorsvn != '':
             realsvn = colorsvn
 
     Popen([realsvn] + argv).wait()
