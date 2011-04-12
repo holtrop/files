@@ -1,0 +1,22 @@
+#!/bin/sh
+
+here="$(dirname $0)"
+
+function install_file()
+{
+    source="${here}/$1"
+    dest="${HOME}/$2"
+    if [ -f "$dest" ]; then
+        echo "Skipping $1"
+    else
+        echo "Installing $1"
+        mkdir -p $(dirname "$dest")
+        cp "$source" "$dest"
+    fi
+}
+
+install_file bash_aliases .bash_aliases
+install_file vimrc .vimrc
+install_file inputrc .inputrc
+install_file screenrc .screenrc
+install_file ir_black.vim .vim/colors/ir_black.vim
