@@ -20,3 +20,4 @@ install_file vimrc .vimrc
 install_file inputrc .inputrc
 install_file screenrc .screenrc
 install_file ir_black.vim .vim/colors/ir_black.vim
+install_file gitignore .gitignore
