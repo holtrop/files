@@ -1,0 +1,14 @@
+#!/usr/bin/env python
+
+import os
+
+repos = '/var/git/git/repositories'
+base = 'git://holtrop.homelinux.com/'
+
+for d in os.listdir(repos):
+    repo_path = repos + '/' + d
+    if os.path.isdir(repo_path):
+        url_path = repo_path + '/cloneurl'
+        if not os.path.isfile(url_path):
+            f = file(url_path, 'w')
+            f.write(base + d)
