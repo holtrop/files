@@ -33,7 +33,7 @@ function mark()
     case "$param" in
     -g)
         local mark_name="$2"
-        local mark_dir=$(grep "^$mark_name:" ${MARKS_FILE} | sed -e 's/[^:]*://')
+        local mark_dir=$(grep -i "^$mark_name:" ${MARKS_FILE} | sed -e 's/[^:]*://')
         if [[ "$mark_dir" != "" ]]; then
             cd "$mark_dir"
         else
@@ -42,8 +42,12 @@ function mark()
         ;;
     -s)
         local mark_name="$2"
-        local mark_dir=$(grep "^$mark_name:" ${MARKS_FILE} | sed -e 's/[^:]*://')
-        echo "$mark_dir"
+        local mark_dir=$(grep -i "^$mark_name:" ${MARKS_FILE} | sed -e 's/[^:]*://')
+        if [[ "$mark_dir" != "" ]]; then
+            echo "$mark_dir"
+        else
+            echo "\`$mark_name' is NOT in mark list!"
+        fi
         ;;
     -h|--help)
         echo "mark <name> [<dir>]: mark <dir> (default \$PWD) as <name>"
