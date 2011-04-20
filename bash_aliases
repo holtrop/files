@@ -27,27 +27,27 @@ function mark()
 {
     local MARKS_FILE=${HOME}/.marks
     local param="$1"
+    local mark_name=""
+    local mark_value=""
     if [[ ! -f ${MARKS_FILE} ]]; then
         touch ${MARKS_FILE}
     fi
     case "$param" in
-    -g)
-        local mark_name="$2"
-        local mark_dir=$(grep -i "^$mark_name:" ${MARKS_FILE} | sed -e 's/[^:]*://')
-        if [[ "$mark_dir" != "" ]]; then
-            cd "$mark_dir"
-        else
+    -g|-s|-d)
+        mark_name="$2"
+        mark_value=$(grep -i "^$mark_name:" ${MARKS_FILE} | sed -e 's/[^:]*://')
+        if [[ "$mark_value" == "" ]]; then
             echo "\`$mark_name' is NOT in mark list!"
+            return
         fi
         ;;
+    esac
+    case "$param" in
+    -g)
+        cd "$mark_value"
+        ;;
     -s)
-        local mark_name="$2"
-        local mark_dir=$(grep -i "^$mark_name:" ${MARKS_FILE} | sed -e 's/[^:]*://')
-        if [[ "$mark_dir" != "" ]]; then
-            echo "$mark_dir"
-        else
-            echo "\`$mark_name' is NOT in mark list!"
-        fi
+        echo "$mark_value"
         ;;
     -h|--help)
         echo "mark <name> [<dir>]: mark <dir> (default \$PWD) as <name>"
@@ -60,7 +60,6 @@ function mark()
         cat ${MARKS_FILE}
         ;;
     -d)
-        local mark_name="$2"
         grep -v "^$mark_name:" ${MARKS_FILE} > ${MARKS_FILE}.tmp
         mv ${MARKS_FILE}.tmp ${MARKS_FILE}
         ;;
@@ -69,13 +68,13 @@ function mark()
         ;;
     *)
         local mark_name="$1"
-        local mark_dir="$2"
-        if [[ "$mark_dir" == "" ]]; then
-            mark_dir=`pwd`
+        local mark_value="$2"
+        if [[ "$mark_value" == "" ]]; then
+            mark_value=`pwd`
         fi
         grep -v "^$mark_name:" ${MARKS_FILE} > ${MARKS_FILE}.tmp
         mv ${MARKS_FILE}.tmp ${MARKS_FILE}
-        echo "$mark_name:$mark_dir" >> ${MARKS_FILE}
+        echo "$mark_name:$mark_value" >> ${MARKS_FILE}
         ;;
     esac
 }
