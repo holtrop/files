@@ -89,10 +89,6 @@ function git-config-joshs()
     git config --global core.pager 'less -FRXi'
     git config --global alias.dc 'diff --cached'
 }
-function svn-contributors()
-{
-    svn log -q "$@" | grep -Ev '^-{30}' | cut -d '|' -f2 | awk '{ print $1 }' | sort | uniq -c | sort -n
-}
 if [[ "$(which jsvn)" != "" ]]; then
     alias svn='jsvn'
 fi
