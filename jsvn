@@ -28,6 +28,8 @@
 #   - output root URL (for use on shell such as "svn log $(svn root)/tags")
 #  watch-lock
 #   - block until the lock on a file/URL is released
+#  users
+#   - show a list of contributing users to a SVN path
 
 import sys
 import os
@@ -224,6 +226,27 @@ def watch_lock(argv, svn):
 ''')
     return 0
 
+def users(argv, svn):
+    path = '.'
+    if len(argv) > 1:
+        path = argv[1]
+    users = {}
+    p = Popen([svn, 'log', '-q', path], stdout=PIPE)
+    lines = p.communicate()[0].split('\n')
+    for line in lines:
+        m = re.match('r\d+\s*\|([^|]+)\|', line)
+        if m is not None:
+            user = m.group(1).strip()
+            if not user.lower() in users:
+                users[user.lower()] = [user, 1]
+            else:
+                users[user.lower()][1] += 1
+    values = users.values()
+    values.sort(key = lambda x: x[1], reverse = True)
+    for v in values:
+        print "%8d %s" % (v[1], v[0])
+    return 0
+
 def main(argv):
     realsvn = findInPath('svn')
     colorsvn = findInPath('colorsvn')
@@ -264,6 +287,9 @@ def main(argv):
 
         if argv[0] == "watch-lock":
             return watch_lock(argv, realsvn)
+
+        if argv[0] == "users":
+            return users(argv, realsvn)
 
         if argv[0] in ('st', 'status', 'log', 'up', 'update') \
             and colorsvn != '':
