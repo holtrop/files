@@ -26,6 +26,8 @@
 #   - falls back to Subversion "merge" if <branch> doesn't exist
 #  root
 #   - output root URL (for use on shell such as "svn log $(svn root)/tags")
+#  watch-lock
+#   - block until the lock on a file/URL is released
 
 import sys
 import os
