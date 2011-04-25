@@ -13,9 +13,10 @@
 #   - with no arguments, list branches with '*' by the current one
 #   - with -d, delete <branch>
 #   - otherwise, create a new branch from the current one
-#  tag[s] [[-d] <tag_name>]
+#  tag[s] [[-d] <tag_name>] | [-m <old_tag_name> <new_tag_name>]
 #   - with no arguments, list tags
 #   - with -d, delete <tag>
+#   - with -m, rename <old_tag_name> to <new_tag_name>
 #   - otherwise, create a new tag from the current branch
 #  switch <short_name>
 #   - switch to 'trunk', branch name, or tag name without having to specify
@@ -123,8 +124,8 @@ def branch(argv, svn):
     return 0
 
 def tag(argv, svn):
+    tl = getSVNTagList(svn)
     if len(argv) < 2:
-        tl = getSVNTagList(svn)
         tl.sort()
         for t in tl:
             sys.stdout.write(t + '\n')
@@ -132,14 +133,26 @@ def tag(argv, svn):
     tag_name = argv[-1]
     origin = getSVNTopLevel(svn)
     root = getSVNRoot(svn)
-    if len(argv) >= 3 and argv[1] == "-d":
-        # delete tag in argv[2]
-        Popen([svn, 'rm', root + '/tags/' + argv[2], '-m',
-            "Removed tag '%s'" % tag_name]).wait()
-        return 0
     if origin == '' or root == '':
         sys.stderr.write("Could not determine origin/root URL\n")
         return 1
+    if len(argv) == 4 and argv[1] == '-m':
+        old_tag_name = argv[2]
+        if not old_tag_name in tl:
+            sys.stderr.write('Tag %s not found!\n' % old_tag_name)
+            return 1
+        Popen([svn, 'mv',
+            root + '/tags/' + old_tag_name, root + '/tags/' + tag_name,
+            '-m', "Renamed tag '%s' to '%s'" % (old_tag_name, tag_name)]).wait()
+        return 0
+    if len(argv) >= 3 and argv[1] == "-d":
+        if not tag_name in tl:
+            sys.stderr.write('Tag %s not found!\n' % tag_name)
+            return 1
+        # delete tag in argv[2]
+        Popen([svn, 'rm', root + '/tags/' + tag_name, '-m',
+            "Removed tag '%s'" % tag_name]).wait()
+        return 0
     comment = "Created '%s' tag" % tag_name
     tag_path = root + '/tags/' + tag_name
     Popen([svn, 'copy', origin, tag_path, '-m', comment]).wait()
