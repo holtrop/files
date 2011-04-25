@@ -31,6 +31,9 @@
 #   - block until the lock on a file/URL is released
 #  users
 #   - show a list of contributing users to a SVN path
+#  binaries
+#   - show a list of versioned binary files under the current path, with
+#     a prepended '*' for those with svn:needs-lock set
 
 import sys
 import os
@@ -97,6 +100,9 @@ def getSVNTagList(svn):
         if re.match(r'^\s*$', line) is None:
             colist.append(re.sub(r'/$', '', line))
     return colist
+
+def getSVNProperty(svn, prop, path):
+    return Popen([svn, 'propget', prop, path], stdout=PIPE).communicate()[0]
 
 def branch(argv, svn):
     if len(argv) < 2:
@@ -260,6 +266,23 @@ def users(argv, svn):
         print "%8d %s" % (v[1], v[0])
     return 0
 
+def binaries(argv, svn, base_path = '.'):
+    for ent in os.listdir(base_path):
+        if ent in ('.', '..', '.svn'):
+            continue
+        ent_path = os.sep.join([base_path, ent])
+        if os.path.isfile(ent_path):
+            mime_type = getSVNProperty(svn, 'svn:mime-type', ent_path)
+            if re.match(r'application/octet-stream', mime_type):
+                # we found a binary file
+                needs_lock = getSVNProperty(svn, 'svn:needs-lock', ent_path)
+                sys.stdout.write('* ' if needs_lock != '' else '  ')
+                sys.stdout.write(ent_path)
+                sys.stdout.write('\n')
+        elif os.path.isdir(ent_path):
+            binaries(argv, svn, os.sep.join([base_path, ent]))
+    return 0
+
 def main(argv):
     realsvn = findInPath('svn')
     colorsvn = findInPath('colorsvn')
@@ -303,6 +326,9 @@ def main(argv):
 
         if argv[0] == "users":
             return users(argv, realsvn)
+
+        if argv[0] == "binaries":
+            return binaries(argv, realsvn)
 
         if argv[0] in ('st', 'status', 'log', 'up', 'update') \
             and colorsvn != '':
