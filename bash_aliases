@@ -22,6 +22,7 @@ alias backgammon='backgammon -r -pb'
 # put 'cattodo' in $PROMPT_COMMAND to use
 alias cattodo='if [[ $LAST_WD != $PWD ]]; then if [[ -r .todo ]]; then cat .todo; fi; LAST_WD=$PWD; fi'
 alias ls='ls --color=auto'
+alias strip-cr="sed -e 's/\x0d//'"
 export LESS='Ri'
 function mark()
 {
