@@ -85,7 +85,9 @@ map ,f :set ts=8:retab:set ts=4
 map ,C ggVGc
 " jump to tag in a new tab
 "map  :tab :tag 
-nnoremap <silent> <F8> :TlistToggle<CR>
+"nnoremap <silent> <F8> :TlistToggle<CR>
+" re-indent the following line how vim would automatically do it
+map ,j Ji
 
 " highlight characters past column 80
 map ,L :highlight TooLong guibg=lightyellow:match TooLong '\%>80v.*.$'
