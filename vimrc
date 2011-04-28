@@ -107,4 +107,6 @@ if has("autocmd")
   autocmd FileType dxl set syntax=cpp
   " open all buffers in a new tab
 "  au BufAdd,BufNewFile * nested tab sball
+" install glsl.vim in ~/.vim/syntax to use syntax highlighting for GLSL:
+" au BufNewFile,BufRead *.frag,*.vert,*.fp,*.vp,*.glsl setf glsl
 endif " has("autocmd")
