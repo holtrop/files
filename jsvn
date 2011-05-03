@@ -31,9 +31,10 @@
 #   - block until the lock on a file/URL is released
 #  users
 #   - show a list of contributing users to a SVN path
-#  binaries
+#  binaries [--set-lock]
 #   - show a list of versioned binary files under the current path, with
 #     a prepended '*' for those with svn:needs-lock set
+#   - with --set-lock, set svn:needs-lock to '*' for binaries
 
 import sys
 import os
@@ -103,6 +104,9 @@ def getSVNTagList(svn):
 
 def getSVNProperty(svn, prop, path):
     return Popen([svn, 'propget', prop, path], stdout=PIPE).communicate()[0]
+
+def setSVNProperty(svn, prop, val, path):
+    Popen([svn, 'propset', prop, val, path], stdout=PIPE).wait()
 
 def branch(argv, svn):
     if len(argv) < 2:
@@ -276,7 +280,13 @@ def binaries(argv, svn, base_path = '.'):
             if re.match(r'application/octet-stream', mime_type):
                 # we found a binary file
                 needs_lock = getSVNProperty(svn, 'svn:needs-lock', ent_path)
-                sys.stdout.write('* ' if needs_lock != '' else '  ')
+                if needs_lock:
+                    sys.stdout.write('* ')
+                elif len(argv) >= 2 and argv[1] == '--set-lock':
+                    setSVNProperty(svn, 'svn:needs-lock', '*', ent_path)
+                    sys.stdout.write('S ')
+                else:
+                    sys.stdout.write('  ')
                 sys.stdout.write(ent_path)
                 sys.stdout.write('\n')
         elif os.path.isdir(ent_path):
