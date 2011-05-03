@@ -23,6 +23,7 @@ alias backgammon='backgammon -r -pb'
 alias cattodo='if [[ $LAST_WD != $PWD ]]; then if [[ -r .todo ]]; then cat .todo; fi; LAST_WD=$PWD; fi'
 alias ls='ls --color=auto'
 alias strip-cr="sed -e 's/\x0d//'"
+alias rip='abcde -x -p -o mp3'
 export LESS='Ri'
 function mark()
 {
