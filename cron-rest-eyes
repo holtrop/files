@@ -1,0 +1,10 @@
+#!/bin/sh
+
+# no message if one is displayed already
+if [[ "`ps -efww | grep -v grep | grep gxmessage`" == "" ]]; then
+    # no message if screensaver active
+    if [ "`ps -efww | grep -v grep | grep xscreensaver`" == "" ]; then
+        export DISPLAY=:0
+        gxmessage 'Rest your eyes!'
+    fi
+fi

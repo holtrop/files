@@ -1,0 +1,4 @@
+#!/bin/sh
+
+#exec xscreensaver-command -lock
+exec gnome-screensaver-command --activate

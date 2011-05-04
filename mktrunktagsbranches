@@ -1,0 +1,3 @@
+#!/bin/sh
+svn mkdir trunk tags branches
+svn ci -m 'added initial trunk, tags, and branches directories' .
