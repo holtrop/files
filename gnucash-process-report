@@ -1,0 +1,110 @@
+#!/usr/bin/python
+
+# Josh Holtrop
+# 2011-05-07
+# This script processes an HTML report output by gnucash and consolidates
+# the in/out amounts into net amounts and writes a new HTML report file
+# to the standard output.
+# Usage:
+#   gnucash-process-report generated.html > new.html
+
+import sys
+import re
+
+def main(argv):
+    if len(argv) < 2:
+        sys.stderr.write('Usage: %s <report-file>\n' % argv[0])
+        return 2
+    title = ''
+    accounts = {}
+    inout = ''
+    category = ''
+    f = open(argv[1], 'r')
+    lines = f.read().split('\n')
+    f.close()
+    for line in lines:
+        m = re.search(r'<h3>(.*)</h3>', line)
+        if m is not None:
+            title = m.group(1)
+            continue
+        m = re.search(r'Money into', line)
+        if m is not None:
+            inout = 'in'
+            continue
+        m = re.search(r'Money out of', line)
+        if m is not None:
+            inout = 'out'
+            continue
+        m = re.search(r'<a\s*href="gnc-register.*>(.*)</a>', line)
+        if m is not None:
+            category = m.group(1)
+            continue
+        m = re.search(r'</tr>', line)
+        if m is not None:
+            category = ''
+            continue
+        m = re.search(r'number-cel.*>(.*)</td>', line)
+        if m is not None:
+            amt = float(re.sub(r'[$,]', '', m.group(1).strip()))
+            if category != '':
+                if inout == 'in':
+                    amt = -amt
+                elif inout != 'out':
+                    continue
+                if category in accounts:
+                    accounts[category] += amt
+                else:
+                    accounts[category] = amt
+    categories = accounts.keys()
+    categories.sort()
+    def fmt_amt(a):
+        f = '%.2f' % a
+        m = re.match(r'(.+)(...\...)', f)
+        if m is not None:
+            f = '%s,%s' % (m.group(1, 2))
+        return '$%s' % f
+    sys.stdout.write('''
+<html>
+    <head>
+        <title>%s</title>
+    </head>
+    <body>
+    <h3>%s</h3>
+    <h5>Money Into Accounts</h5>
+    <table>
+''' % (title, title))
+    total_in = 0.0
+    for c in categories:
+        if accounts[c] < 0:
+            amt = -accounts[c]
+            total_in += amt
+            sys.stdout.write('<tr><td>%s</td><td>%s</td></tr>\n' %
+                    (c, fmt_amt(amt)))
+    sys.stdout.write('<tr style="font-weight: bold;"><td>Total:</td>'
+            '<td>%s</td></tr>\n' % fmt_amt(total_in))
+    sys.stdout.write('''
+    </table>
+    <h5>Money Out Of Accounts</h5>
+    <table>''')
+    total_out = 0.0
+    for c in categories:
+        if accounts[c] >= 0:
+            amt = accounts[c]
+            total_out += amt
+            sys.stdout.write('<tr><td>%s</td><td>%s</td></tr>\n' %
+                    (c, fmt_amt(amt)))
+    sys.stdout.write('<tr style="font-weight: bold;"><td>Total:</td>'
+            '<td>%s</td></tr>\n' % fmt_amt(total_out))
+    total_diff = total_in - total_out
+    sys.stdout.write('<tr><td>&nbsp;</td><td>&nbsp;</td></tr>\n')
+    sys.stdout.write('<tr style="font-weight: bold;"><td>Net In:</td>'
+            '<td>%s</td></tr>\n' % fmt_amt(total_diff))
+    sys.stdout.write('''
+    </table>
+    </body>
+</html>
+''')
+    return 0
+
+if __name__ == "__main__":
+    main(sys.argv)
