@@ -9,7 +9,9 @@ $include /etc/inputrc
 
 # F1 -> clear screen
 "\eOP": "clear\n"
-# F4
+# F2 -> take a quick note
+"\eOQ": "cat >/dev/null\n"
+# F4 -> c++ source file extensions
 "\eOS": "{h,cc}"
 
 # Fragment from Ubuntus default inputrc:
