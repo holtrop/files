@@ -108,5 +108,5 @@ if has("autocmd")
   " open all buffers in a new tab
 "  au BufAdd,BufNewFile * nested tab sball
 " install glsl.vim in ~/.vim/syntax to use syntax highlighting for GLSL:
-" au BufNewFile,BufRead *.frag,*.vert,*.fp,*.vp,*.glsl setf glsl
+  au BufNewFile,BufWinEnter *.frag,*.vert,*.fp,*.vp,*.glsl setf glsl
 endif " has("autocmd")
