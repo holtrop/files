@@ -109,4 +109,5 @@ if has("autocmd")
 "  au BufAdd,BufNewFile * nested tab sball
 " install glsl.vim in ~/.vim/syntax to use syntax highlighting for GLSL:
   au BufNewFile,BufWinEnter *.frag,*.vert,*.fp,*.vp,*.glsl setf glsl
+  autocmd Syntax {cpp,c,idl} runtime syntax/doxygen.vim
 endif " has("autocmd")
