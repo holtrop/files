@@ -42,10 +42,9 @@ import re
 import time
 from subprocess import *
 
-PATH = os.environ['PATH'].split(os.pathsep)
-
 def findInPath(cmd):
-    for p in PATH:
+    path_entries = os.environ['PATH'].split(os.pathsep)
+    for p in path_entries:
         full_path = os.path.join(p, cmd)
         if os.path.exists(full_path):
             return full_path
