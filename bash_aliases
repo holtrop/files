@@ -91,7 +91,7 @@ function git-config-joshs()
     git config --global core.pager 'less -FRXi'
     git config --global alias.dc 'diff --cached'
 }
-if [[ "$(which jsvn)" != "" ]]; then
+if [[ "$(which jsvn 2>/dev/null)" != "" ]]; then
     alias svn='jsvn'
 fi
 
