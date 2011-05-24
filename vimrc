@@ -70,6 +70,10 @@ else
     set scrolloff=4
 endif
 
+if has("win32") || has("win64")
+    set directory=$TMP
+end
+
 " mappings
 map ,# :set pasteO75A#yypO#73A A#0ll:set nopasteR
 map ,p :set pasteo#73A A#0ll:set nopasteR
