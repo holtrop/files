@@ -1,5 +1,7 @@
 #!/bin/sh
 
+export DISPLAY=:0
+
 # no message if one is displayed already
 if [[ "$(ps -efww | grep -v grep | grep gxmessage)" != "" ]]; then
     exit
@@ -13,5 +15,4 @@ if [ "$(gnome-screensaver-command --query | grep is.active)" != "" ]; then
     exit
 fi
 
-export DISPLAY=:0
 gxmessage 'Rest your eyes!'
