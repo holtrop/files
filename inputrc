@@ -28,7 +28,7 @@ $include /etc/inputrc
 # puttycyg
 "\eOC": forward-word
 "\eOD": backward-word
-"\010": backward-kill-word
+#"\010": backward-kill-word
 # allow the use of the Home/End keys
 "\e[1~": beginning-of-line
 "\e[4~": end-of-line
