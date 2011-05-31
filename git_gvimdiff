@@ -1,0 +1,5 @@
+#!/bin/sh
+
+gvimdiff "$2" "$5"
+# give gvimdiff a chance to read the file before exiting
+sleep 1
