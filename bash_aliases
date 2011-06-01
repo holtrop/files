@@ -96,6 +96,7 @@ alias git-find-lost-commit='git fsck --lost-found'
 if [[ "$(which jsvn 2>/dev/null)" != "" ]]; then
     alias svn='jsvn'
 fi
+alias jindent='indent -bbo -bl -blf -bli0 -bls -i4 -npcs -nut -ts8'
 
 # source any machine-local aliases
 # this way ~/.bash_aliases can be a symlink to a version-controlled
