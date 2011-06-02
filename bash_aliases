@@ -90,7 +90,11 @@ function git-config-joshs()
     git config --global core.excludesfile ${HOME}/.gitignore
     git config --global core.pager 'less -FRXi'
     git config --global alias.dc 'diff --cached'
-    git config --global alias.gdiff '!f() { GIT_EXTERNAL_DIFF=git_gvimdiff git --no-pager diff $1; }; f'
+    git config --global alias.gdiff 'difftool -y -t gvimdiff'
+    git config --global alias.gdiffc 'difftool -y -t gvimdiff --cached'
+    git config --global alias.bcdiff 'difftool -y -t bc2'
+    git config --global alias.bcdiffc 'difftool -y -t bc2 --cached'
+    git config --global difftool.bc2.cmd 'git_bc2diff "$LOCAL" "$REMOTE"'
 }
 alias git-find-lost-commit='git fsck --lost-found'
 if [[ "$(which jsvn 2>/dev/null)" != "" ]]; then
