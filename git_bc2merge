@@ -1,0 +1,6 @@
+#!/bin/sh
+
+local=$(cygpath -w "$1")
+remote=$(cygpath -w "$2")
+merged=$(cygpath -w "$3")
+/cygdrive/c/apps/Beyond\ Compare\ 2/BC2.exe "$local" "$remote" /title1=Local /title2=Remote /savetarget="$merged"
