@@ -50,6 +50,7 @@ set showmatch
 set incsearch
 set tags=./tags;/
 let Tlist_WinWidth = 40
+set grepprg=internal
 
 " GUI settings
 set background=dark
@@ -114,4 +115,6 @@ if has("autocmd")
 " install glsl.vim in ~/.vim/syntax to use syntax highlighting for GLSL:
   au BufNewFile,BufWinEnter *.frag,*.vert,*.fp,*.vp,*.glsl setf glsl
   autocmd Syntax {cpp,c,idl} runtime syntax/doxygen.vim
+  autocmd QuickFixCmdPre grep copen
+  autocmd QuickFixCmdPre vimgrep copen
 endif " has("autocmd")
