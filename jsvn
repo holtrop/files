@@ -374,7 +374,7 @@ def main(argv):
             and colorsvn != '':
             realsvn = colorsvn
 
-        if argv[0] in "lockable":
+        if argv[0] == "lockable":
             return lockable(argv, realsvn)
 
 
