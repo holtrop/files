@@ -93,6 +93,8 @@ map ,C ggVGc
 "nnoremap <silent> <F8> :TlistToggle<CR>
 " re-indent the following line how vim would automatically do it
 map ,j Ji
+map  :cn
+map  :cp
 
 " highlight characters past column 80
 map ,L :highlight TooLong guibg=lightyellow:match TooLong '\%>80v.*.$'
