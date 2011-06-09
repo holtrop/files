@@ -35,6 +35,10 @@
 #   - show a list of versioned binary files under the current path, with
 #     a prepended '*' for those with svn:needs-lock set
 #   - with --set-lock, set svn:needs-lock to '*' for binaries
+#  lockable [--remove] | [--status] <file[s]>
+#   - with no switches, set svn:needs-lock to '*' for file[s]
+#   - with --remove, remove svn:needs-lock' for file[s]
+#   - with --status, prepended '*' for those with svn:needs-lock set
 
 import sys
 import os
@@ -106,6 +110,9 @@ def getSVNProperty(svn, prop, path):
 
 def setSVNProperty(svn, prop, val, path):
     Popen([svn, 'propset', prop, val, path], stdout=PIPE).wait()
+
+def delSVNProperty(svn, prop, path):
+        Popen([svn, 'propdel', prop, path], stdout=PIPE).wait()
 
 def branch(argv, svn):
     if len(argv) < 2:
@@ -292,6 +299,30 @@ def binaries(argv, svn, base_path = '.'):
             binaries(argv, svn, os.sep.join([base_path, ent]))
     return 0
 
+def lockable(argv, svn, base_path = '.'):
+    if len(argv) >= 2 and argv[1] == '--status':
+        for ob in argv[2:]:
+            ob_path = os.sep.join([base_path, ob])
+
+            needs_lock = getSVNProperty(svn, 'svn:needs-lock', ob_path)
+            if needs_lock:
+                sys.stdout.write('* ')
+            else:
+                sys.stdout.write('  ')
+            sys.stdout.write(ob_path)
+            sys.stdout.write('\n')
+
+    elif len(argv) >= 2 and argv[1] == '--remove':
+        for ob in argv[2:]:
+            ob_path = os.sep.join([base_path, ob])
+            delSVNProperty(svn, 'svn:needs-lock', ob_path)
+
+    else:
+        # note this is the default assumed operation
+        for ob in argv[1:]:
+            ob_path = os.sep.join([base_path, ob])
+            setSVNProperty(svn, 'svn:needs-lock', '*', ob_path)
+
 def main(argv):
     realsvn = findInPath('svn')
     colorsvn = findInPath('colorsvn')
@@ -342,6 +373,10 @@ def main(argv):
         if argv[0] in ('st', 'status', 'log', 'up', 'update') \
             and colorsvn != '':
             realsvn = colorsvn
+
+        if argv[0] in "lockable":
+            return lockable(argv, realsvn)
+
 
     Popen([realsvn] + argv).wait()
     return 0
