@@ -276,7 +276,7 @@ def binaries(argv, svn, base_path = '.'):
         ent_path = os.sep.join([base_path, ent])
         if os.path.isfile(ent_path):
             mime_type = getSVNProperty(svn, 'svn:mime-type', ent_path)
-            if re.match(r'application/octet-stream', mime_type):
+            if mime_type != '' and not re.match(r'text/.*', mime_type):
                 # we found a binary file
                 needs_lock = getSVNProperty(svn, 'svn:needs-lock', ent_path)
                 if needs_lock:
