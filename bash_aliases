@@ -90,11 +90,23 @@ function git-config-joshs()
     git config --global core.excludesfile ${HOME}/.gitignore
     git config --global core.pager 'less -FRXi'
     git config --global alias.dc 'diff --cached'
+    git config --global alias.gdiff 'difftool -y -t gvimdiff'
+    git config --global alias.gdiffc 'difftool -y -t gvimdiff --cached'
+    if [ -e /bin/cygwin1.dll ]; then
+        git config --global alias.bcdiff 'difftool -y -t bc2'
+        git config --global alias.bcdiffc 'difftool -y -t bc2 --cached'
+        git config --global difftool.bc2.cmd 'git_bc2diff "$LOCAL" "$REMOTE"'
+        git config --global alias.bcmerge 'mergetool -y -t bc2'
+        git config --global mergetool.bc2.cmd \
+            'git_bc2merge "$LOCAL" "$REMOTE" "$MERGED"'
+        git config --global mergetool.bc2.trustExitCode false
+    fi
 }
 alias git-find-lost-commit='git fsck --lost-found'
 if [[ "$(which jsvn 2>/dev/null)" != "" ]]; then
     alias svn='jsvn'
 fi
+alias jindent='indent -bbo -bl -blf -bli0 -bls -i4 -npcs -nut -ts8'
 
 # source any machine-local aliases
 # this way ~/.bash_aliases can be a symlink to a version-controlled
