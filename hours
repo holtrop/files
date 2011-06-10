@@ -5,6 +5,7 @@
 
 import sys
 import re
+import argparse
 from datetime import *
 
 LOGFILE = '/var/log/auth.log'
@@ -27,7 +28,14 @@ def get_dt_from_log_line(line):
         return dt
     return None
 
-def main():
+def main(argv):
+    total_hours = 40
+    parser = argparse.ArgumentParser('hours')
+    parser.add_argument('-t', '--total', type=float)
+    args = parser.parse_args(argv[1:])
+    if args.total is not None:
+        total_hours = args.total
+
     times = []
     for i in range(7):
         times.append([None, None])
@@ -82,12 +90,12 @@ def main():
     border()
     sys.stdout.write('Total: %.2f hours' % (seconds / 60.0 / 60.0))
 
-    seconds_in_40_hours = 40 * 60 * 60
-    if total_seconds < seconds_in_40_hours:
-        forty_time = now + timedelta(0, seconds_in_40_hours - total_seconds)
-        sys.stdout.write('; 40 at: %s %s' % (forty_time.strftime('%a %d'),
-            fmt_time_dt(forty_time)))
+    secs_in_total_hours = total_hours * 60 * 60
+    if total_seconds < secs_in_total_hours:
+        out_time = now + timedelta(0, secs_in_total_hours - total_seconds)
+        sys.stdout.write('; %.1f at: %s %s' % (total_hours,
+            out_time.strftime('%a %d'), fmt_time_dt(out_time)))
     sys.stdout.write('\n')
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main(sys.argv))
