@@ -25,6 +25,9 @@ alias ls='ls --color=auto'
 alias strip-cr="sed -e 's/\x0d//'"
 alias rip='abcde -x -p -o mp3:"-v -b160"'
 export LESS='Ri'
+HISTCONTROL='ignoreboth'
+HISTSIZE=5000
+HISTFILESIZE=${HISTSIZE}
 function mark()
 {
     local MARKS_FILE=${HOME}/.marks
