@@ -1,0 +1,93 @@
+#!/usr/bin/env python
+
+# Author: Josh Holtrop
+# Simple script to show me my week's hours as far as my Ubuntu box knows them
+
+import sys
+import re
+from datetime import *
+
+LOGFILE = '/var/log/auth.log'
+
+now = datetime.now()
+monday = (now - timedelta(now.weekday())).date()
+
+def get_dt_from_log_line(line):
+    m = re.match(r'(\S\S\S)\s+(\d+)\s+(\d+):(\d+):(\d+)\s+.*', line)
+    if m is not None:
+        month_name, day, t_hr, t_min, t_sec = m.group(1, 2, 3, 4, 5)
+        try:
+            month = datetime.strptime(month_name, '%b').month
+        except:
+            return None
+        year = now.year
+        if month == 12 and now.month == 1:
+            year -= 1
+        dt = datetime(*map(int, [year, month, day, t_hr, t_min, t_sec]))
+        return dt
+    return None
+
+def main():
+    times = []
+    for i in range(7):
+        times.append([None, None])
+
+    f = open(LOGFILE, 'r')
+    while True:
+        line = f.readline()
+        if line == '':
+            break
+        if re.search(r'gnome-screensaver.*unlocked.login.keyring', line):
+            # found a login line
+            dt = get_dt_from_log_line(line)
+            idx = (dt.date() - monday).days
+            if times[idx][0] is None or dt < times[idx][0]:
+                times[idx][0] = dt
+        elif re.search(r'lock-screen:', line):
+            # found a logout line
+            dt = get_dt_from_log_line(line)
+            idx = (dt.date() - monday).days
+            if times[idx][1] is None or dt > times[idx][1]:
+                times[idx][1] = dt
+    f.close()
+
+    now_idx = (now.date() - monday).days
+    if times[now_idx][1] is None or now > times[now_idx][1]:
+        times[now_idx][1] = now
+
+    def fmt_time_dt(dt):
+        s = dt.strftime('%I:%M') + dt.strftime('%p')[0].lower()
+        if s[0] == '0':
+            s = s[1:]
+        return s
+
+    border = lambda: sys.stdout.write('-' * 40 + '\n')
+
+    total_seconds = 0
+    border()
+    for time in times:
+        if time[0] is not None:
+            sys.stdout.write('%-14s' % (time[0].strftime('%d %A') + ':'))
+            sys.stdout.write(fmt_time_dt(time[0]))
+            sys.stdout.write(' - ')
+            if time[1] is not None:
+                sys.stdout.write(fmt_time_dt(time[1]))
+                seconds = (time[1] - time[0]).seconds
+                hours = seconds / 60.0 / 60.0
+                sys.stdout.write(' (%.2f hours)' % hours)
+                total_seconds += seconds
+            else:
+                sys.stdout.write('???')
+            sys.stdout.write('\n')
+    border()
+    sys.stdout.write('Total: %.2f hours' % (seconds / 60.0 / 60.0))
+
+    seconds_in_40_hours = 40 * 60 * 60
+    if total_seconds < seconds_in_40_hours:
+        forty_time = now + timedelta(0, seconds_in_40_hours - total_seconds)
+        sys.stdout.write('; 40 at: %s %s' % (forty_time.strftime('%a %d'),
+            fmt_time_dt(forty_time)))
+    sys.stdout.write('\n')
+
+if __name__ == "__main__":
+    main()
