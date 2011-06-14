@@ -82,13 +82,13 @@ def main(argv):
                 sys.stdout.write(fmt_time_dt(time[1]))
                 seconds = (time[1] - time[0]).seconds
                 hours = seconds / 60.0 / 60.0
-                sys.stdout.write(' (%.2f hours)' % hours)
+                sys.stdout.write(' (%.1f hours)' % round(hours, 1))
                 total_seconds += seconds
             else:
                 sys.stdout.write('???')
             sys.stdout.write('\n')
     border()
-    sys.stdout.write('Total: %.2f hours' % (seconds / 60.0 / 60.0))
+    sys.stdout.write('Total: %.1f hours' % round(seconds / 60.0 / 60.0, 1))
 
     secs_in_total_hours = total_hours * 60 * 60
     if total_seconds < secs_in_total_hours:
