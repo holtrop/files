@@ -71,7 +71,7 @@ def main(argv):
 
     border = lambda: sys.stdout.write('-' * 40 + '\n')
 
-    total_seconds = 0
+    total_hours = 0
     border()
     for time in times:
         if time[0] is not None:
@@ -81,18 +81,17 @@ def main(argv):
             if time[1] is not None:
                 sys.stdout.write(fmt_time_dt(time[1]))
                 seconds = (time[1] - time[0]).seconds
-                hours = seconds / 60.0 / 60.0
-                sys.stdout.write(' (%.1f hours)' % round(hours, 1))
-                total_seconds += seconds
+                hours = round(seconds / 60.0 / 60.0, 1)
+                sys.stdout.write(' (%.1f hours)' % hours)
+                total_hours += hours
             else:
                 sys.stdout.write('???')
             sys.stdout.write('\n')
     border()
-    sys.stdout.write('Total: %.1f hours' % round(seconds / 60.0 / 60.0, 1))
+    sys.stdout.write('Total: %.1f hours' % round(total_hours, 1))
 
-    secs_in_total_hours = goal_hours * 60 * 60
-    if total_seconds < secs_in_total_hours:
-        out_time = now + timedelta(0, secs_in_total_hours - total_seconds)
+    if total_hours < goal_hours:
+        out_time = now + timedelta(0, (goal_hours - total_hours) * 60 * 60)
         sys.stdout.write('; %.1f at: %s %s' % (goal_hours,
             out_time.strftime('%a %d'), fmt_time_dt(out_time)))
     sys.stdout.write('\n')
