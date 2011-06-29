@@ -3,15 +3,64 @@
 # Author: Josh Holtrop
 # Simple script to show me my week's hours as far as my Ubuntu box knows them
 
+import os
 import sys
 import re
 import argparse
 from datetime import *
 
-LOGFILE = '/var/log/auth.log'
+LOG_FILE = '/var/log/auth.log'
+ADJUSTMENTS_FILE = os.path.expanduser('~/.hours')
+ISO_DATE_FMT = '%Y-%m-%d'
 
 now = datetime.now()
 monday = (now - timedelta(now.weekday())).date()
+
+def get_date_from_day_spec(day_spec):
+    if re.match(r'\d+', day_spec):
+        for i in range(7):
+            d = monday + timedelta(i)
+            if d.day == int(day_spec):
+                return d.strftime(ISO_DATE_FMT)
+        return ''
+    days = {
+            'mon': 0,
+            'tue': 1,
+            'wed': 2,
+            'thu': 3,
+            'fri': 4,
+            'sat': 5,
+            'sun': 6
+            }
+    day_spec = day_spec.lower()
+    if len(day_spec) > 3:
+        day_spec = day_spec[:3]
+    if day_spec in days:
+        return (monday + timedelta(days[day_spec])).strftime(ISO_DATE_FMT)
+    return ''
+
+def get_adjustments():
+    adjustments = {}
+    if not os.path.isfile(ADJUSTMENTS_FILE):
+        return adjustments
+    f = open(ADJUSTMENTS_FILE, 'r')
+    while True:
+        line = f.readline()
+        if line == '':
+            break
+        m = re.match(r'adj\s+(\S+)\s+(\S+)', line)
+        if m is not None:
+            adjustments[m.group(1)] = float(m.group(2))
+    f.close()
+    return adjustments
+
+def save_adjustments(adjustments):
+    f = open(ADJUSTMENTS_FILE, 'w')
+    for a in adjustments:
+        if datetime.strptime(a, ISO_DATE_FMT).date() >= monday:
+            if adjustments[a] != 0.0:
+                f.write('adj %s %f\n' % (a, adjustments[a]))
+    f.close()
 
 def get_dt_from_log_line(line):
     m = re.match(r'(\S\S\S)\s+(\d+)\s+(\d+):(\d+):(\d+)\s+.*', line)
@@ -30,17 +79,37 @@ def get_dt_from_log_line(line):
 
 def main(argv):
     goal_hours = 40
+    adjustments = get_adjustments()
     parser = argparse.ArgumentParser('hours')
-    parser.add_argument('-t', '--total', type=float)
+    parser.add_argument('-t', '--total', type=float, metavar='TOT',
+            help='set target number of hours for the week')
+    parser.add_argument('-a', '--adjust', type=float, metavar='ADJ',
+            help="adjust given day's (default today) hours by ADJ")
+    parser.add_argument('-d', '--day',
+            help='specify which day to adjust hours for with --adj')
     args = parser.parse_args(argv[1:])
     if args.total is not None:
         goal_hours = args.total
+    if args.adjust is not None:
+        adj_date = now.strftime(ISO_DATE_FMT)
+        if args.day is not None:
+            adj_date = get_date_from_day_spec(args.day)
+            if adj_date == '':
+                sys.stderr.write('Unknown DAY format.\n')
+                sys.stderr.write('Specify DAY as an integer or as a day name\n')
+                sys.exit(2)
+        if adj_date in adjustments:
+            adjustments[adj_date] += args.adjust
+        else:
+            adjustments[adj_date] = args.adjust
+        save_adjustments(adjustments)
+        sys.stdout.write('Adjusted %s by %.1f\n' % (adj_date, args.adjust))
 
     times = []
     for i in range(7):
         times.append([None, None])
 
-    f = open(LOGFILE, 'r')
+    f = open(LOG_FILE, 'r')
     while True:
         line = f.readline()
         if line == '':
@@ -82,7 +151,12 @@ def main(argv):
                 sys.stdout.write(fmt_time_dt(time[1]))
                 seconds = (time[1] - time[0]).seconds
                 hours = round(seconds / 60.0 / 60.0, 1)
+                iso_spec = time[1].strftime(ISO_DATE_FMT)
+                if iso_spec in adjustments:
+                    hours += adjustments[iso_spec]
                 sys.stdout.write(' (%.1f hours)' % hours)
+                if iso_spec in adjustments and adjustments[iso_spec] != 0.0:
+                    sys.stdout.write(' Adj: %.1f' % adjustments[iso_spec])
                 total_hours += hours
             else:
                 sys.stdout.write('???')
