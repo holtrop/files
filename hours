@@ -156,7 +156,7 @@ def main(argv):
                     hours += adjustments[iso_spec]
                 sys.stdout.write(' (%.1f hours)' % hours)
                 if iso_spec in adjustments and adjustments[iso_spec] != 0.0:
-                    sys.stdout.write(' Adj: %.1f' % adjustments[iso_spec])
+                    sys.stdout.write(' [%.1f]' % adjustments[iso_spec])
                 total_hours += hours
             else:
                 sys.stdout.write('???')
