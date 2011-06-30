@@ -159,7 +159,8 @@ def main(argv):
                 hours += adj
                 sys.stdout.write(' (%.1f hours)' % hours)
                 if adj != 0.0:
-                    sys.stdout.write(' [%.1f]' % adjustments[iso_spec])
+                    sys.stdout.write(
+                            ' [%s%.1f]' % ('+' if adj > 0.0 else '', adj))
                 if (iso_spec == now.strftime(ISO_DATE_FMT)
                         and hours < HOURS_PER_DAY):
                     sys.stdout.write(', %.1f at %s' % (HOURS_PER_DAY,
