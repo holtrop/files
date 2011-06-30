@@ -164,12 +164,13 @@ def main(argv):
                 if adj != 0.0:
                     sys.stdout.write(
                             ' [%s%.1f]' % ('+' if adj > 0.0 else '', adj))
+                hours_to_do_today = min(goal_hours - total_hours, HOURS_PER_DAY)
                 if (iso_spec == now.strftime(ISO_DATE_FMT)
-                        and hours < HOURS_PER_DAY):
-                    sched_hours += HOURS_PER_DAY
-                    sys.stdout.write(', %.1f at %s' % (HOURS_PER_DAY,
+                        and hours < hours_to_do_today):
+                    sched_hours += hours_to_do_today
+                    sys.stdout.write(', %.1f at %s' % (hours_to_do_today,
                         fmt_time_dt(time[0] + timedelta(0,
-                            int((HOURS_PER_DAY - adj) * 60 * 60)))))
+                            (hours_to_do_today - adj) * 60 * 60))))
                 else:
                     sched_hours += hours
                 total_hours += hours
