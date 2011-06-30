@@ -190,12 +190,9 @@ def main(argv):
             d += timedelta(1)
 
     border()
-    sys.stdout.write('Total: %.1f hours' % round(total_hours, 1))
-
-    if total_hours < goal_hours:
-        out_time = now + timedelta(0, (goal_hours - total_hours) * 60 * 60)
-        sys.stdout.write('; %.1f at: %s %s' % (goal_hours,
-            out_time.strftime('%a %d'), fmt_time_dt(out_time)))
+    sys.stdout.write(
+            'at %.1f, goal %.1f, %.1f remain' % (total_hours, goal_hours,
+                goal_hours - total_hours))
     sys.stdout.write('\n')
 
 if __name__ == "__main__":
