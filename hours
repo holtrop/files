@@ -139,7 +139,7 @@ def main(argv):
             s = s[1:]
         return s
 
-    border = lambda: sys.stdout.write('-' * 40 + '\n')
+    border = lambda: sys.stdout.write('-' * 55 + '\n')
 
     total_hours = 0
     border()
