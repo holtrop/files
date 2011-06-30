@@ -12,6 +12,7 @@ from datetime import *
 LOG_FILE = '/var/log/auth.log'
 ADJUSTMENTS_FILE = os.path.expanduser('~/.hours')
 ISO_DATE_FMT = '%Y-%m-%d'
+HOURS_PER_DAY = 8.0
 
 now = datetime.now()
 monday = (now - timedelta(now.weekday())).date()
@@ -152,11 +153,18 @@ def main(argv):
                 seconds = (time[1] - time[0]).seconds
                 hours = round(seconds / 60.0 / 60.0, 1)
                 iso_spec = time[1].strftime(ISO_DATE_FMT)
+                adj = 0.0
                 if iso_spec in adjustments:
-                    hours += adjustments[iso_spec]
+                    adj = adjustments[iso_spec]
+                hours += adj
                 sys.stdout.write(' (%.1f hours)' % hours)
-                if iso_spec in adjustments and adjustments[iso_spec] != 0.0:
+                if adj != 0.0:
                     sys.stdout.write(' [%.1f]' % adjustments[iso_spec])
+                if (iso_spec == now.strftime(ISO_DATE_FMT)
+                        and hours < HOURS_PER_DAY):
+                    sys.stdout.write(', %.1f at %s' % (HOURS_PER_DAY,
+                        fmt_time_dt(time[0] + timedelta(0,
+                            int((HOURS_PER_DAY - adj) * 60 * 60)))))
                 total_hours += hours
             else:
                 sys.stdout.write('???')
