@@ -88,6 +88,8 @@ def main(argv):
             help="adjust given day's (default today) hours by ADJ")
     parser.add_argument('-d', '--day',
             help='specify which day to adjust hours for with --adj')
+    parser.add_argument('-s', '--show-schedule', action='store_true',
+            help='show schedule for the rest of the week')
     args = parser.parse_args(argv[1:])
     if args.total is not None:
         goal_hours = args.total
@@ -142,6 +144,7 @@ def main(argv):
     border = lambda: sys.stdout.write('-' * 55 + '\n')
 
     total_hours = 0
+    sched_hours = 0
     border()
     for time in times:
         if time[0] is not None:
@@ -163,13 +166,28 @@ def main(argv):
                             ' [%s%.1f]' % ('+' if adj > 0.0 else '', adj))
                 if (iso_spec == now.strftime(ISO_DATE_FMT)
                         and hours < HOURS_PER_DAY):
+                    sched_hours += HOURS_PER_DAY
                     sys.stdout.write(', %.1f at %s' % (HOURS_PER_DAY,
                         fmt_time_dt(time[0] + timedelta(0,
                             int((HOURS_PER_DAY - adj) * 60 * 60)))))
+                else:
+                    sched_hours += hours
                 total_hours += hours
             else:
                 sys.stdout.write('???')
             sys.stdout.write('\n')
+
+    # schedule for remainder of week
+    if args.show_schedule:
+        d = now.date() + timedelta(1)
+        while sched_hours < goal_hours:
+            hours_to_do = min(goal_hours - sched_hours, HOURS_PER_DAY)
+            sys.stdout.write('%-14s' % (d.strftime('%d %A') + ':'))
+            sys.stdout.write('* %.1f hours *' % hours_to_do)
+            sys.stdout.write('\n')
+            sched_hours += hours_to_do
+            d += timedelta(1)
+
     border()
     sys.stdout.write('Total: %.1f hours' % round(total_hours, 1))
 
