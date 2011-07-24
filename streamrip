@@ -1,0 +1,6 @@
+#!/bin/sh
+
+URL="$1"
+shift
+DEST=${HOME}/mp3
+exec streamripper ${URL} -d ${DEST} -s -u mpg123 -xs_padding=10000:10000 "$@"
