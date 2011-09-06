@@ -22,7 +22,7 @@ def main(argv):
 
     for f in args:
         if os.path.isfile(f):
-            Popen(['lame', '-v', '-b', bitrate, f, f + '.mp3']).wait()
+            Popen(['lame', '-v', '-b', str(bitrate), f, f + '.mp3']).wait()
 
 if __name__ == "__main__":
     main(sys.argv)
