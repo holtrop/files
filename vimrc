@@ -107,8 +107,8 @@ if has("autocmd")
 "  autocmd FileType c match error /\v\s+$/
 "  autocmd FileType c 2match error /\t/
 "  autocmd FileType cpp 2match error /\t/
-  autocmd FileType c syn match Constant display "\<_*[A-Z][A-Z0-9_]*\>"
-  autocmd FileType cpp syn match Constant display "\<_*[A-Z][A-Z0-9_]*\>"
+  autocmd FileType c syn match Constant display "\<[A-Z_][A-Z_0-9]*\>"
+  autocmd FileType cpp syn match Constant display "\<[A-Z_][A-Z_0-9]*\>"
   autocmd FileType dosbatch syn match Comment "^@rem\($\|\s.*$\)"lc=4 contains=dosbatchTodo,@dosbatchNumber,dosbatchVariable,dosbatchArgument
   au BufRead,BufNewFile *.dxl set filetype=dxl
   autocmd FileType dxl set syntax=cpp
