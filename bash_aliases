@@ -129,7 +129,7 @@ fi
 # or within a subdirectory thereof
 # this allows multiple alias files or repositories of alias files
 for f in ~/.bash_aliases.d/* ~/.bash_aliases.d/*/*; do
-    if [ -f $f -a -x $f ]; then
+    if [ -f $f ]; then
         . $f
     fi
 done
