@@ -125,3 +125,11 @@ fi
 if [ -f ~/.bash_aliases.local ]; then
     . ~/.bash_aliases.local
 fi
+# source any alias files in ~/.bash_aliases.d,
+# or within a subdirectory thereof
+# this allows multiple alias files or repositories of alias files
+for f in ~/.bash_aliases.d/* ~/.bash_aliases.d/*/*; do
+    if [ -f $f -a -x $f ]; then
+        . $f
+    fi
+done
