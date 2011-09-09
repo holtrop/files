@@ -16,6 +16,8 @@ $include /etc/inputrc
 # F4 -> c++ source file extensions
 "\eOS": "{h,cc}"
 "\e[14~": "{h,cc}"
+# F5 -> refresh bash aliases
+"\e[15~": ". ~/.bash_aliases\n"
 
 # mappings for Ctrl-left-arrow and Ctrl-right-arrow for word moving
 "\e[1;5C": forward-word
