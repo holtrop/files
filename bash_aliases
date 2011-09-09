@@ -114,6 +114,11 @@ if [[ "$(which jsvn 2>/dev/null)" != "" ]]; then
 fi
 alias jindent='indent -bbo -bl -blf -bli0 -bls -i4 -npcs -nut -ts8'
 
+# cygwin-specific aliases
+if [ -e /bin/cygwin1.dll ]; then
+    alias ip="ipconfig | grep 'IP Address' | sed -e 's/.*: //'"
+fi
+
 # source any machine-local aliases
 # this way ~/.bash_aliases can be a symlink to a version-controlled
 # aliases file
