@@ -94,8 +94,6 @@ function git-config-joshs()
     git config --global core.pager 'less -FRXi'
     git config --global alias.dc 'diff --cached'
     git config --global alias.mergef 'merge FETCH_HEAD'
-    git config --global alias.incoming '!git fetch; git log ..FETCH_HEAD'
-    git config --global alias.outgoing '!git fetch; git log FETCH_HEAD..'
     git config --global alias.gdiff 'difftool -y -t gvimdiff'
     git config --global alias.gdiffc 'difftool -y -t gvimdiff --cached'
     git config --global alias.wdiff 'diff --word-diff=color'
