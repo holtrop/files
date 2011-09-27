@@ -98,6 +98,7 @@ function git-config-joshs()
     git config --global alias.outgoing '!git fetch; git log FETCH_HEAD..'
     git config --global alias.gdiff 'difftool -y -t gvimdiff'
     git config --global alias.gdiffc 'difftool -y -t gvimdiff --cached'
+    git config --global alias.wdiff 'diff --word-diff=color'
     if [ -e /bin/cygwin1.dll ]; then
         git config --global alias.bcdiff 'difftool -y -t bc2'
         git config --global alias.bcdiffc 'difftool -y -t bc2 --cached'
