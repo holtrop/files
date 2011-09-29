@@ -1,23 +1,32 @@
-#!/bin/bash
+#!/usr/bin/env python
 
-here="$(dirname $0)"
+import os
+import sys
+from subprocess import Popen, PIPE
 
-function install_file()
-{
-    source="${here}/$1"
-    dest="${HOME}/$2"
-    if [ -e "$dest" ]; then
-        echo "Skipping $1"
-    else
-        echo "Installing $1"
-        mkdir -p $(dirname "$dest")
-        ln -s "$source" "$dest"
-    fi
-}
+here = os.path.dirname(sys.argv[0])
+if here.startswith('./'):
+    here = os.getcwd() + here[1:]
 
-install_file bash_aliases .bash_aliases
-install_file vimrc .vimrc
-install_file inputrc .inputrc
-install_file screenrc .screenrc
-install_file ir_black.vim .vim/colors/ir_black.vim
-install_file gitignore .gitignore
+def install_file(src, dst):
+    source = '%s/%s' % (here, src)
+    dest = '%s/%s' % (os.environ['HOME'], dst)
+    if os.path.exists(dest):
+        sys.stdout.write('Skipping %s\n' % dst)
+    else:
+        sys.stdout.write('Installing %s\n' % dst)
+        if not os.path.exists(os.path.dirname(dest)):
+            os.makedirs(os.path.dirname(dest))
+        Popen(['ln', '-s', source, dest]).wait()
+
+files = [
+        ('bash_aliases', '.bash_aliases'),
+        ('vimrc', '.vimrc'),
+        ('inputrc', '.inputrc'),
+        ('screenrc', '.screenrc'),
+        ('ir_black.vim', '.vim/colors/ir_black.vim'),
+        ('gitignore', '.gitignore'),
+        ]
+
+for s, d in files:
+    install_file(s, d)
