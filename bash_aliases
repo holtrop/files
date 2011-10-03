@@ -2,7 +2,7 @@
 if [[ "`whoami`" == "root" ]]; then
     PS1='\[\033[31;1m\]\u@\H\[\033[32;1m\] [\w]\[\033[35;1m\] \d \t \[\033[34;1m\](\j)\n\$ \[\033[0m\]'
 else
-    PS1='\[\033[32;1m\]\u@\H\[\033[31;1m\] [\w]\[\033[35;1m\] \d \t \[\033[34;1m\](\j)\n\$ \[\033[0m\]'
+    PS1='\[\033[32;1m\]\u@\H\[\033[31;1m\] [\w]\[\033[35;1m\] \d \t \[\033[34;1m\](\j)\[\033[33;1m\]$(prompt_ps1_git_branch)\[\033[34;1m\]\n\$ \[\033[0m\]'
 fi
 # alternate PS1:
 # PS1='[\[\033[31;1m\]\u@\H\[\033[34;1m\] \w\[\033[0m\]]\$ \[\033[0m\]'
@@ -23,6 +23,17 @@ alias backgammon='backgammon -r -pb'
 alias cattodo='if [[ $CATTODO_LAST_WD != $PWD ]]; then if [[ -r .todo ]]; then cat .todo; fi; CATTODO_LAST_WD=$PWD; fi'
 alias cdshowgitstatus='if [[ $CDSHOWGITSTATUS_LAST_WD != $PWD ]]; then if [[ -d .git ]]; then git status; fi; CDSHOWGITSTATUS_LAST_WD=$PWD; fi'
 #PROMPT_COMMAND="$PROMPT_COMMAND;cdshowgitstatus"
+function prompt_ps1_git_branch()
+{
+    if [[ -e /usr/bin/git && "$PCGB_LAST_WD" != "$PWD" ]]; then
+        current_git_branch=$(git branch 2>/dev/null | grep '^\*' | sed -e 's/^..//');
+        PCGB_LAST_WD=$PWD;
+    fi;
+    if [[ "$current_git_branch" != "" ]]; then
+        echo -e " [${current_git_branch}]";
+    fi
+}
+#put $(prompt_ps1_git_branch) in $PS1 to use it
 alias ls='ls --color=auto'
 alias strip-cr="sed -e 's/\x0d//'"
 alias rip='abcde -x -p -o mp3:"-v -b160"'
