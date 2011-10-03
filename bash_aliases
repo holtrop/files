@@ -21,6 +21,8 @@ alias cribbage='cribbage -r'
 alias backgammon='backgammon -r -pb'
 # put 'cattodo' in $PROMPT_COMMAND to use
 alias cattodo='if [[ $CATTODO_LAST_WD != $PWD ]]; then if [[ -r .todo ]]; then cat .todo; fi; CATTODO_LAST_WD=$PWD; fi'
+alias cdshowgitstatus='if [[ $CDSHOWGITSTATUS_LAST_WD != $PWD ]]; then if [[ -d .git ]]; then git status; fi; CDSHOWGITSTATUS_LAST_WD=$PWD; fi'
+#PROMPT_COMMAND="$PROMPT_COMMAND;cdshowgitstatus"
 alias ls='ls --color=auto'
 alias strip-cr="sed -e 's/\x0d//'"
 alias rip='abcde -x -p -o mp3:"-v -b160"'
