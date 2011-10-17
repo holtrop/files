@@ -1,5 +1,9 @@
 #!/bin/sh
 
-#exec xscreensaver-command -lock
 logger -p auth.info -t lock-screen screen locked
-exec gnome-screensaver-command --activate
+# for xscreensaver:
+exec xscreensaver-command -lock
+# for gnome-screensaver:
+#exec gnome-screensaver-command --activate
+# for KDE:
+#qdbus org.freedesktop.ScreenSaver /ScreenSaver Lock
