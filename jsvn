@@ -127,7 +127,7 @@ def setSVNProperty(svn, prop, val, path):
     Popen([svn, 'propset', prop, val, path], stdout=PIPE).wait()
 
 def delSVNProperty(svn, prop, path):
-        Popen([svn, 'propdel', prop, path], stdout=PIPE).wait()
+    Popen([svn, 'propdel', prop, path], stdout=PIPE).wait()
 
 ###########################################################################
 # Subcommand Handlers                                                     #
