@@ -3,7 +3,12 @@
 # Josh's SVN wrapper script
 #
 # Recommend putting in path as 'jsvn' or something other than 'svn' and
-# making an alias svn='jsvn'
+# making an alias svn='jsvn'. For example, this .bash_aliases stanza
+# will check if 'jsvn' is in your path and automatically alias 'svn' to
+# it if so:
+#   if [[ "$(which jsvn 2>/dev/null)" != "" ]]; then
+#       alias svn='jsvn'
+#   fi
 #
 # The script detects if you have colorsvn and colordiff and uses them for
 # appropriate subcommands if so.
