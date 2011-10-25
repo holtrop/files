@@ -46,10 +46,16 @@ import re
 import time
 from subprocess import *
 
+###########################################################################
+# Subcommand Handler Return Values                                        #
+###########################################################################
 RET_OK = 0
 RET_ERR = 1
 RET_REEXEC = 2
 
+###########################################################################
+# Utility Functions                                                       #
+###########################################################################
 def findInPath(cmd):
     path_entries = os.environ['PATH'].split(os.pathsep)
     for p in path_entries:
@@ -118,6 +124,9 @@ def setSVNProperty(svn, prop, val, path):
 def delSVNProperty(svn, prop, path):
         Popen([svn, 'propdel', prop, path], stdout=PIPE).wait()
 
+###########################################################################
+# Subcommand Handlers                                                     #
+###########################################################################
 def branch(argv, svn):
     if len(argv) < 2:
         bl = ['trunk'] + getSVNBranchList(svn)
@@ -349,6 +358,9 @@ def root(argv, svn):
     sys.stdout.write(getSVNRoot(svn) + '\n')
     return RET_OK
 
+###########################################################################
+# Main                                                                    #
+###########################################################################
 def main(argv):
     realsvn = findInPath('svn')
     colorsvn = findInPath('colorsvn')
