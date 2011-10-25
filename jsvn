@@ -177,18 +177,27 @@ def tag(argv, svn):
 def switch(argv, svn):
     if len(argv) < 2:
         return -1
+    switched = False
     root = getSVNRoot(svn)
     path = getSVNRelPath(svn)
-    if argv[1] == 'trunk':
-        Popen([svn, 'switch', root + '/trunk' + path]).wait()
-        return 0
-    bl = getSVNBranchList(svn)
-    if argv[1] in bl:
-        Popen([svn, 'switch', root + '/branches/' + argv[1] + path]).wait()
-        return 0
-    tl = getSVNTagList(svn)
-    if argv[1] in tl:
-        Popen([svn, 'switch', root + '/tags/' + argv[1] + path]).wait()
+    while True:
+        if argv[1] == 'trunk':
+            Popen([svn, 'switch', root + '/trunk' + path]).wait()
+            switched = True
+            break
+        bl = getSVNBranchList(svn)
+        if argv[1] in bl:
+            Popen([svn, 'switch', root + '/branches/' + argv[1] + path]).wait()
+            switched = True
+            break
+        tl = getSVNTagList(svn)
+        if argv[1] in tl:
+            Popen([svn, 'switch', root + '/tags/' + argv[1] + path]).wait()
+            switched = True
+            break
+    if switched:
+        Popen(svn + ' info | grep --color=none "^URL:"',
+                shell = True).wait()
         return 0
     return -2
 
@@ -338,9 +347,6 @@ def main(argv):
 
         if argv[0] == "switch":
             r = switch(argv, realsvn)
-            if r == 0:
-                Popen(realsvn + ' info | grep --color=none "^URL:"',
-                        shell = True).wait()
             if r >= 0:
                 return r
 
