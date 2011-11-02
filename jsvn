@@ -3,7 +3,12 @@
 # Josh's SVN wrapper script
 #
 # Recommend putting in path as 'jsvn' or something other than 'svn' and
-# making an alias svn='jsvn'
+# making an alias svn='jsvn'. For example, this .bash_aliases stanza
+# will check if 'jsvn' is in your path and automatically alias 'svn' to
+# it if so:
+#   if [[ "$(which jsvn 2>/dev/null)" != "" ]]; then
+#       alias svn='jsvn'
+#   fi
 #
 # The script detects if you have colorsvn and colordiff and uses them for
 # appropriate subcommands if so.
@@ -46,6 +51,16 @@ import re
 import time
 from subprocess import *
 
+###########################################################################
+# Subcommand Handler Return Values                                        #
+###########################################################################
+RET_OK = 0
+RET_ERR = 1
+RET_REEXEC = 2
+
+###########################################################################
+# Utility Functions                                                       #
+###########################################################################
 def findInPath(cmd):
     path_entries = os.environ['PATH'].split(os.pathsep)
     for p in path_entries:
@@ -112,8 +127,11 @@ def setSVNProperty(svn, prop, val, path):
     Popen([svn, 'propset', prop, val, path], stdout=PIPE).wait()
 
 def delSVNProperty(svn, prop, path):
-        Popen([svn, 'propdel', prop, path], stdout=PIPE).wait()
+    Popen([svn, 'propdel', prop, path], stdout=PIPE).wait()
 
+###########################################################################
+# Subcommand Handlers                                                     #
+###########################################################################
 def branch(argv, svn):
     if len(argv) < 2:
         bl = ['trunk'] + getSVNBranchList(svn)
@@ -122,7 +140,7 @@ def branch(argv, svn):
         for b in bl:
             sys.stdout.write('*' if b == current else ' ')
             sys.stdout.write(b + '\n')
-        return 0
+        return RET_OK
     branch_name = argv[-1]
     origin = getSVNTopLevel(svn)
     root = getSVNRoot(svn)
@@ -130,14 +148,14 @@ def branch(argv, svn):
         # delete branch in argv[2]
         Popen([svn, 'rm', root + '/branches/' + argv[2], '-m',
             "Removed branch '%s'" % branch_name]).wait()
-        return 0
+        return RET_OK
     if origin == '' or root == '':
         sys.stderr.write("Could not determine origin/root URL\n")
-        return 1
+        return RET_ERR
     comment = "Created '%s' branch" % branch_name
     branch_path = root + '/branches/' + branch_name
     Popen([svn, 'copy', origin, branch_path, '-m', comment]).wait()
-    return 0
+    return RET_OK
 
 def tag(argv, svn):
     tl = getSVNTagList(svn)
@@ -145,60 +163,69 @@ def tag(argv, svn):
         tl.sort()
         for t in tl:
             sys.stdout.write(t + '\n')
-        return 0
+        return RET_OK
     tag_name = argv[-1]
     origin = getSVNTopLevel(svn)
     root = getSVNRoot(svn)
     if origin == '' or root == '':
         sys.stderr.write("Could not determine origin/root URL\n")
-        return 1
+        return RET_ERR
     if len(argv) == 4 and argv[1] == '-m':
         old_tag_name = argv[2]
         if not old_tag_name in tl:
             sys.stderr.write('Tag %s not found!\n' % old_tag_name)
-            return 1
+            return RET_ERR
         Popen([svn, 'mv',
             root + '/tags/' + old_tag_name, root + '/tags/' + tag_name,
             '-m', "Renamed tag '%s' to '%s'" % (old_tag_name, tag_name)]).wait()
-        return 0
+        return RET_OK
     if len(argv) >= 3 and argv[1] == "-d":
         if not tag_name in tl:
             sys.stderr.write('Tag %s not found!\n' % tag_name)
-            return 1
+            return RET_ERR
         # delete tag in argv[2]
         Popen([svn, 'rm', root + '/tags/' + tag_name, '-m',
             "Removed tag '%s'" % tag_name]).wait()
-        return 0
+        return RET_OK
     comment = "Created '%s' tag" % tag_name
     tag_path = root + '/tags/' + tag_name
     Popen([svn, 'copy', origin, tag_path, '-m', comment]).wait()
-    return 0
+    return RET_OK
 
 def switch(argv, svn):
     if len(argv) < 2:
-        return -1
+        return RET_REEXEC
+    switched = False
     root = getSVNRoot(svn)
     path = getSVNRelPath(svn)
-    if argv[1] == 'trunk':
-        Popen([svn, 'switch', root + '/trunk' + path]).wait()
-        return 0
-    bl = getSVNBranchList(svn)
-    if argv[1] in bl:
-        Popen([svn, 'switch', root + '/branches/' + argv[1] + path]).wait()
-        return 0
-    tl = getSVNTagList(svn)
-    if argv[1] in tl:
-        Popen([svn, 'switch', root + '/tags/' + argv[1] + path]).wait()
-        return 0
-    return -2
+    while True:
+        if argv[1] == 'trunk':
+            Popen([svn, 'switch', root + '/trunk' + path]).wait()
+            switched = True
+            break
+        bl = getSVNBranchList(svn)
+        if argv[1] in bl:
+            Popen([svn, 'switch', root + '/branches/' + argv[1] + path]).wait()
+            switched = True
+            break
+        tl = getSVNTagList(svn)
+        if argv[1] in tl:
+            Popen([svn, 'switch', root + '/tags/' + argv[1] + path]).wait()
+            switched = True
+            break
+    if switched:
+        Popen(svn + ' info | grep --color=none "^URL:"',
+                shell = True).wait()
+        return RET_OK
+    return RET_REEXEC
 
 def merge(argv, svn):
     if len(argv) < 2:
-        return -1
+        return RET_REEXEC
     root = getSVNRoot(svn)
     branches = getSVNBranchList(svn)
     if not argv[1] in branches:
-        return -3
+        return RET_REEXEC
     lines = Popen([svn, 'log', '--stop-on-copy', root + '/branches/' + argv[1]],
             stdout=PIPE).communicate()[0].split('\n')
     rev = 0
@@ -208,15 +235,15 @@ def merge(argv, svn):
             rev = m.group(1)
     if rev == 0:
         sys.stderr.write('Could not get first branch revision\n')
-        return -4
+        return RET_ERR
     path = getSVNRelPath(svn)
     Popen([svn, 'merge', '-r%s:HEAD' % rev,
         root + '/branches/' + argv[1] + path, '.']).wait()
-    return 0
+    return RET_OK
 
 def watch_lock(argv, svn):
     if len(argv) < 2:
-        return -1
+        return RET_ERR
     path = argv[1]
     if os.path.exists(path):
         # Get the repository URL of the file being watched
@@ -229,7 +256,7 @@ def watch_lock(argv, svn):
                 break
 
     last_lock_owner = ''
-    while 1:
+    while True:
         lock_owner = ''
         p = Popen([svn, 'info', path], stdout=PIPE)
         lines = p.communicate()[0].split('\n')
@@ -253,7 +280,7 @@ def watch_lock(argv, svn):
  \___/|_| |_|_|\___/ \___|_|\_\___|\__,_(_)
 
 ''')
-    return 0
+    return RET_OK
 
 def users(argv, svn):
     path = '.'
@@ -274,7 +301,7 @@ def users(argv, svn):
     values.sort(key = lambda x: x[1], reverse = True)
     for v in values:
         print "%8d %s" % (v[1], v[0])
-    return 0
+    return RET_OK
 
 def binaries(argv, svn, base_path = '.'):
     for ent in os.listdir(base_path):
@@ -297,7 +324,7 @@ def binaries(argv, svn, base_path = '.'):
                 sys.stdout.write('\n')
         elif os.path.isdir(ent_path):
             binaries(argv, svn, os.sep.join([base_path, ent]))
-    return 0
+    return RET_OK
 
 def lockable(argv, svn, base_path = '.'):
     if len(argv) >= 2 and argv[1] == '--status':
@@ -322,61 +349,55 @@ def lockable(argv, svn, base_path = '.'):
         for ob in argv[1:]:
             ob_path = os.sep.join([base_path, ob])
             setSVNProperty(svn, 'svn:needs-lock', '*', ob_path)
+    return RET_OK
 
+def diff(argv, svn):
+    colordiff = findInPath('colordiff')
+    if colordiff != '':
+        diff_out = Popen([svn] + argv, stdout=PIPE).stdout
+        Popen([colordiff], stdin=diff_out).wait()
+        return RET_OK
+    return RET_REEXEC
+
+def root(argv, svn):
+    sys.stdout.write(getSVNRoot(svn) + '\n')
+    return RET_OK
+
+###########################################################################
+# Main                                                                    #
+###########################################################################
 def main(argv):
     realsvn = findInPath('svn')
     colorsvn = findInPath('colorsvn')
-    colordiff = findInPath('colordiff')
 
     if realsvn == '':
         sys.stderr.write("Error: 'svn' not found in path\n")
         return 1
 
+    handlers = {
+            'branch': branch,
+            'branches': branch,
+            'switch': switch,
+            'merge': merge,
+            'tag': tag,
+            'tags': tag,
+            'diff': diff,
+            'root': root,
+            'watch-lock': watch_lock,
+            'users': users,
+            'binaries': binaries,
+            'lockable': lockable,
+            }
+
     if len(argv) >= 1:
-        if argv[0] == "branch" or argv[0] == "branches":
-            return branch(argv, realsvn)
-
-        if argv[0] == "switch":
-            r = switch(argv, realsvn)
-            if r == 0:
-                Popen(realsvn + ' info | grep --color=none "^URL:"',
-                        shell = True).wait()
-            if r >= 0:
+        if argv[0] in handlers:
+            r = handlers[argv[0]](argv, realsvn)
+            if r == RET_OK or r == RET_ERR:
                 return r
 
-        if argv[0] == "merge":
-            r = merge(argv, realsvn)
-            if r >= 0:
-                return r
-
-        if argv[0] == "tag" or argv[0] == "tags":
-            return tag(argv, realsvn)
-
-        if argv[0] == "diff" and colordiff != '':
-            diff_out = Popen([realsvn] + argv, stdout=PIPE).stdout
-            Popen([colordiff], stdin=diff_out).wait()
-            return 0
-
-        if argv[0] == "root":
-            sys.stdout.write(getSVNRoot(realsvn) + '\n')
-            return 0
-
-        if argv[0] == "watch-lock":
-            return watch_lock(argv, realsvn)
-
-        if argv[0] == "users":
-            return users(argv, realsvn)
-
-        if argv[0] == "binaries":
-            return binaries(argv, realsvn)
-
-        if argv[0] == "lockable":
-            return lockable(argv, realsvn)
-
-        if argv[0] in ('st', 'status', 'log', 'up', 'update') \
-            and colorsvn != '':
+        if (argv[0] in ('st', 'status', 'log', 'up', 'update')
+            and colorsvn != ''):
             realsvn = colorsvn
-
 
     Popen([realsvn] + argv).wait()
     return 0
