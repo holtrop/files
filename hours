@@ -112,7 +112,8 @@ def main(argv):
     f = open(LOG_FILE, 'r')
     for line in iter(f.readline, ''):
         if (re.search(r'gnome-screensaver.*unlocked.login.keyring', line)
-                or re.search(r'screen unlocked', line)):
+                or re.search(r'screen unlocked', line)
+                or re.search(r'gdm.session.*session.opened.for.user', line)):
             # found a login line
             dt = get_dt_from_log_line(line)
             idx = (dt.date() - monday).days
