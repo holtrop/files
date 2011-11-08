@@ -22,7 +22,7 @@ alias backgammon='backgammon -r -pb'
 # put 'cattodo' in $PROMPT_COMMAND to use
 alias cattodo='if [[ $CATTODO_LAST_WD != $PWD ]]; then if [[ -r .todo ]]; then cat .todo; fi; CATTODO_LAST_WD=$PWD; fi'
 alias cdshowgitstatus='if [[ $CDSHOWGITSTATUS_LAST_WD != $PWD ]]; then if [[ -d .git ]]; then git status; fi; CDSHOWGITSTATUS_LAST_WD=$PWD; fi'
-#PROMPT_COMMAND="$PROMPT_COMMAND;cdshowgitstatus"
+#PROMPT_COMMAND="cdshowgitstatus;$PROMPT_COMMAND"
 function prompt_ps1_git_branch()
 {
     if [[ -e /usr/bin/git && "$PCGB_LAST_WD" != "$PWD" ]]; then
