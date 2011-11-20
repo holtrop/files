@@ -3,11 +3,11 @@
 export DISPLAY=:0
 
 # no message if one is displayed already
-if [[ "$(ps -efww | grep -v grep | grep gxmessage)" != "" ]]; then
+if [[ "$(ps -efww | grep gxmessage | grep -v grep)" != "" ]]; then
     exit
 fi
 # no message if xscreensaver active
-if [ "$(ps -efww | grep -v grep | grep xscreensaver)" != "" ]; then
+if [ "$(ps -efww | grep xscreensaver | grep -v grep)" != "" ]; then
     exit
 fi
 # no message if gnome-screensaver active
