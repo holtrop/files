@@ -129,6 +129,14 @@ alias jindent='indent -bbo -bl -blf -bli0 -bls -i4 -npcs -nut -ts8'
 # cygwin-specific aliases
 if [ -e /bin/cygwin1.dll ]; then
     alias ip="ipconfig | grep -E 'IP(v4)? Address' | sed -e 's/.*: //'"
+    function cs
+    {
+        while [ "$1" != "" ]
+        do
+            cygstart "$1"
+            shift
+        done
+    }
 fi
 
 # source any machine-local aliases
