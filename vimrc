@@ -79,9 +79,8 @@ end
 " mappings
 map ,# :set pasteO75A#yypO#73A A#0ll:set nopasteR
 map ,p :set pasteo#73A A#0ll:set nopasteR
-map ,* :set pasteO/74A*o *72A A*o 73A*A/0klll:set nopasteR
+map ,* :set pasteO/74A*o 73A*A/O * :set nopasteA
 map ,; :set pasteO;74A*o;*72A A*o;74A*0klll:set nopasteR
-map ,c :set pasteo *72A A*0lll:set nopasteR
 map ,8 :set pasteo20A-A8<20A-:set nopaste0
 map ,m mz:%s///g:noh'z
 map ,t :tabn
