@@ -121,3 +121,28 @@ if has("autocmd")
   autocmd QuickFixCmdPre vimgrep copen
   autocmd FileType html set sw=2 ts=2 sts=2
 endif " has("autocmd")
+
+if !exists('s:loaded')
+    s:loaded = 0
+endif
+
+if s:loaded
+    delfunction Bwmatch
+    delcommand Bwmatch
+endif
+
+function Bwmatch(exp)
+    let last = bufnr('$')
+    let index = 0
+    while index <= last
+        if bufexists(index) && bufname(index) =~ a:exp
+            execute ':bw ' . index
+        endif
+        let index += 1
+    endwhile
+    redraw!
+endfunction
+
+command -nargs=1 Bwmatch :call Bwmatch('<args>')
+
+let s:loaded = 1
