@@ -51,6 +51,7 @@ set incsearch
 set tags=./tags;/
 let Tlist_WinWidth = 40
 set grepprg=internal
+set tabpagemax=999
 
 " GUI settings
 set background=dark
@@ -78,9 +79,8 @@ end
 " mappings
 map ,# :set pasteO75A#yypO#73A A#0ll:set nopasteR
 map ,p :set pasteo#73A A#0ll:set nopasteR
-map ,* :set pasteO/74A*o *72A A*o 73A*A/0klll:set nopasteR
+map ,* :set pasteO/74A*o 73A*A/O * :set nopasteA
 map ,; :set pasteO;74A*o;*72A A*o;74A*0klll:set nopasteR
-map ,c :set pasteo *72A A*0lll:set nopasteR
 map ,8 :set pasteo20A-A8<20A-:set nopaste0
 map ,m mz:%s///g:noh'z
 map ,t :tabn
@@ -122,3 +122,28 @@ if has("autocmd")
   autocmd FileType html set sw=2 ts=2 sts=2
   autocmd FileType xhtml set sw=2 ts=2 sts=2
 endif " has("autocmd")
+
+if !exists('s:loaded')
+    s:loaded = 0
+endif
+
+if s:loaded
+    delfunction Bwmatch
+    delcommand Bwmatch
+endif
+
+function Bwmatch(exp)
+    let last = bufnr('$')
+    let index = 0
+    while index <= last
+        if bufexists(index) && bufname(index) =~ a:exp
+            execute ':bw ' . index
+        endif
+        let index += 1
+    endwhile
+    redraw!
+endfunction
+
+command -nargs=1 Bwmatch :call Bwmatch('<args>')
+
+let s:loaded = 1

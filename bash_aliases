@@ -110,6 +110,8 @@ function git-config-joshs()
     git config --global alias.gdiff 'difftool -y -t gvimdiff'
     git config --global alias.gdiffc 'difftool -y -t gvimdiff --cached'
     git config --global alias.wdiff 'diff --word-diff=color'
+    git config --global alias.mktar '!function f { name="$1"; pos="$2"; if [ "$pos" == "" ]; then pos=HEAD; fi; git archive --prefix="$name"/ "$pos" | bzip2 > ../"$name".tar.bz2; }; f'
+    git config --global push.default tracking
     if [ -e /bin/cygwin1.dll ]; then
         git config --global alias.bcdiff 'difftool -y -t bc2'
         git config --global alias.bcdiffc 'difftool -y -t bc2 --cached'
@@ -129,6 +131,14 @@ alias jindent='indent -bbo -bl -blf -bli0 -bls -i4 -npcs -nut -ts8'
 # cygwin-specific aliases
 if [ -e /bin/cygwin1.dll ]; then
     alias ip="ipconfig | grep -E 'IP(v4)? Address' | sed -e 's/.*: //'"
+    function cs
+    {
+        while [ "$1" != "" ]
+        do
+            cygstart "$1"
+            shift
+        done
+    }
 fi
 
 # source any machine-local aliases
