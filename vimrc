@@ -123,7 +123,7 @@ if has("autocmd")
 endif " has("autocmd")
 
 if !exists('s:loaded')
-    s:loaded = 0
+    let s:loaded = 0
 endif
 
 if s:loaded
