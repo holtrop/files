@@ -120,6 +120,7 @@ if has("autocmd")
   autocmd QuickFixCmdPre grep copen
   autocmd QuickFixCmdPre vimgrep copen
   autocmd FileType html set sw=2 ts=2 sts=2
+  autocmd FileType xhtml set sw=2 ts=2 sts=2
 endif " has("autocmd")
 
 if !exists('s:loaded')
