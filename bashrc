@@ -15,6 +15,7 @@ if [ -e /bin/cygwin1.dll ]; then
     if [ $? = 2 ]; then
         # exit status 2 means we couldn't connect to ssh-agent,
         # so let's start one now
+        rm -f $SSH_AUTH_SOCK
         ssh-agent -a $SSH_AUTH_SOCK >/tmp/.ssh-script
         . /tmp/.ssh-script
         echo $SSH_AGENT_PID >/tmp/.ssh-agent-pid
