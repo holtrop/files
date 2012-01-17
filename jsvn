@@ -359,6 +359,16 @@ def diff(argv, svn):
         return RET_OK
     return RET_REEXEC
 
+def log(argv, svn):
+    if not sys.stdout.isatty():
+        return RET_REEXEC
+    pager = 'less -FRX'
+    if 'PAGER' in os.environ and os.environ['PAGER'] != '':
+        pager = os.environ['PAGER']
+    svn_out = Popen([svn] + argv, stdout=PIPE).stdout
+    Popen(pager, shell=True, stdin=svn_out).wait()
+    return RET_OK
+
 def root(argv, svn):
     sys.stdout.write(getSVNRoot(svn) + '\n')
     return RET_OK
@@ -382,6 +392,7 @@ def main(argv):
             'tag': tag,
             'tags': tag,
             'diff': diff,
+            'log': log,
             'root': root,
             'watch-lock': watch_lock,
             'users': users,
