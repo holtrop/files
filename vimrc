@@ -74,7 +74,7 @@ endif
 
 if has("win32") || has("win64")
     set directory=$TMP
-end
+endif
 
 " mappings
 map ,# :set pasteO75A#yypO#73A A#0ll:set nopasteR
