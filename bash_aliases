@@ -25,12 +25,23 @@ alias cdshowgitstatus='if [[ $CDSHOWGITSTATUS_LAST_WD != $PWD ]]; then if [[ -d 
 #PROMPT_COMMAND="cdshowgitstatus;$PROMPT_COMMAND"
 function prompt_ps1_git_branch()
 {
-    if [[ -e /usr/bin/git && "$PCGB_LAST_WD" != "$PWD" ]]; then
-        current_git_branch=$(git branch 2>/dev/null | grep '^\*' | sed -e 's/^..//');
-        PCGB_LAST_WD=$PWD;
-    fi;
-    if [[ "$current_git_branch" != "" ]]; then
-        echo -e " [${current_git_branch}]";
+    which_git=$(which git)
+    if [[ "$which_git" == "" ]]; then
+        return
+    fi
+    branch_out=$(git branch -vv 2>/dev/null | grep '^\*' | sed -e 's/^..//')
+    if [[ "$branch_out" == "" ]]; then
+        return
+    fi
+    current_branch=$(echo "$branch_out" | awk '{print $1}')
+    ahead_behind=$(echo "$branch_out" | grep -E '(ahead|behind)' | sed -re 's/^.*(ahead|behind)(.[0-9]+).*$/\1\2/')
+    if [[ "$ahead_behind" != "" ]]; then
+        ahead_behind=": ${ahead_behind}"
+    fi
+    if [[ "$branch_out" != "" ]]; then
+        if [[ "$current_branch" != "" ]]; then
+            echo -e " [${current_branch}${ahead_behind}]"
+        fi
     fi
 }
 #put $(prompt_ps1_git_branch) in $PS1 to use it
