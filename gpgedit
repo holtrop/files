@@ -30,7 +30,11 @@ $editor = 'vim' if ($editor =~ /^\s*$/);
 
 system($editor, $dfname);
 
-my $recipient = $ENV{'GPGEDIT_RECIPIENT'};
+my $recipient = '';
+if (exists($ENV{'GPGEDIT_RECIPIENT'}))
+{
+    $recipient = $ENV{'GPGEDIT_RECIPIENT'};
+}
 my @cmd = ('gpg', '--encrypt');
 if ($recipient !~ /^\s*$/)
 {
