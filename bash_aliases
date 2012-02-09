@@ -16,7 +16,15 @@ esac
 alias grep='grep --color=auto'
 alias grepnosvn='grep --color=auto --exclude-dir=".svn"'
 alias egrepnosvn='egrep --color=auto --exclude-dir=".svn"'
-alias gvim='gvim --remote-tab-silent'
+function gvim()
+{
+    arg="$1"
+    if [ "${arg}" = "" ]; then
+        $(which gvim)
+    else
+        $(which gvim) --remote-tab-silent "$@"
+    fi
+}
 alias cribbage='cribbage -r'
 alias backgammon='backgammon -r -pb'
 # put 'cattodo' in $PROMPT_COMMAND to use
