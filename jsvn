@@ -86,16 +86,24 @@ def ansi_reset(out):
     out.write('\033[0m')
 
 def colordiff(out, line):
+    if re.search(r'^Index:\s', line):
+        ansi_color(out, 'yellow')
+        out.write(line + '\n')
+        ansi_reset(out)
+        return
+    if re.match(r'={67}', line):
+        ansi_color(out, 'yellow')
+        out.write(line + '\n')
+        ansi_reset(out)
+        return
     if re.search(r'^-', line):
         ansi_color(out, 'red')
-        out.write(line)
-        out.write('\n')
+        out.write(line + '\n')
         ansi_reset(out)
         return
     elif re.search(r'^\+', line):
         ansi_color(out, 'green')
-        out.write(line)
-        out.write('\n')
+        out.write(line + '\n')
         ansi_reset(out)
         return
     m = re.match(r'(@@.*@@)(.*)', line)
@@ -106,8 +114,7 @@ def colordiff(out, line):
         out.write('\n')
         ansi_reset(out)
         return
-    out.write(line)
-    out.write('\n')
+    out.write(line + '\n')
 
 def findInPath(cmd):
     path_entries = os.environ['PATH'].split(os.pathsep)
@@ -403,12 +410,9 @@ def lockable(argv, svn, out):
     return RET_OK
 
 def diff(argv, svn, out):
-    colordiff = findInPath('colordiff')
-    if colordiff != '':
-        diff_out = Popen([svn] + argv, stdout=PIPE).stdout
-        Popen([colordiff], stdin=diff_out, stdout=out).wait()
-        return RET_OK
-    return RET_REEXEC
+    for line in Popen([svn] + argv, stdout=PIPE).communicate()[0].split('\n'):
+        colordiff(out, line)
+    return RET_OK
 
 def log(argv, svn, out):
     in_diff = False
