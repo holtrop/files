@@ -132,7 +132,7 @@ def delSVNProperty(svn, prop, path):
 ###########################################################################
 # Subcommand Handlers                                                     #
 ###########################################################################
-def branch(argv, svn):
+def branch(argv, svn, out):
     if len(argv) < 2:
         bl = ['trunk'] + getSVNBranchList(svn)
         current = getSVNTopLevel(svn).split('/')[-1]
@@ -147,17 +147,17 @@ def branch(argv, svn):
     if len(argv) >= 3 and argv[1] == "-d":
         # delete branch in argv[2]
         Popen([svn, 'rm', root + '/branches/' + argv[2], '-m',
-            "Removed branch '%s'" % branch_name]).wait()
+            "Removed branch '%s'" % branch_name], stdout=out).wait()
         return RET_OK
     if origin == '' or root == '':
         sys.stderr.write("Could not determine origin/root URL\n")
         return RET_ERR
     comment = "Created '%s' branch" % branch_name
     branch_path = root + '/branches/' + branch_name
-    Popen([svn, 'copy', origin, branch_path, '-m', comment]).wait()
+    Popen([svn, 'copy', origin, branch_path, '-m', comment], stdout=out).wait()
     return RET_OK
 
-def tag(argv, svn):
+def tag(argv, svn, out):
     tl = getSVNTagList(svn)
     if len(argv) < 2:
         tl.sort()
@@ -177,7 +177,8 @@ def tag(argv, svn):
             return RET_ERR
         Popen([svn, 'mv',
             root + '/tags/' + old_tag_name, root + '/tags/' + tag_name,
-            '-m', "Renamed tag '%s' to '%s'" % (old_tag_name, tag_name)]).wait()
+            '-m', "Renamed tag '%s' to '%s'" % (old_tag_name, tag_name)],
+            stdout=out).wait()
         return RET_OK
     if len(argv) >= 3 and argv[1] == "-d":
         if not tag_name in tl:
@@ -185,14 +186,14 @@ def tag(argv, svn):
             return RET_ERR
         # delete tag in argv[2]
         Popen([svn, 'rm', root + '/tags/' + tag_name, '-m',
-            "Removed tag '%s'" % tag_name]).wait()
+            "Removed tag '%s'" % tag_name], stdout=out).wait()
         return RET_OK
     comment = "Created '%s' tag" % tag_name
     tag_path = root + '/tags/' + tag_name
-    Popen([svn, 'copy', origin, tag_path, '-m', comment]).wait()
+    Popen([svn, 'copy', origin, tag_path, '-m', comment], stdout=out).wait()
     return RET_OK
 
-def switch(argv, svn):
+def switch(argv, svn, out):
     if len(argv) < 2:
         return RET_REEXEC
     switched = False
@@ -200,26 +201,28 @@ def switch(argv, svn):
     path = getSVNRelPath(svn)
     while True:
         if argv[1] == 'trunk':
-            Popen([svn, 'switch', root + '/trunk' + path]).wait()
+            Popen([svn, 'switch', root + '/trunk' + path], stdout=out).wait()
             switched = True
             break
         bl = getSVNBranchList(svn)
         if argv[1] in bl:
-            Popen([svn, 'switch', root + '/branches/' + argv[1] + path]).wait()
+            Popen([svn, 'switch', root + '/branches/' + argv[1] + path],
+                    stdout=out).wait()
             switched = True
             break
         tl = getSVNTagList(svn)
         if argv[1] in tl:
-            Popen([svn, 'switch', root + '/tags/' + argv[1] + path]).wait()
+            Popen([svn, 'switch', root + '/tags/' + argv[1] + path],
+                    stdout=out).wait()
             switched = True
             break
     if switched:
         Popen(svn + ' info | grep --color=none "^URL:"',
-                shell = True).wait()
+                shell=True, stdout=out).wait()
         return RET_OK
     return RET_REEXEC
 
-def merge(argv, svn):
+def merge(argv, svn, out):
     if len(argv) < 2:
         return RET_REEXEC
     root = getSVNRoot(svn)
@@ -238,10 +241,10 @@ def merge(argv, svn):
         return RET_ERR
     path = getSVNRelPath(svn)
     Popen([svn, 'merge', '-r%s:HEAD' % rev,
-        root + '/branches/' + argv[1] + path, '.']).wait()
+        root + '/branches/' + argv[1] + path, '.'], stdout=out).wait()
     return RET_OK
 
-def watch_lock(argv, svn):
+def watch_lock(argv, svn, out):
     if len(argv) < 2:
         return RET_ERR
     path = argv[1]
@@ -282,7 +285,7 @@ def watch_lock(argv, svn):
 ''')
     return RET_OK
 
-def users(argv, svn):
+def users(argv, svn, out):
     path = '.'
     if len(argv) > 1:
         path = argv[1]
@@ -300,10 +303,10 @@ def users(argv, svn):
     values = users.values()
     values.sort(key = lambda x: x[1], reverse = True)
     for v in values:
-        print "%8d %s" % (v[1], v[0])
+        sys.stdout.write("%8d %s\n" % (v[1], v[0]))
     return RET_OK
 
-def binaries(argv, svn, base_path = '.'):
+def binaries(argv, svn, out, base_path = '.'):
     for ent in os.listdir(base_path):
         if ent in ('.', '..', '.svn'):
             continue
@@ -323,10 +326,10 @@ def binaries(argv, svn, base_path = '.'):
                 sys.stdout.write(ent_path)
                 sys.stdout.write('\n')
         elif os.path.isdir(ent_path):
-            binaries(argv, svn, os.sep.join([base_path, ent]))
+            binaries(argv, svn, out, os.sep.join([base_path, ent]))
     return RET_OK
 
-def lockable(argv, svn, base_path = '.'):
+def lockable(argv, svn, out):
     if len(argv) >= 2 and argv[1] == '--status':
         for ob in argv[2:]:
             ob_path = os.sep.join([base_path, ob])
@@ -351,25 +354,19 @@ def lockable(argv, svn, base_path = '.'):
             setSVNProperty(svn, 'svn:needs-lock', '*', ob_path)
     return RET_OK
 
-def diff(argv, svn):
+def diff(argv, svn, out):
     colordiff = findInPath('colordiff')
     if colordiff != '':
         diff_out = Popen([svn] + argv, stdout=PIPE).stdout
-        Popen([colordiff], stdin=diff_out).wait()
+        Popen([colordiff], stdin=diff_out, stdout=out).wait()
         return RET_OK
     return RET_REEXEC
 
-def log(argv, svn):
-    if not sys.stdout.isatty():
-        return RET_REEXEC
-    pager = 'less -FRX'
-    if 'PAGER' in os.environ and os.environ['PAGER'] != '':
-        pager = os.environ['PAGER']
-    svn_out = Popen([svn] + argv, stdout=PIPE).stdout
-    Popen(pager, shell=True, stdin=svn_out).wait()
+def log(argv, svn, out):
+    Popen([svn] + argv, stdout=out)
     return RET_OK
 
-def root(argv, svn):
+def root(argv, svn, out):
     sys.stdout.write(getSVNRoot(svn) + '\n')
     return RET_OK
 
@@ -379,6 +376,14 @@ def root(argv, svn):
 def main(argv):
     realsvn = findInPath('svn')
     colorsvn = findInPath('colorsvn')
+    out = sys.stdout
+    stdout_is_a_tty = sys.stdout.isatty()
+    if stdout_is_a_tty:
+        pager = 'less -FRX'
+        if 'PAGER' in os.environ and os.environ['PAGER'] != '':
+            pager = os.environ['PAGER']
+        pager_proc = Popen(pager, shell=True, stdin=PIPE)
+        out = pager_proc.stdin
 
     if realsvn == '':
         sys.stderr.write("Error: 'svn' not found in path\n")
@@ -400,17 +405,22 @@ def main(argv):
             'lockable': lockable,
             }
 
+    do_normal_exec = True
     if len(argv) >= 1:
         if argv[0] in handlers:
-            r = handlers[argv[0]](argv, realsvn)
+            r = handlers[argv[0]](argv, realsvn, out)
             if r == RET_OK or r == RET_ERR:
-                return r
+                do_normal_exec = False
 
         if (argv[0] in ('st', 'status', 'log', 'up', 'update')
             and colorsvn != ''):
             realsvn = colorsvn
 
-    Popen([realsvn] + argv).wait()
+    if do_normal_exec:
+        Popen([realsvn] + argv, stdout=out).wait()
+    if stdout_is_a_tty:
+        out.close()
+        pager_proc.wait()
     return 0
 
 if __name__ == "__main__":
