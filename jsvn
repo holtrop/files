@@ -345,8 +345,7 @@ def users(argv, svn, out):
         path = argv[1]
     users = {}
     p = Popen([svn, 'log', '-q', path], stdout=PIPE)
-    lines = p.communicate()[0].split('\n')
-    for line in lines:
+    for line in iter(p.stdout.readline, ''):
         m = re.match('r\d+\s*\|([^|]+)\|', line)
         if m is not None:
             user = m.group(1).strip()
