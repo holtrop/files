@@ -411,7 +411,43 @@ def diff(argv, svn, out):
     return RET_REEXEC
 
 def log(argv, svn, out):
-    Popen([svn] + argv, stdout=out)
+    in_diff = False
+    for line in Popen([svn] + argv, stdout=PIPE).communicate()[0].split('\n'):
+        if re.match(r'(r\d+)\s+\|', line):
+            parts = line.split('|')
+            if len(parts) == 4:
+                ansi_color(out, 'blue', bold=True)
+                out.write(parts[0])
+                ansi_reset(out)
+                out.write('|')
+                ansi_color(out, 'cyan')
+                out.write(parts[1])
+                ansi_reset(out)
+                out.write('|')
+                ansi_color(out, 'magenta')
+                out.write(parts[2])
+                ansi_reset(out)
+                out.write('|')
+                out.write(parts[3])
+                out.write('\n')
+        elif re.match(r'-{72}', line):
+            ansi_color(out, 'yellow')
+            out.write(line + '\n')
+            ansi_reset(out)
+            in_diff = False
+        elif re.match(r'={67}', line):
+            ansi_color(out, 'yellow')
+            out.write(line + '\n')
+            ansi_reset(out)
+            in_diff = True
+        elif in_diff:
+            colordiff(out, line)
+        elif re.search(r'^Index:\s', line):
+            ansi_color(out, 'yellow')
+            out.write(line + '\n')
+            ansi_reset(out)
+        else:
+            out.write(line + '\n')
     return RET_OK
 
 def root(argv, svn, out):
