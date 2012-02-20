@@ -507,7 +507,7 @@ def main(argv):
             if r == RET_OK or r == RET_ERR:
                 do_normal_exec = False
 
-        if (argv[0] in ('st', 'status', 'log', 'up', 'update')
+        if (argv[0] in ('st', 'status', 'up', 'update')
             and colorsvn != ''):
             realsvn = colorsvn
 
