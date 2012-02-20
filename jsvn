@@ -10,7 +10,7 @@
 #       alias svn='jsvn'
 #   fi
 #
-# The script detects if you have colorsvn and colordiff and uses them for
+# The script detects if you have colorsvn and uses it for
 # appropriate subcommands if so.
 #
 # Implemented subcommands:
