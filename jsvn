@@ -88,22 +88,22 @@ def ansi_reset(out):
 def colordiff(out, line):
     if re.search(r'^Index:\s', line):
         ansi_color(out, 'yellow')
-        out.write(line + '\n')
+        out.write(line)
         ansi_reset(out)
         return
     if re.match(r'={67}', line):
         ansi_color(out, 'yellow')
-        out.write(line + '\n')
+        out.write(line)
         ansi_reset(out)
         return
     if re.search(r'^-', line):
         ansi_color(out, 'red')
-        out.write(line + '\n')
+        out.write(line)
         ansi_reset(out)
         return
     elif re.search(r'^\+', line):
         ansi_color(out, 'green')
-        out.write(line + '\n')
+        out.write(line)
         ansi_reset(out)
         return
     m = re.match(r'(@@.*@@)(.*)', line)
@@ -111,10 +111,9 @@ def colordiff(out, line):
         ansi_color(out, 'cyan')
         out.write(m.group(1))
         out.write(m.group(2))
-        out.write('\n')
         ansi_reset(out)
         return
-    out.write(line + '\n')
+    out.write(line)
 
 def findInPath(cmd):
     path_entries = os.environ['PATH'].split(os.pathsep)
@@ -410,13 +409,15 @@ def lockable(argv, svn, out):
     return RET_OK
 
 def diff(argv, svn, out):
-    for line in Popen([svn] + argv, stdout=PIPE).communicate()[0].split('\n'):
+    pout = Popen([svn] + argv, stdout=PIPE).stdout
+    for line in iter(pout.readline, ''):
         colordiff(out, line)
     return RET_OK
 
 def log(argv, svn, out):
     in_diff = False
-    for line in Popen([svn] + argv, stdout=PIPE).communicate()[0].split('\n'):
+    pout = Popen([svn] + argv, stdout=PIPE).stdout
+    for line in iter(pout.readline, ''):
         if re.match(r'(r\d+)\s+\|', line):
             parts = line.split('|')
             if len(parts) == 4:
@@ -433,25 +434,24 @@ def log(argv, svn, out):
                 ansi_reset(out)
                 out.write('|')
                 out.write(parts[3])
-                out.write('\n')
         elif re.match(r'-{72}', line):
             ansi_color(out, 'yellow')
-            out.write(line + '\n')
+            out.write(line)
             ansi_reset(out)
             in_diff = False
         elif re.match(r'={67}', line):
             ansi_color(out, 'yellow')
-            out.write(line + '\n')
+            out.write(line)
             ansi_reset(out)
             in_diff = True
         elif in_diff:
             colordiff(out, line)
         elif re.search(r'^Index:\s', line):
             ansi_color(out, 'yellow')
-            out.write(line + '\n')
+            out.write(line)
             ansi_reset(out)
         else:
-            out.write(line + '\n')
+            out.write(line)
     return RET_OK
 
 def root(argv, svn, out):
