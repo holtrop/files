@@ -59,8 +59,33 @@ RET_ERR = 1
 RET_REEXEC = 2
 
 ###########################################################################
+# ANSI escape color code values                                           #
+###########################################################################
+COLORS = {
+        'black': 0,
+        'red': 1,
+        'green': 2,
+        'yellow': 3,
+        'blue': 4,
+        'magenta': 5,
+        'cyan': 6,
+        'white': 7,
+        }
+
+###########################################################################
 # Utility Functions                                                       #
 ###########################################################################
+def ansi_color(out, fg=None, bg=None, bold=False):
+    if bold is not None:
+        out.write('\033[1m')
+    if fg is not None:
+        out.write('\033[%dm' % (30 + COLORS[fg]))
+    if bg is not None:
+        out.write('\033[%dm' % (40 + COLORS[bg]))
+
+def ansi_reset(out):
+    out.write('\033[0m')
+
 def findInPath(cmd):
     path_entries = os.environ['PATH'].split(os.pathsep)
     for p in path_entries:
