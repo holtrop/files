@@ -465,13 +465,15 @@ def main(argv):
     realsvn = findInPath('svn')
     colorsvn = findInPath('colorsvn')
     out = sys.stdout
-    stdout_is_a_tty = sys.stdout.isatty()
-    if stdout_is_a_tty:
-        pager = 'less -FRX'
-        if 'PAGER' in os.environ and os.environ['PAGER'] != '':
-            pager = os.environ['PAGER']
-        pager_proc = Popen(pager, shell=True, stdin=PIPE)
-        out = pager_proc.stdin
+    using_pager = False
+    if sys.stdout.isatty():
+        if not (len(argv) >= 1 and argv[0] in ('propedit')):
+            pager = 'less -FRX'
+            if 'PAGER' in os.environ and os.environ['PAGER'] != '':
+                pager = os.environ['PAGER']
+            pager_proc = Popen(pager, shell=True, stdin=PIPE)
+            out = pager_proc.stdin
+            using_pager = True
 
     if realsvn == '':
         sys.stderr.write("Error: 'svn' not found in path\n")
@@ -506,7 +508,7 @@ def main(argv):
 
     if do_normal_exec:
         Popen([realsvn] + argv, stdout=out).wait()
-    if stdout_is_a_tty:
+    if using_pager:
         out.close()
         pager_proc.wait()
     return 0
