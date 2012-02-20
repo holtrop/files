@@ -467,7 +467,7 @@ def main(argv):
     out = sys.stdout
     using_pager = False
     if sys.stdout.isatty():
-        if not (len(argv) >= 1 and argv[0] in ('propedit')):
+        if not (len(argv) >= 1 and argv[0] in ('commit', 'propedit')):
             pager = 'less -FRX'
             if 'PAGER' in os.environ and os.environ['PAGER'] != '':
                 pager = os.environ['PAGER']
