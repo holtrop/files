@@ -76,15 +76,38 @@ COLORS = {
 # Utility Functions                                                       #
 ###########################################################################
 def ansi_color(out, fg=None, bg=None, bold=False):
-    if bold is not None:
-        out.write('\033[1m')
+    bc = 1 if bold else 0
     if fg is not None:
-        out.write('\033[%dm' % (30 + COLORS[fg]))
+        out.write('\033[%d;%dm' % (bc, 30 + COLORS[fg]))
     if bg is not None:
-        out.write('\033[%dm' % (40 + COLORS[bg]))
+        out.write('\033[%d;%dm' % (bc, 40 + COLORS[bg]))
 
 def ansi_reset(out):
     out.write('\033[0m')
+
+def colordiff(out, line):
+    if re.search(r'^-', line):
+        ansi_color(out, 'red')
+        out.write(line)
+        out.write('\n')
+        ansi_reset(out)
+        return
+    elif re.search(r'^\+', line):
+        ansi_color(out, 'green')
+        out.write(line)
+        out.write('\n')
+        ansi_reset(out)
+        return
+    m = re.match(r'(@@.*@@)(.*)', line)
+    if m is not None:
+        ansi_color(out, 'cyan')
+        out.write(m.group(1))
+        out.write(m.group(2))
+        out.write('\n')
+        ansi_reset(out)
+        return
+    out.write(line)
+    out.write('\n')
 
 def findInPath(cmd):
     path_entries = os.environ['PATH'].split(os.pathsep)
