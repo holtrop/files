@@ -71,19 +71,22 @@ COLORS = {
         'cyan': 6,
         'white': 7,
         }
+using_color = False
 
 ###########################################################################
 # Utility Functions                                                       #
 ###########################################################################
 def ansi_color(out, fg=None, bg=None, bold=False):
-    bc = 1 if bold else 0
-    if fg is not None:
-        out.write('\033[%d;%dm' % (bc, 30 + COLORS[fg]))
-    if bg is not None:
-        out.write('\033[%d;%dm' % (bc, 40 + COLORS[bg]))
+    if using_color:
+        bc = 1 if bold else 0
+        if fg is not None:
+            out.write('\033[%d;%dm' % (bc, 30 + COLORS[fg]))
+        if bg is not None:
+            out.write('\033[%d;%dm' % (bc, 40 + COLORS[bg]))
 
 def ansi_reset(out):
-    out.write('\033[0m')
+    if using_color:
+        out.write('\033[0m')
 
 def colordiff(out, line):
     if re.search(r'^Index:\s', line):
@@ -462,10 +465,12 @@ def root(argv, svn, out):
 # Main                                                                    #
 ###########################################################################
 def main(argv):
+    global using_color
     realsvn = findInPath('svn')
     colorsvn = findInPath('colorsvn')
     out = sys.stdout
     using_pager = False
+    using_color = sys.stdout.isatty()
     if sys.stdout.isatty():
         if not (len(argv) >= 1 and argv[0] in ('commit', 'propedit')):
             pager = 'less -FRX'
