@@ -112,6 +112,7 @@ def colordiff(out, line):
         out.write(m.group(1))
         out.write(m.group(2))
         ansi_reset(out)
+        out.write('\n')
         return
     out.write(line)
 
