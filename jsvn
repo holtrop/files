@@ -418,10 +418,10 @@ def diff(argv, svn, out):
     return RET_OK
 
 def log(argv, svn, out):
-    in_diff = False
+    mode = 'normal'
     pout = Popen([svn] + argv, stdout=PIPE).stdout
     for line in iter(pout.readline, ''):
-        if re.match(r'(r\d+)\s+\|', line):
+        if mode == 'normal' and re.match(r'(r\d+)\s+\|', line):
             parts = line.split('|')
             if len(parts) == 4:
                 ansi_color(out, 'blue', bold=True)
@@ -437,17 +437,32 @@ def log(argv, svn, out):
                 ansi_reset(out)
                 out.write('|')
                 out.write(parts[3])
+            else:
+                out.write(line)
+        elif mode == 'normal' and re.match(r'Changed.paths:', line):
+            out.write(line)
+            mode = 'cp'
+        elif mode == 'cp' and re.search(r'^   [ADM] ', line):
+            action = line[3]
+            if action == 'A':
+                ansi_color(out, 'green')
+            elif action == 'D':
+                ansi_color(out, 'red')
+            elif action == 'M':
+                ansi_color(out, 'yellow')
+            out.write(line)
+            ansi_reset(out)
         elif re.match(r'-{72}', line):
             ansi_color(out, 'yellow')
             out.write(line)
             ansi_reset(out)
-            in_diff = False
+            mode = 'normal'
         elif re.match(r'={67}', line):
             ansi_color(out, 'yellow')
             out.write(line)
             ansi_reset(out)
-            in_diff = True
-        elif in_diff:
+            mode = 'diff'
+        elif mode == 'diff':
             colordiff(out, line)
         elif re.search(r'^Index:\s', line):
             ansi_color(out, 'yellow')
