@@ -41,7 +41,7 @@ function prompt_ps1_git_branch()
     if [[ "$branch_out" == "" ]]; then
         return
     fi
-    current_branch=$(echo "$branch_out" | awk '{print $1}')
+    current_branch=$(echo "$branch_out" | sed -re 's/(.no.branch.|[^ ]*).*/\1/')
     ahead_behind=$(echo "$branch_out" | grep -E '(ahead|behind)' | sed -re 's/^.*(ahead|behind)(.[0-9]+).*$/\1\2/')
     if [[ "$ahead_behind" != "" ]]; then
         ahead_behind=": ${ahead_behind}"
