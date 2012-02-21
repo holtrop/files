@@ -490,7 +490,8 @@ def main(argv):
         if not (len(argv) >= 1 and argv[0] in
                 ('checkout', 'co',
                     'commit', 'ci',
-                    'propedit', 'pedit', 'pe')):
+                    'propedit', 'pedit', 'pe',
+                    'update', 'up')):
             pager = 'less -FRX'
             if 'PAGER' in os.environ and os.environ['PAGER'] != '':
                 pager = os.environ['PAGER']
