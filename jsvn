@@ -89,7 +89,7 @@ def ansi_reset(out):
         out.write('\033[0m')
 
 def colordiff(out, line):
-    if re.search(r'^Index:\s', line):
+    if re.match(r'Index:\s', line):
         ansi_color(out, 'yellow')
         out.write(line)
         ansi_reset(out)
@@ -99,12 +99,12 @@ def colordiff(out, line):
         out.write(line)
         ansi_reset(out)
         return
-    if re.search(r'^-', line):
+    if re.match(r'-', line):
         ansi_color(out, 'red')
         out.write(line)
         ansi_reset(out)
         return
-    elif re.search(r'^\+', line):
+    elif re.match(r'\+', line):
         ansi_color(out, 'green')
         out.write(line)
         ansi_reset(out)
@@ -442,7 +442,7 @@ def log(argv, svn, out):
         elif mode == 'normal' and re.match(r'Changed.paths:', line):
             out.write(line)
             mode = 'cp'
-        elif mode == 'cp' and re.search(r'^   [ADM] ', line):
+        elif mode == 'cp' and re.match(r'   [ADM] ', line):
             action = line[3]
             if action == 'A':
                 ansi_color(out, 'green')
@@ -464,7 +464,7 @@ def log(argv, svn, out):
             mode = 'diff'
         elif mode == 'diff':
             colordiff(out, line)
-        elif re.search(r'^Index:\s', line):
+        elif re.match(r'Index:\s', line):
             ansi_color(out, 'yellow')
             out.write(line)
             ansi_reset(out)
@@ -484,11 +484,11 @@ def update(argv, svn, out):
             continue
         if re.match(r'\s*$', line):
             continue
-        if re.search(r'^External at revision ', line):
+        if re.match(r'External at revision ', line):
             if external_printed:
                 out.write(line)
             continue
-        if re.search(r'^(Updated.to|At) revision', line):
+        if re.match(r'(Updated.to|At) revision', line):
             out.write(line)
             continue
 
