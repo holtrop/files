@@ -489,6 +489,8 @@ def update(argv, svn, out):
                 out.write(line)
             continue
         if re.match(r'(Updated.to|At) revision', line):
+            if external_printed:
+                out.write('\n')
             out.write(line)
             continue
 
