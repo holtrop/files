@@ -473,7 +473,9 @@ def main(argv):
     using_color = sys.stdout.isatty()
     if sys.stdout.isatty():
         if not (len(argv) >= 1 and argv[0] in
-                ('commit', 'ci', 'propedit', 'pedit', 'pe')):
+                ('checkout', 'co',
+                    'commit', 'ci',
+                    'propedit', 'pedit', 'pe')):
             pager = 'less -FRX'
             if 'PAGER' in os.environ and os.environ['PAGER'] != '':
                 pager = os.environ['PAGER']
