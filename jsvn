@@ -475,6 +475,7 @@ def log(argv, svn, out):
 def update(argv, svn, out):
     external = ''
     external_printed = True
+    any_external_printed = False
     pout = Popen([svn] + argv, stdout=PIPE).stdout
     for line in iter(pout.readline, ''):
         m = re.match(r"Fetching external item into '(.*)':", line)
@@ -489,7 +490,7 @@ def update(argv, svn, out):
                 out.write(line)
             continue
         if re.match(r'(Updated.to|At) revision', line):
-            if external_printed:
+            if any_external_printed:
                 out.write('\n')
             out.write(line)
             continue
@@ -498,6 +499,7 @@ def update(argv, svn, out):
         if not external_printed:
             out.write("\nExternal '%s':\n" % external)
             external_printed = True
+            any_external_printed = True
         if re.match(r'[ADUCGER ]{2}[B ][C ] ', line):
             action = line[0]
             if action == 'A':
