@@ -197,6 +197,48 @@ def setSVNProperty(svn, prop, val, path):
 def delSVNProperty(svn, prop, path):
     Popen([svn, 'propdel', prop, path], stdout=PIPE).wait()
 
+def filter_update(pout, out):
+    external = ''
+    external_printed = True
+    any_external_printed = False
+    for line in iter(pout.readline, ''):
+        m = re.match(r"Fetching external item into '(.*)':", line)
+        if m is not None:
+            external = m.group(1)
+            external_printed = False
+            continue
+        if re.match(r'\s*$', line):
+            continue
+        if re.match(r'External at revision ', line):
+            if external_printed:
+                out.write(line)
+            continue
+        if re.match(r'(Updated.to|At) revision', line):
+            if any_external_printed:
+                out.write('\n')
+            out.write(line)
+            continue
+
+        # anything not matched yet will cause an external to be shown
+        if not external_printed:
+            out.write("\nExternal '%s':\n" % external)
+            external_printed = True
+            any_external_printed = True
+        if re.match(r'[ADUCGER ]{2}[B ][C ] ', line):
+            action = line[0]
+            if action == 'A':
+                ansi_color(out, 'green')
+            elif action == 'D':
+                ansi_color(out, 'red')
+            elif action == 'C':
+                ansi_color(out, 'yellow')
+            elif action == 'G':
+                ansi_color(out, 'cyan')
+            out.write(line)
+            ansi_reset(out)
+            continue
+        out.write(line)
+
 ###########################################################################
 # Subcommand Handlers                                                     #
 ###########################################################################
@@ -269,26 +311,32 @@ def switch(argv, svn, out):
     path = getSVNRelPath(svn)
     while True:
         if argv[1] == 'trunk':
-            Popen([svn, 'switch', root + '/trunk' + path], stdout=out).wait()
+            pout = Popen([svn, 'switch', root + '/trunk' + path],
+                    stdout=PIPE).stdout
+            filter_update(pout, out)
             switched = True
             break
         bl = getSVNBranchList(svn)
         if argv[1] in bl:
-            Popen([svn, 'switch', root + '/branches/' + argv[1] + path],
-                    stdout=out).wait()
+            pout = Popen([svn, 'switch', root + '/branches/' + argv[1] + path],
+                    stdout=PIPE).stdout
+            filter_update(pout, out)
             switched = True
             break
         tl = getSVNTagList(svn)
         if argv[1] in tl:
-            Popen([svn, 'switch', root + '/tags/' + argv[1] + path],
-                    stdout=out).wait()
+            pout = Popen([svn, 'switch', root + '/tags/' + argv[1] + path],
+                    stdout=PIPE).stdout
+            filter_update(pout, out)
             switched = True
             break
     if switched:
         Popen(svn + ' info | grep --color=none "^URL:"',
                 shell=True, stdout=out).wait()
         return RET_OK
-    return RET_REEXEC
+    pout = Popen([svn] + argv, stdout=PIPE).stdout
+    filter_update(pout, out)
+    return RET_OK
 
 def merge(argv, svn, out):
     if len(argv) < 2:
@@ -483,47 +531,8 @@ def log(argv, svn, out):
     return RET_OK
 
 def update(argv, svn, out):
-    external = ''
-    external_printed = True
-    any_external_printed = False
     pout = Popen([svn] + argv, stdout=PIPE).stdout
-    for line in iter(pout.readline, ''):
-        m = re.match(r"Fetching external item into '(.*)':", line)
-        if m is not None:
-            external = m.group(1)
-            external_printed = False
-            continue
-        if re.match(r'\s*$', line):
-            continue
-        if re.match(r'External at revision ', line):
-            if external_printed:
-                out.write(line)
-            continue
-        if re.match(r'(Updated.to|At) revision', line):
-            if any_external_printed:
-                out.write('\n')
-            out.write(line)
-            continue
-
-        # anything not matched yet will cause an external to be shown
-        if not external_printed:
-            out.write("\nExternal '%s':\n" % external)
-            external_printed = True
-            any_external_printed = True
-        if re.match(r'[ADUCGER ]{2}[B ][C ] ', line):
-            action = line[0]
-            if action == 'A':
-                ansi_color(out, 'green')
-            elif action == 'D':
-                ansi_color(out, 'red')
-            elif action == 'C':
-                ansi_color(out, 'yellow')
-            elif action == 'G':
-                ansi_color(out, 'cyan')
-            out.write(line)
-            ansi_reset(out)
-            continue
-        out.write(line)
+    filter_update(pout, out)
     return RET_OK
 
 def status(argv, svn, out):
