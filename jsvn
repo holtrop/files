@@ -107,6 +107,8 @@ def colordiff(out, line):
         ansi_reset(out)
         return
     m = re.match(r'(@@.*@@)(.*)', line)
+    if m is None:
+        m = re.match(r'(##.*##)(.*)', line)
     if m is not None:
         ansi_color(out, 'cyan')
         out.write(m.group(1))
