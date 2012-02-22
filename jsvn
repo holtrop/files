@@ -41,6 +41,17 @@
 #   - with no switches, set svn:needs-lock to '*' for file[s]
 #   - with --remove, remove svn:needs-lock' for file[s]
 #   - with --status, prepended '*' for those with svn:needs-lock set
+#
+# The following subcommands are executed using their native handler, but
+# have their output simplified and/or colorized:
+#  - diff
+#  - log
+#  - status
+#  - update
+#
+# If the subcommand name begins with two leading underscores ("__"), the
+# underscores will be stripped and the command will be handled by native
+# Subversion without any jsvn processing.
 
 import sys
 import os
