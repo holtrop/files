@@ -608,6 +608,10 @@ def main(argv):
             r = handlers[argv[0]](argv, realsvn, out)
             if r == RET_OK or r == RET_ERR:
                 do_normal_exec = False
+        elif argv[0].startswith('__'):
+            # allow double-underscore commands to execute the native
+            # subversion command (e.g. "__st")
+            argv[0] = argv[0][2:]
 
     if do_normal_exec:
         Popen([realsvn] + argv, stdout=out).wait()
