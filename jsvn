@@ -248,8 +248,14 @@ def branch(argv, svn, out):
         current = getSVNTopLevel(svn).split('/')[-1]
         bl.sort()
         for b in bl:
-            sys.stdout.write('*' if b == current else ' ')
+            if b == current:
+                out.write('*')
+                ansi_color(out, 'green')
+            else:
+                out.write(' ')
             sys.stdout.write(b + '\n')
+            if b == current:
+                ansi_reset(out)
         return RET_OK
     branch_name = argv[-1]
     origin = getSVNTopLevel(svn)
