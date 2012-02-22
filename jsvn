@@ -614,6 +614,7 @@ def main(argv):
             'branch': branch,
             'branches': branch,
             'switch': switch,
+            'sw': switch,
             'merge': merge,
             'tag': tag,
             'tags': tag,
