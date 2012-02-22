@@ -253,7 +253,7 @@ def branch(argv, svn, out):
                 ansi_color(out, 'green')
             else:
                 out.write(' ')
-            sys.stdout.write(b + '\n')
+            out.write(b + '\n')
             if b == current:
                 ansi_reset(out)
         return RET_OK
@@ -278,7 +278,7 @@ def tag(argv, svn, out):
     if len(argv) < 2:
         tl.sort()
         for t in tl:
-            sys.stdout.write(t + '\n')
+            out.write(t + '\n')
         return RET_OK
     tag_name = argv[-1]
     origin = getSVNTopLevel(svn)
@@ -393,11 +393,11 @@ def watch_lock(argv, svn, out):
         if lock_owner == '':
             break
         if lock_owner != last_lock_owner:
-            sys.stdout.write('Locked by: %s\n' % lock_owner)
+            out.write('Locked by: %s\n' % lock_owner)
             last_lock_owner = lock_owner
         time.sleep(60)
 
-    sys.stdout.write('''
+    out.write('''
  _   _       _            _            _ _
 | | | |_ __ | | ___   ___| | _____  __| | |
 | | | | '_ \| |/ _ \ / __| |/ / _ \/ _` | |
@@ -424,7 +424,7 @@ def users(argv, svn, out):
     values = users.values()
     values.sort(key = lambda x: x[1], reverse = True)
     for v in values:
-        sys.stdout.write("%8d %s\n" % (v[1], v[0]))
+        out.write("%8d %s\n" % (v[1], v[0]))
     return RET_OK
 
 def binaries(argv, svn, out, base_path = '.'):
@@ -438,14 +438,14 @@ def binaries(argv, svn, out, base_path = '.'):
                 # we found a binary file
                 needs_lock = getSVNProperty(svn, 'svn:needs-lock', ent_path)
                 if needs_lock:
-                    sys.stdout.write('* ')
+                    out.write('* ')
                 elif len(argv) >= 2 and argv[1] == '--set-lock':
                     setSVNProperty(svn, 'svn:needs-lock', '*', ent_path)
-                    sys.stdout.write('S ')
+                    out.write('S ')
                 else:
-                    sys.stdout.write('  ')
-                sys.stdout.write(ent_path)
-                sys.stdout.write('\n')
+                    out.write('  ')
+                out.write(ent_path)
+                out.write('\n')
         elif os.path.isdir(ent_path):
             binaries(argv, svn, out, os.sep.join([base_path, ent]))
     return RET_OK
@@ -457,11 +457,11 @@ def lockable(argv, svn, out):
 
             needs_lock = getSVNProperty(svn, 'svn:needs-lock', ob_path)
             if needs_lock:
-                sys.stdout.write('* ')
+                out.write('* ')
             else:
-                sys.stdout.write('  ')
-            sys.stdout.write(ob_path)
-            sys.stdout.write('\n')
+                out.write('  ')
+            out.write(ob_path)
+            out.write('\n')
 
     elif len(argv) >= 2 and argv[1] == '--remove':
         for ob in argv[2:]:
@@ -577,7 +577,7 @@ def status(argv, svn, out):
     return RET_OK
 
 def root(argv, svn, out):
-    sys.stdout.write(getSVNRoot(svn) + '\n')
+    out.write(getSVNRoot(svn) + '\n')
     return RET_OK
 
 ###########################################################################
