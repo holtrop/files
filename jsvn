@@ -10,9 +10,6 @@
 #       alias svn='jsvn'
 #   fi
 #
-# The script detects if you have colorsvn and uses it for
-# appropriate subcommands if so.
-#
 # Implemented subcommands:
 #  branch[es] [[-d] <branch_name>]
 #   - with no arguments, list branches with '*' by the current one
@@ -516,6 +513,41 @@ def update(argv, svn, out):
         out.write(line)
     return RET_OK
 
+def status(argv, svn, out):
+    external = ''
+    external_printed = True
+    pout = Popen([svn] + argv, stdout=PIPE).stdout
+    for line in iter(pout.readline, ''):
+        m = re.match(r"Performing status on external item at '(.*)':", line)
+        if m is not None:
+            external = m.group(1)
+            external_printed = False
+            continue
+        if re.match(r'\s*$', line):
+            continue
+
+        # anything not matched yet will cause an external to be shown
+        if not external_printed:
+            out.write("\nExternal '%s':\n" % external)
+            external_printed = True
+        if re.match(r'[ACDIMRX?!~ ][CM ][L ][+ ][SX ][KOTB ]', line):
+            action = line[0]
+            if action == 'A' or action == 'M':
+                ansi_color(out, 'green')
+            elif action == 'C':
+                ansi_color(out, 'yellow')
+            elif action == 'D':
+                ansi_color(out, 'red')
+            elif action == 'R':
+                ansi_color(out, 'magenta')
+            elif action == 'X':
+                continue            # don't print externals
+            out.write(line)
+            ansi_reset(out)
+            continue
+        out.write(line)
+    return RET_OK
+
 def root(argv, svn, out):
     sys.stdout.write(getSVNRoot(svn) + '\n')
     return RET_OK
@@ -526,7 +558,6 @@ def root(argv, svn, out):
 def main(argv):
     global using_color
     realsvn = findInPath('svn')
-    colorsvn = findInPath('colorsvn')
     out = sys.stdout
     using_pager = False
     using_color = sys.stdout.isatty()
@@ -563,6 +594,8 @@ def main(argv):
             'users': users,
             'binaries': binaries,
             'lockable': lockable,
+            'st': status,
+            'status': status,
             }
 
     do_normal_exec = True
@@ -571,10 +604,6 @@ def main(argv):
             r = handlers[argv[0]](argv, realsvn, out)
             if r == RET_OK or r == RET_ERR:
                 do_normal_exec = False
-
-        if (argv[0] in ('st', 'status')
-            and colorsvn != ''):
-            realsvn = colorsvn
 
     if do_normal_exec:
         Popen([realsvn] + argv, stdout=out).wait()
