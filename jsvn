@@ -603,6 +603,7 @@ def main(argv):
             'tag': tag,
             'tags': tag,
             'diff': diff,
+            'di': diff,
             'log': log,
             'root': root,
             'up': update,
@@ -612,6 +613,7 @@ def main(argv):
             'binaries': binaries,
             'lockable': lockable,
             'st': status,
+            'stat': status,
             'status': status,
             }
 
