@@ -11,6 +11,8 @@
 #   fi
 #
 # Implemented subcommands:
+#  add <file>...
+#   - add files as usual; add recursive contents of directories
 #  branch[es] [[-d] <branch_name>]
 #   - with no arguments, list branches with '*' by the current one
 #   - with -d, delete <branch>
