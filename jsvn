@@ -272,7 +272,7 @@ def add(argv, svn, out):
     if len(argv) < 2:
         # do not handle if no targets are passed
         return RET_REEXEC
-    if True in map(lambda x: x.startswith('-'), argv):
+    if len(filter(lambda x: x.startswith('-'), argv)) != 0:
         # do not handle if any options are passed
         return RET_REEXEC
     # for each target specified, check if there are unversioned items
