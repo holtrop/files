@@ -242,9 +242,55 @@ def filter_update(pout, out):
             continue
         out.write(line)
 
+def get_unknowns(svn):
+    unknowns = []
+    pout = Popen([svn, 'status'], stdout=PIPE).stdout
+    for line in iter(pout.readline, ''):
+        m = re.match(r'\?       (.*)$', line)
+        if m is not None:
+            unknowns.append(m.group(1))
+    return unknowns
+
+def descendant_path(child, parent):
+    if child[0] != '/' and parent[0] == '/':
+        child = os.getcwd() + '/' + child
+    elif child[0] == '/' and parent[0] != '/':
+        parent = os.getcwd() + '/' + parent
+    if child == parent:
+        return True
+    if child.startswith(parent):
+        if child[len(parent)] == '/':
+            return True
+    return False
+
 ###########################################################################
 # Subcommand Handlers                                                     #
 ###########################################################################
+def add(argv, svn, out):
+    if len(argv) < 2:
+        # do not handle if no targets are passed
+        return RET_REEXEC
+    if True in map(lambda x: x.startswith('-'), argv):
+        # do not handle if any options are passed
+        return RET_REEXEC
+    # for each target specified, check if there are unversioned items
+    # underneath it (for directories) and add them as well
+    # if none are found, fall back to the native svn add
+    unknowns = get_unknowns(svn)
+    for path in argv[1:]:
+        if path == '.':
+            path = os.getcwd()
+        if path.endswith('/'):
+            path = path[:-1]
+        found_one = False
+        for u in unknowns:
+            if descendant_path(u, path):
+                Popen([svn, 'add', u], stdout=out).wait()
+                found_one = True
+        if not found_one:
+            Popen([svn, 'add', path], stdout=out).wait()
+    return RET_OK
+
 def branch(argv, svn, out):
     if len(argv) < 2:
         bl = ['trunk'] + getSVNBranchList(svn)
@@ -622,6 +668,7 @@ def main(argv):
         return 1
 
     handlers = {
+            'add': add,
             'branch': branch,
             'branches': branch,
             'externals': externals,
