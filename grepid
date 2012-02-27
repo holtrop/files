@@ -2,5 +2,5 @@
 
 id="$1"
 shift
-exec grep --exclude-dir .svn --exclude-dir .git --color=auto -R \
+exec grep --exclude-dir .svn --exclude-dir .git --color=auto -IR \
     '\<'"${id}"'\>' "$@"
