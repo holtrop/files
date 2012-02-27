@@ -154,7 +154,7 @@ if [ -e /bin/cygwin1.dll ]; then
     {
         while [ "$1" != "" ]
         do
-            cygstart "$1"
+            HOME='' cygstart "$1"
             shift
         done
     }
