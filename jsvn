@@ -62,6 +62,7 @@ import os
 import re
 import time
 from subprocess import *
+import traceback
 
 STATUS_LINE_REGEX = r'[ACDIMRX?!~ ][CM ][L ][+ ][SX ][KOTB ]'
 ###########################################################################
@@ -85,6 +86,34 @@ COLORS = {
         'white': 7,
         }
 using_color = False
+
+###########################################################################
+# Configuration                                                           #
+###########################################################################
+def get_config():
+    config = {
+            'pager': 'less -FRX',
+            'use_pager': True,
+            'use_color': True,
+            'aliases': {},
+            }
+    pth = os.path.expanduser('~/.jsvn')
+    if os.path.exists(pth):
+        fh = open(pth, 'r')
+        script = fh.read()
+        fh.close()
+        try:
+            exec(script, config)
+        except:
+            sys.stderr.write('Configuration file error in "%s":\n' % pth)
+            traceback.print_exception(sys.exc_info()[0], sys.exc_info()[1],
+                    None)
+            tb = traceback.extract_tb(sys.exc_info()[2])
+            for ent in tb[1:]:
+                lineno, fn = ent[1:3]
+                sys.stderr.write('  File "%s", line %d, in %s\n'
+                        % (pth, lineno, fn))
+    return config
 
 ###########################################################################
 # Utility Functions                                                       #
@@ -644,11 +673,13 @@ def root(argv, svn, out):
 ###########################################################################
 def main(argv):
     global using_color
+
+    config = get_config()
     realsvn = findInPath('svn')
     out = sys.stdout
     using_pager = False
-    using_color = sys.stdout.isatty()
-    if sys.stdout.isatty():
+    using_color = sys.stdout.isatty() and config['use_color']
+    if sys.stdout.isatty() and config['use_pager']:
         if (len(argv) >= 1 and argv[0] in
                 ('blame', 'praise', 'annotate', 'ann',
                         'cat',
@@ -658,7 +689,7 @@ def main(argv):
                         'log',
                         'propget', 'pget', 'pg',
                         'proplist', 'plist', 'pl')):
-            pager = 'less -FRX'
+            pager = config['pager']
             if 'PAGER' in os.environ and os.environ['PAGER'] != '':
                 pager = os.environ['PAGER']
             pager_proc = Popen(pager, shell=True, stdin=PIPE)
