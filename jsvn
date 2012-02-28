@@ -56,6 +56,25 @@
 # If the subcommand name begins with two leading underscores ("__"), the
 # underscores will be stripped and the command will be handled by native
 # Subversion without any jsvn processing.
+#
+# Configuration:
+#
+# jsvn will execute the file ~/.jsvn, if it exists, as a Python script.
+# Variables written to will be used as configuration directives.
+# Available configuration directives:
+#   use_color: True or False to enable/disable colorization of svn output
+#   use_pager: True or False to enable/disable automatic piping of svn
+#              output to a pager program
+#   pager:     A string specifying the pager program (and args) to execute
+#   aliases['XXX']: A string or list defining the alias 'XXX'. A string
+#              can be used if the alias expands to a single argument. A
+#              list must be used to pass multiple arguments to svn.
+#
+# Configuration Examples:
+#   pager = 'less -FRXi' # enable case-insensitive searching in less
+#   aliases['revert'] = ['revert', '-R'] # default to recursive reverts
+#   aliases['s'] = ['status', '--ignore-externals']
+#   aliases['status'] = '__status' # ignore jsvn processing of status command
 
 import sys
 import os
