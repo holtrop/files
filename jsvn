@@ -115,6 +115,17 @@ def get_config():
                         % (pth, lineno, fn))
     return config
 
+def apply_aliases(config, argv):
+    if not argv[0] in config['aliases']:
+        return argv
+    alias = config['aliases'][argv[0]]
+    if type(alias) == str:
+        return [alias] + argv[1:]
+    elif type(alias) == list:
+        return alias + argv[1:]
+    sys.stderr.write('Unsupported type for alias "%s"\n' % alias)
+    return argv
+
 ###########################################################################
 # Utility Functions                                                       #
 ###########################################################################
@@ -677,6 +688,7 @@ def main(argv):
     config = get_config()
     realsvn = findInPath('svn')
     out = sys.stdout
+    argv = apply_aliases(config, argv)
     using_pager = False
     using_color = sys.stdout.isatty() and config['use_color']
     if sys.stdout.isatty() and config['use_pager']:
