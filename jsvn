@@ -31,6 +31,8 @@
 #   - falls back to Subversion "merge" if <branch> doesn't exist
 #  root
 #   - output root URL (for use on shell such as "svn log $(svn root)/tags")
+#  url
+#   - output repository URL of current working directory
 #  watch-lock
 #   - block until the lock on a file/URL is released
 #  users
@@ -698,6 +700,10 @@ def root(argv, svn, out):
     out.write(getSVNRoot(svn) + '\n')
     return RET_OK
 
+def url(argv, svn, out):
+    out.write(getSVNURL(svn) + '\n')
+    return RET_OK
+
 ###########################################################################
 # Main                                                                    #
 ###########################################################################
@@ -747,6 +753,7 @@ def main(argv):
             'root': root,
             'up': update,
             'update': update,
+            'url' : url,
             'watch-lock': watch_lock,
             'users': users,
             'binaries': binaries,
