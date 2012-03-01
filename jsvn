@@ -447,8 +447,8 @@ def switch(argv, svn, out):
             switched = True
             break
     if switched:
-        Popen(svn + ' info | grep --color=none "^URL:"',
-                shell=True, stdout=out).wait()
+        url = getSVNURL(svn)
+        out.write('URL: %s\n' % url)
         return RET_OK
     pout = Popen([svn] + argv, stdout=PIPE).stdout
     filter_update(pout, out)
