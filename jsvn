@@ -355,6 +355,11 @@ def add(argv, svn, out):
     return RET_OK
 
 def branch(argv, svn, out):
+    origin = getSVNTopLevel(svn)
+    root = getSVNRoot(svn)
+    if origin == '' or root == '':
+        sys.stderr.write("Could not determine origin/root URL\n")
+        return RET_ERR
     if len(argv) < 2:
         bl = ['trunk'] + getSVNBranchList(svn)
         current = getSVNTopLevel(svn).split('/')[-1]
@@ -370,22 +375,22 @@ def branch(argv, svn, out):
                 ansi_reset(out)
         return RET_OK
     branch_name = argv[-1]
-    origin = getSVNTopLevel(svn)
-    root = getSVNRoot(svn)
     if len(argv) >= 3 and argv[1] == "-d":
         # delete branch in argv[2]
         Popen([svn, 'rm', root + '/branches/' + argv[2], '-m',
             "Removed branch '%s'" % branch_name], stdout=out).wait()
         return RET_OK
-    if origin == '' or root == '':
-        sys.stderr.write("Could not determine origin/root URL\n")
-        return RET_ERR
     comment = "Created '%s' branch" % branch_name
     branch_path = root + '/branches/' + branch_name
     Popen([svn, 'copy', origin, branch_path, '-m', comment], stdout=out).wait()
     return RET_OK
 
 def tag(argv, svn, out):
+    origin = getSVNTopLevel(svn)
+    root = getSVNRoot(svn)
+    if origin == '' or root == '':
+        sys.stderr.write("Could not determine origin/root URL\n")
+        return RET_ERR
     tl = getSVNTagList(svn)
     if len(argv) < 2:
         tl.sort()
@@ -393,11 +398,6 @@ def tag(argv, svn, out):
             out.write(t + '\n')
         return RET_OK
     tag_name = argv[-1]
-    origin = getSVNTopLevel(svn)
-    root = getSVNRoot(svn)
-    if origin == '' or root == '':
-        sys.stderr.write("Could not determine origin/root URL\n")
-        return RET_ERR
     if len(argv) == 4 and argv[1] == '-m':
         old_tag_name = argv[2]
         if not old_tag_name in tl:
