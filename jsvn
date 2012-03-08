@@ -448,6 +448,8 @@ def switch(argv, svn, out):
             filter_update(pout, out)
             switched = True
             break
+        # argument is not a tag/branch name
+        break
     if switched:
         url = getSVNURL(svn)
         out.write('URL: %s\n' % url)
