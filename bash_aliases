@@ -8,7 +8,7 @@ fi
 # PS1='[\[\033[31;1m\]\u@\H\[\033[34;1m\] \w\[\033[0m\]]\$ \[\033[0m\]'
 case "$TERM" in
 [ax]term*|rxvt*)
-    PROMPT_COMMAND='echo -ne "\033]0;"$(basename ${PWD})" [${USER}@${HOSTNAME}: ${PWD}]\007"'
+    PROMPT_COMMAND='echo -ne "\033]0;"$(basename "$PWD")" [${USER}@${HOSTNAME}: ${PWD}]\007"'
     ;;
 *)
     PROMPT_COMMAND=''
