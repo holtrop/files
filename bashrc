@@ -12,7 +12,7 @@ if [ -e /bin/cygwin1.dll ]; then
 
     export SSH_AUTH_SOCK=/tmp/.ssh_socket
 
-    ssh-add -l 2>&1 >/dev/null
+    ssh-add -l >/dev/null 2>&1
 
     if [ $? = 2 ]; then
         # exit status 2 means we couldn't connect to ssh-agent,
