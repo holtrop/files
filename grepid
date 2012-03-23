@@ -1,6 +1,93 @@
-#!/bin/bash
+#!/usr/bin/env python
 
-id="$1"
-shift
-exec grep --exclude-dir .svn --exclude-dir .git --color=auto -IR \
-    '\<'"${id}"'\>' "$@"
+import os
+import sys
+import re
+from subprocess import Popen, PIPE
+
+COLORS = {
+        'black': 0,
+        'red': 1,
+        'green': 2,
+        'yellow': 3,
+        'blue': 4,
+        'magenta': 5,
+        'cyan': 6,
+        'white': 7,
+        }
+using_color = sys.stdout.isatty()
+
+def usage(prog_name):
+    sys.stdout.write('Usage: %s <identifier> [location]\n' % prog_name)
+
+def ansi_color(out, fg=None, bg=None, bold=False):
+    if using_color:
+        bc = 1 if bold else 0
+        if fg is not None:
+            out.write('\033[%d;%dm' % (bc, 30 + COLORS[fg]))
+        if bg is not None:
+            out.write('\033[%d;%dm' % (bc, 40 + COLORS[bg]))
+
+def ansi_reset(out):
+    if using_color:
+        out.write('\033[0m')
+
+def display_lines(lines, ident):
+    line_no_width = len(lines[-1][0])
+    for line_no, content in lines:
+        ansi_color(sys.stdout, 'magenta')
+        sys.stdout.write('%%%ds: ' % line_no_width % line_no)
+        ansi_reset(sys.stdout)
+        while content != '':
+            m = re.match('(.*?)(%s)(.*)$' % ident, content)
+            if m is None:
+                sys.stdout.write(content)
+                break
+            sys.stdout.write(m.group(1))
+            ansi_color(sys.stdout, 'red')
+            sys.stdout.write(m.group(2))
+            ansi_reset(sys.stdout)
+            content = m.group(3)
+        sys.stdout.write('\n')
+
+def main(argv):
+    if len(argv) < 2:
+        usage(argv[0])
+        return 1
+    where = '.'
+    ident = argv[1]
+    if len(argv) == 3:
+        where = argv[2]
+
+    process = Popen(['grep', '--exclude-dir=.svn', '--exclude-dir=.git',
+        '--color=never', '-HIRn', '\<%s\>' % ident, where], stdout=PIPE)
+
+    last_file_name = ''
+    lines = []
+    for line in iter(process.stdout.readline, ''):
+        line = line.strip()
+        m = re.match('(.*):(\d+):(.*)$', line)
+        if m is None:
+            last_file_name = ''
+            sys.stdout.write(m)
+            sys.stdout.write('\n')
+            continue
+        file_name, line_no, content = m.group(1, 2, 3)
+        if file_name != last_file_name:
+            if len(lines) > 0:
+                display_lines(lines, ident)
+                sys.stdout.write('\n')
+            last_file_name = file_name
+            ansi_color(sys.stdout, 'yellow')
+            sys.stdout.write(last_file_name)
+            sys.stdout.write(':')
+            ansi_reset(sys.stdout)
+            sys.stdout.write('\n')
+            lines = []
+        lines.append((line_no, content))
+    if len(lines) > 0:
+        display_lines(lines, ident)
+    return 0
+
+if __name__ == '__main__':
+    sys.exit(main(sys.argv))
