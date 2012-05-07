@@ -57,6 +57,16 @@ function prompt_ps1_git_branch()
 alias ls='ls --color=auto'
 alias strip-cr="sed -e 's/\x0d//'"
 alias rip='abcde -x -p -o mp3:"-v -b160"'
+function rip-dvd()
+{
+    name="$1"
+    if [ "$name" == "" ]; then
+        echo 'specify dvd name'
+    else
+        mplayer dvd://1 -v -dupstream -dumpfile "$name.vob"
+        mencoder -ovc xvid -oac mp3lame -xvidencopts fixed_quant=4 -lameopts cbr:br=192:aq=1 -aid 128 -sid 0 -o "$name.avi" "$name.vob"
+    fi
+}
 export LESS='Ri'
 HISTCONTROL='ignoreboth'
 HISTSIZE=5000
