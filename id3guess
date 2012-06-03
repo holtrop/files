@@ -1,0 +1,18 @@
+#!/usr/bin/env python
+
+import os
+import sys
+import re
+from subprocess import Popen, PIPE
+
+sys.stdout.write('Artist: ')
+artist = sys.stdin.readline().strip()
+sys.stdout.write('Album: ')
+album = sys.stdin.readline().strip()
+
+for f in sorted(os.listdir('.')):
+    m = re.match('(\d+)\s(.*)\.mp3', f, re.I)
+    if m is not None:
+        track, title = m.group(1, 2)
+        sys.stdout.write('%s: Track "%s", Title "%s"\n' % (f, track, title))
+        Popen(['id3tag', '-a', artist, '-A', album, '-t', track, '-s', title, f]).wait()
