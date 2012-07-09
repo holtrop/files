@@ -2,7 +2,7 @@
 if [[ "`whoami`" == "root" ]]; then
     PS1='\[\033[31;1m\]\u@\H\[\033[32;1m\] [\w]\[\033[35;1m\] \d \t \[\033[34;1m\](\j)\n\$ \[\033[0m\]'
 else
-    PS1='\[\033[32;1m\]\u@\H\[\033[31;1m\] [\w]\[\033[35;1m\] \d \t \[\033[34;1m\](\j)\[\033[33;1m\]$(prompt_ps1_git_branch)\[\033[34;1m\]\n\$ \[\033[0m\]'
+    PS1='\[\033[32;1m\]\u@\H\[\033[31;1m\] [\w]\[\033[35;1m\] \d \t \[\033[34;1m\](\j)\[\033[33;1m\]$(prompt_ps1_git_branch)$(prompt_ps1_svn_branch)\[\033[34;1m\]\n\$ \[\033[0m\]'
 fi
 # alternate PS1:
 # PS1='[\[\033[31;1m\]\u@\H\[\033[34;1m\] \w\[\033[0m\]]\$ \[\033[0m\]'
@@ -54,6 +54,19 @@ function prompt_ps1_git_branch()
     fi
 }
 #put $(prompt_ps1_git_branch) in $PS1 to use it
+function prompt_ps1_svn_branch()
+{
+    which_svn=$(which svn)
+    if [[ "$which_svn" == "" ]]; then
+        return
+    fi
+    url_out=$(svn info 2>/dev/null | grep '^URL:' | grep -E '\<(trunk|tags|branches)\>')
+    if [[ "$url_out" == "" ]]; then
+        return
+    fi
+    filter=$(echo "$url_out" | sed -re 's/.*\<trunk\>.*$/trunk/' -e 's/.*\<(tags|branches)\/([^\/]*).*$/\2/')
+    echo " [${filter}]"
+}
 alias ls='ls --color=auto'
 alias strip-cr="sed -e 's/\x0d//'"
 alias rip='abcde -x -p -o mp3:"-v -b160"'
