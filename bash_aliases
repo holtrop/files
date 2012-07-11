@@ -185,6 +185,15 @@ if [ -e /bin/cygwin1.dll ]; then
             shift
         done
     }
+    function winpython
+    {
+        local winpython=/c/Python27/python.exe
+        if [[ "$1" == "" ]]; then
+            ${winpython} -i
+        else
+            ${winpython} "$@"
+        fi
+    }
 fi
 
 # source any machine-local aliases
