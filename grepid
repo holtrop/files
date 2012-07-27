@@ -59,34 +59,37 @@ def main(argv):
     if len(argv) == 3:
         where = argv[2]
 
-    process = Popen(['grep', '--exclude-dir=.svn', '--exclude-dir=.git',
-        '--color=never', '-HIRn', '\<%s\>' % ident, where], stdout=PIPE)
+    try:
+        process = Popen(['grep', '--exclude-dir=.svn', '--exclude-dir=.git',
+            '--color=never', '-HIRn', '\<%s\>' % ident, where], stdout=PIPE)
 
-    last_file_name = ''
-    lines = []
-    for line in iter(process.stdout.readline, ''):
-        line = line.strip()
-        m = re.match('(.*):(\d+):(.*)$', line)
-        if m is None:
-            last_file_name = ''
-            sys.stdout.write(m)
-            sys.stdout.write('\n')
-            continue
-        file_name, line_no, content = m.group(1, 2, 3)
-        if file_name != last_file_name:
-            if len(lines) > 0:
-                display_lines(lines, ident)
+        last_file_name = ''
+        lines = []
+        for line in iter(process.stdout.readline, ''):
+            line = line.strip()
+            m = re.match('(.*):(\d+):(.*)$', line)
+            if m is None:
+                last_file_name = ''
+                sys.stdout.write(m)
                 sys.stdout.write('\n')
-            last_file_name = file_name
-            ansi_color(sys.stdout, 'yellow')
-            sys.stdout.write(last_file_name)
-            sys.stdout.write(':')
-            ansi_reset(sys.stdout)
-            sys.stdout.write('\n')
-            lines = []
-        lines.append((line_no, content))
-    if len(lines) > 0:
-        display_lines(lines, ident)
+                continue
+            file_name, line_no, content = m.group(1, 2, 3)
+            if file_name != last_file_name:
+                if len(lines) > 0:
+                    display_lines(lines, ident)
+                    sys.stdout.write('\n')
+                last_file_name = file_name
+                ansi_color(sys.stdout, 'yellow')
+                sys.stdout.write(last_file_name)
+                sys.stdout.write(':')
+                ansi_reset(sys.stdout)
+                sys.stdout.write('\n')
+                lines = []
+            lines.append((line_no, content))
+        if len(lines) > 0:
+            display_lines(lines, ident)
+    except KeyboardInterrupt:
+        pass
     return 0
 
 if __name__ == '__main__':
