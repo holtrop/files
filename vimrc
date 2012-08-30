@@ -63,7 +63,6 @@ if has("gui_running")
     runtime ftplugin/man.vim
     nmap K :Man <cword><CR>
     set lines=50
-    map ,w :winpos 769 153
     set scrolloff=8
     if &diff
         set columns=175
@@ -89,7 +88,7 @@ map ,s mz:%s/\v\s+$//'z
 map ,f :set ts=8:retab:set ts=4
 map ,C ggVGc
 " jump to tag in a new tab
-"map  :tab :tag 
+map ,w :tab :tag 
 "nnoremap <silent> <F8> :TlistToggle<CR>
 " re-indent the following line how vim would automatically do it
 map ,j Ji
