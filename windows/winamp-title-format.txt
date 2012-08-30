@@ -1,1 +1,1 @@
-[%artist%]$if(%album%%tracknumber%,' ['$if(%album%,%album%' - ',)%tracknumber%']',) - $if2(%title%,$filepart(%filename%))
+$if2(%albumartist%,%artist%)$if(%album%%tracknumber%,' ['$if(%album%,%album%' - ',)$num(%track%,2)']',) - $IfStrEqual2(%albumartist%,,,$IfStrEqual2(%artist%,%albumartist%,,%artist% - ))$if2(%title%,$filepart(%filename%))
