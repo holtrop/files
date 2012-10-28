@@ -15,7 +15,7 @@ def filter_contents(s):
         if new_s == s:
             break;
         s = new_s
-    return s.replace(',', '').strip()
+    return s.replace(',', '').replace('$', '').strip()
 
 def slurp_row(fh, rows):
     row = []
