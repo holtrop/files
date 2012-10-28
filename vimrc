@@ -118,9 +118,10 @@ if has("autocmd")
   autocmd Syntax {cpp,c,idl} runtime syntax/doxygen.vim
   autocmd QuickFixCmdPre grep copen
   autocmd QuickFixCmdPre vimgrep copen
-  autocmd FileType html set sw=2 ts=2 sts=2
-  autocmd FileType xhtml set sw=2 ts=2 sts=2
-  autocmd FileType ruby set sw=2 ts=2 sts=2
+  autocmd FileType html setlocal sw=2 ts=2 sts=2
+  autocmd FileType xhtml setlocal sw=2 ts=2 sts=2
+  autocmd FileType xml setlocal sw=2 ts=2 sts=2
+  autocmd FileType ruby setlocal sw=2 ts=2 sts=2
 endif " has("autocmd")
 
 if !exists('s:loaded')
