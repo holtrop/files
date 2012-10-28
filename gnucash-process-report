@@ -2,9 +2,9 @@
 
 # Josh Holtrop
 # 2011-05-07
-# This script processes an HTML report output by gnucash and consolidates
-# the in/out amounts into net amounts and writes a new HTML report file
-# to the standard output.
+# This script processes a cash flow HTML report output by gnucash and
+# consolidates the in/out amounts into net amounts and writes a new
+# HTML report file to standard output.
 # Usage:
 #   gnucash-process-report generated.html > new.html
 
