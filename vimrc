@@ -52,6 +52,8 @@ set tags=./tags;/
 let Tlist_WinWidth = 40
 set grepprg=internal
 set tabpagemax=999
+set nobackup
+set nowritebackup
 
 " GUI settings
 set background=dark
