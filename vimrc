@@ -55,7 +55,7 @@ set tabpagemax=999
 
 " GUI settings
 set background=dark
-set showtabline=2
+set showtabline=1
 set nomousehide
 
 if has("gui_running")
@@ -67,6 +67,10 @@ if has("gui_running")
     if &diff
         set columns=175
     endif
+    set guioptions-=m   " remove menu bar
+    set guioptions-=T   " remove toolbar
+    set colorcolumn=80
+    hi ColorColumn guibg=#220000
 else
     set scrolloff=4
 endif
