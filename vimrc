@@ -55,6 +55,7 @@ set tabpagemax=999
 set nobackup
 set nowritebackup
 set wildmode=longest,list,full
+set splitright
 
 " GUI settings
 set background=dark
