@@ -54,6 +54,7 @@ set grepprg=internal
 set tabpagemax=999
 set nobackup
 set nowritebackup
+set wildmode=longest,list,full
 
 " GUI settings
 set background=dark
