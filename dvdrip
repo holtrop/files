@@ -1,0 +1,69 @@
+#!/usr/bin/env python
+
+import os
+import sys
+from subprocess import Popen, PIPE
+import getopt
+import re
+
+opts, args = getopt.getopt(sys.argv[1:], 'alt:m:')
+
+_all = False
+_list = False
+_titlenumber = 0
+_minsize = 0
+for opt, val in opts:
+    if opt == '-a':
+        _all = True
+    elif opt == '-l':
+        _list = True
+    elif opt == '-t':
+        _titlenumber = val
+    elif opt == '-m':
+        _minsize = int(val)
+
+if (not _list and len(args) != 1) or (not _all and not _list and _titlenumber == 0):
+    sys.stderr.write('''Usage: %s [-l|-a|-t tn] [-m minsize] <name>
+    -l          List titles
+    -a          rip all titles
+    -t tn       rip title number <titlenumber>
+    -m minsize  remove produced files less than minsize
+    <name>      DVD name
+''' % sys.argv[0])
+    sys.exit(2)
+
+p = Popen(['vobcopy', '-I', '-i', '/dev/dvd'], stderr=PIPE)
+vobcopy_out = p.communicate()[1]
+
+if _list:
+    for line in vobcopy_out.split('\n'):
+        if re.search(r'Title\s\d+\shas.*chapter', line):
+            sys.stdout.write(line + '\n')
+    sys.exit(0)
+
+titles = []
+if _all:
+    for line in vobcopy_out.split('\n'):
+        m = re.search(r'Title\s(\d+)\shas.*chapter', line)
+        if m is not None:
+            titles.append(m.group(1))
+else:
+    titles.append(_titlenumber)
+
+dvdname = args[0]
+try:
+    os.makedirs(dvdname)
+except:
+    pass
+for tn in titles:
+    ofname = '%s/title%s.avi' % (dvdname, tn)
+    Popen(['mencoder', 'dvd://%s' % tn, '-ovc', 'lavc',
+        '-af', 'volnorm=1', '-alang', 'en', '-oac', 'mp3lame',
+        '-lameopts', 'cbr:preset=128',
+        '-lavcopts', 'threads=4:vbitrate=1200:v4mv:vhq:vcodec=mpeg4',
+        '-vf', 'pp=de,scale=720:-2', '-nosub', '-forceidx',
+        '-o', ofname]).wait()
+    if _minsize != 0:
+        size = os.stat(ofname).st_size
+        if size < _minsize:
+            os.unlink(ofname)
