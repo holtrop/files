@@ -54,6 +54,8 @@ set grepprg=internal
 set tabpagemax=999
 set nobackup
 set nowritebackup
+set wildmode=longest,list,full
+set splitright
 
 " GUI settings
 set background=dark
@@ -127,6 +129,7 @@ if has("autocmd")
   autocmd FileType html setlocal sw=2 ts=2 sts=2
   autocmd FileType xhtml setlocal sw=2 ts=2 sts=2
   autocmd FileType xml setlocal sw=2 ts=2 sts=2
+  autocmd FileType yaml setlocal sw=2 ts=2 sts=2
   autocmd FileType ruby setlocal sw=2 ts=2 sts=2
 endif " has("autocmd")
 
