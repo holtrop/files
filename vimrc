@@ -102,6 +102,8 @@ map ,w :tab :tag 
 map ,j Ji
 map  :cn
 map  :cp
+" copy searched-for symbol to clipboard
+nnoremap * :let @+=expand("<cword>")<CR>*
 
 " highlight characters past column 80
 map ,L :highlight TooLong guibg=lightyellow:match TooLong '\%>80v.*.$'
