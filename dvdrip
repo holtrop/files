@@ -60,7 +60,7 @@ for tn in titles:
     Popen(['mencoder', 'dvd://%s' % tn, '-ovc', 'lavc',
         '-af', 'volnorm=1', '-alang', 'en', '-oac', 'mp3lame',
         '-lameopts', 'cbr:preset=128',
-        '-lavcopts', 'threads=4:vbitrate=1200:v4mv:vhq:vcodec=mpeg4',
+        '-lavcopts', 'threads=4:vbitrate=2000:v4mv:vhq:vcodec=mpeg4',
         '-vf', 'pp=de,scale=720:-2', '-nosub', '-forceidx',
         '-o', ofname]).wait()
     if _minsize != 0:
