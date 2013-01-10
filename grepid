@@ -61,6 +61,7 @@ def main(argv):
 
     try:
         process = Popen(['grep', '--exclude-dir=.svn', '--exclude-dir=.git',
+            '--exclude=tags',
             '--color=never', '-HIRn', '\<%s\>' % ident, where], stdout=PIPE)
 
         last_file_name = ''
