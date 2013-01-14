@@ -68,7 +68,7 @@ def main(argv):
         lines = []
         for line in iter(process.stdout.readline, ''):
             line = line.strip()
-            m = re.match('(.*):(\d+):(.*)$', line)
+            m = re.match('(.*?):(\d+):(.*)$', line)
             if m is None:
                 last_file_name = ''
                 sys.stdout.write(m)
