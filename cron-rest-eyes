@@ -1,17 +1,24 @@
 #!/bin/bash
 
+if [[ -r /bin/cygwin1.dll ]]; then
+    # in cygwin
+    PSF='-ef'
+else
+    PSF='-efww'
+fi
+
 export DISPLAY=:0
 
 # no message if one is displayed already
-if [[ "$(ps -efww | grep gxmessage | grep -v grep)" != "" ]]; then
+if [[ "$(ps $PSF | grep gxmessage | grep -v grep)" != "" ]]; then
     exit
 fi
 # no message if xscreensaver active
-if [ "$(ps -efww | grep xscreensaver | grep -v grep)" != "" ]; then
+if [ "$(ps $PSF | grep xscreensaver | grep -v grep)" != "" ]; then
     exit
 fi
 # no message if gnome-screensaver active
-if [ "$(gnome-screensaver-command --query | grep is.active)" != "" ]; then
+if [ "$(gnome-screensaver-command --query 2>/dev/null | grep is.active)" != "" ]; then
     exit
 fi
 
