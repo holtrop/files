@@ -14,9 +14,7 @@ def main(argv):
     if len(args) != 2:
         sys.stderr.write('Usage: %s [-n] source destination\n' % argv[0])
         return -2
-    out = sys.stdout
-    if dry_run:
-        out = Popen(['grep', '-v', '/$'], stdin=PIPE).stdin
+    out = Popen(['grep', '-v', '/$'], stdin=PIPE).stdin
     cmd = ['rsync', '-av%s' % ('n' if dry_run else ''), '--delete',
            '--modify-window=2'] + args
     sys.stdout.write(' '.join(cmd) + '\n')
