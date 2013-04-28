@@ -21,7 +21,6 @@ def install_file(src, dst):
 
 files = [
         ('bash_aliases', '.bash_aliases'),
-        ('vimrc', '.vimrc'),
         ('inputrc', '.inputrc'),
         ('screenrc', '.screenrc'),
         ('ir_black.vim', '.vim/colors/ir_black.vim'),
