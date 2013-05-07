@@ -23,7 +23,6 @@ files = [
         ('bash_aliases', '.bash_aliases'),
         ('inputrc', '.inputrc'),
         ('screenrc', '.screenrc'),
-        ('ir_black.vim', '.vim/colors/ir_black.vim'),
         ('gitignore', '.gitignore'),
         ]
 
