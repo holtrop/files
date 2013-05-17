@@ -143,8 +143,6 @@ export EDITOR=vim
 function git-config-joshs()
 {
     git config --global user.name 'Josh Holtrop'
-    local domain='gmail.com'
-    git config --global user.email 'jholtrop@'${domain}
     git config --global color.ui true
     git config --global core.excludesfile ${HOME}/.gitignore
     git config --global core.pager 'less -FRXi'
@@ -165,6 +163,11 @@ function git-config-joshs()
             'git_bc2merge "$LOCAL" "$REMOTE" "$MERGED"'
         git config --global mergetool.bc2.trustExitCode false
     fi
+}
+function git-config-local-personal()
+{
+    local domain='gmail.com'
+    git config user.email 'jholtrop@'${domain}
 }
 alias git-find-lost-commit='git fsck --lost-found'
 if [[ "$(which jsvn 2>/dev/null)" != "" ]]; then
