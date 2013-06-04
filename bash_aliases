@@ -38,7 +38,7 @@ function prompt_ps1_git_branch()
     if [[ "$which_git" == "" ]]; then
         return
     fi
-    branch_out=$(git branch -vv 2>/dev/null | grep '^\*' | sed -e 's/^..//')
+    branch_out=$(command git branch -vv 2>/dev/null | grep '^\*' | sed -e 's/^..//')
     if [[ "$branch_out" == "" ]]; then
         return
     fi
@@ -60,7 +60,7 @@ function prompt_ps1_svn_branch()
     if [[ "$which_svn" == "" ]]; then
         return
     fi
-    url_out=$(svn info 2>/dev/null | grep '^URL:' | grep -E '\<(trunk|tags|branches)\>')
+    url_out=$(command svn info 2>/dev/null | grep '^URL:' | grep -E '\<(trunk|tags|branches)\>')
     if [[ "$url_out" == "" ]]; then
         return
     fi
