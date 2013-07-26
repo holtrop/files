@@ -144,6 +144,7 @@ function git-config-joshs()
 {
     git config --global user.name 'Josh Holtrop'
     git config --global color.ui true
+    git config --global color.diff.meta yellow
     git config --global core.excludesfile ${HOME}/.gitignore
     git config --global core.pager 'less -FRXi'
     git config --global alias.dc 'diff --cached'
