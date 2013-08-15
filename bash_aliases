@@ -148,6 +148,8 @@ function git-config-joshs()
     git config --global core.excludesfile ${HOME}/.gitignore
     git config --global core.pager 'less -FRXi'
     git config --global alias.dc 'diff --cached'
+    # from http://stackoverflow.com/questions/1057564/pretty-git-branch-graphs/9074343#9074343
+    git config --global alias.lg 'log --graph --abbrev-commit --decorate --format=format:"%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset) - %C(magenta)%an%C(reset)%C(bold yellow)%d%C(reset)%n          %C(white)%s%C(reset)" --all'
     git config --global alias.mergef 'merge FETCH_HEAD'
     git config --global alias.gdiff 'difftool -y -t gvimdiff'
     git config --global alias.gdiffc 'difftool -y -t gvimdiff --cached'
