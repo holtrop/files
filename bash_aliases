@@ -42,7 +42,7 @@ function prompt_ps1_git_branch()
         re="^\\* (.no.branch.|[^ ]*)"
         if [[ "$branch_out" =~ $re ]]; then
             current_branch="${BASH_REMATCH[1]}"
-            re="((ahead|behind).*)\\]"
+            re="((ahead|behind)[^]]*)\\]"
             if [[ "$branch_out" =~ $re ]]; then
                 current_branch="$current_branch: ${BASH_REMATCH[1]}"
             fi
