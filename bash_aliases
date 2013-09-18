@@ -34,38 +34,35 @@ alias cdshowgitstatus='if [[ $CDSHOWGITSTATUS_LAST_WD != $PWD ]]; then if [[ -e 
 PROMPT_COMMAND="cdshowgitstatus;$PROMPT_COMMAND"
 function prompt_ps1_git_branch()
 {
-    which_git=$(which git)
-    if [[ "$which_git" == "" ]]; then
-        return
-    fi
-    branch_out=$(command git branch -vv 2>/dev/null | grep '^\*' | sed -e 's/^..//')
-    if [[ "$branch_out" == "" ]]; then
-        return
-    fi
-    current_branch=$(echo "$branch_out" | sed -re 's/(.no.branch.|[^ ]*).*/\1/')
-    ahead_behind=$(echo "$branch_out" | grep -E '(ahead|behind)' | grep -Eo '\[.*\]' | grep -Eo '(ahead|behind)[^]]*')
-    if [[ "$ahead_behind" != "" ]]; then
-        ahead_behind=": ${ahead_behind}"
-    fi
-    if [[ "$branch_out" != "" ]]; then
-        if [[ "$current_branch" != "" ]]; then
-            echo -e " [${current_branch}${ahead_behind}]"
+    if [ -e .git ]; then
+        branch_out=$(command git branch -vv 2>/dev/null | grep '^\*')
+        if [[ "$branch_out" == "" ]]; then
+            return
+        fi
+        re="^\\* (.no.branch.|[^ ]*)"
+        if [[ "$branch_out" =~ $re ]]; then
+            current_branch="${BASH_REMATCH[1]}"
+            re="((ahead|behind).*)\\]"
+            if [[ "$branch_out" =~ $re ]]; then
+                current_branch="$current_branch: ${BASH_REMATCH[1]}"
+            fi
+            echo " [${current_branch}${ahead_behind}]"
         fi
     fi
 }
 #put $(prompt_ps1_git_branch) in $PS1 to use it
 function prompt_ps1_svn_branch()
 {
-    which_svn=$(which svn)
-    if [[ "$which_svn" == "" ]]; then
-        return
+    if [ -e .svn ]; then
+        url_out=$(command svn info 2>/dev/null | grep '^URL:')
+        re_branch="\\<(tags|branches)/([^/]*)\\>"
+        re_trunk="\\<trunk\\>"
+        if [[ "$url_out" =~ $re_branch ]]; then
+            echo " [${BASH_REMATCH[2]}]"
+        elif [[ "$url_out" =~ $re_trunk ]]; then
+            echo " [${BASH_REMATCH[0]}]"
+        fi
     fi
-    url_out=$(command svn info 2>/dev/null | grep '^URL:' | grep -E '\<(trunk|tags|branches)\>')
-    if [[ "$url_out" == "" ]]; then
-        return
-    fi
-    filter=$(echo "$url_out" | sed -re 's/.*\<trunk\>.*$/trunk/' -e 's/.*\<(tags|branches)\/([^\/]*).*$/\2/')
-    echo " [${filter}]"
 }
 alias ls='ls --color=auto'
 alias strip-cr="sed -e 's/\x0d//'"
