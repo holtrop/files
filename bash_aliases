@@ -77,6 +77,19 @@ function rip-dvd()
         mencoder -ovc xvid -oac mp3lame -xvidencopts fixed_quant=4 -lameopts cbr:br=192:aq=1 -aid 128 -sid 0 -o "$name.avi" "$name.vob"
     fi
 }
+# Catch and compare output
+function cco()
+{
+    local catch_compare_output_new=$("$@" 2>&1)
+    if [[ "$catch_compare_output" == "" ]]; then
+        echo "$catch_compare_output_new"
+    elif [[ "$catch_compare_output" == "$catch_compare_output_new" ]]; then
+        echo "$catch_compare_output_new"
+    else
+        colordiff -u9999 <(echo "$catch_compare_output") <(echo "$catch_compare_output_new") | tail -n+4
+    fi
+    catch_compare_output="$catch_compare_output_new"
+}
 export LESS='Ri'
 HISTCONTROL='ignoreboth'
 HISTSIZE=5000
