@@ -24,6 +24,7 @@ files = [
         ('inputrc', '.inputrc'),
         ('screenrc', '.screenrc'),
         ('gitignore', '.gitignore'),
+        ('colordiffrc', '.colordiffrc'),
         ]
 
 for s, d in files:
