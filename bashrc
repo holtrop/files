@@ -30,4 +30,14 @@ if [ -e /bin/cygwin1.dll ]; then
         kill $pid
     }
 
+    # for scons
+    unset ALLUSERSPROFILE
+
+    if [[ "$(ps -ef | grep XWin | grep -v grep)" == "" ]]; then
+        cygstart --hide startxwin
+    fi
+fi
+
+if [ -f "${HOME}/.bashrc.local" ]; then
+    source "${HOME}/.bashrc.local"
 fi
