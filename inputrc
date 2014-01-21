@@ -27,6 +27,9 @@ $include /etc/inputrc
 "\e\e[C": forward-word
 "\e\e[D": backward-word
 
+# mintty control-backspace
+"\x1f": backward-kill-word
+
 # puttycyg
 "\eOC": forward-word
 "\eOD": backward-word
