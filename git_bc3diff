@@ -1,0 +1,5 @@
+#!/bin/sh
+
+path1=$(cygpath -w "$1")
+path2=$(cygpath -w "$2")
+'/cygdrive/c/Program Files (x86)/Beyond Compare 3/BComp.exe' "$path1" "$path2" /title1=Base /leftreadonly
