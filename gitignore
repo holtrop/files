@@ -2,5 +2,6 @@
 .*.swp
 *.o
 .sconsign.dblite
-project.vim
+/project.vim
 tags
+/.todo
