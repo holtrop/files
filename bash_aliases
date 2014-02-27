@@ -93,6 +93,8 @@ function cd_hook()
         cd_hook_last_wd="${PWD}"
     fi
 }
+# Invoke cd_hook when we're loaded
+cd_hook
 
 ###########################################################################
 # command aliases/wrappers
