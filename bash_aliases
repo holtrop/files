@@ -21,9 +21,9 @@ function gvim()
 {
     arg="$1"
     if [ "${arg}" = "" ]; then
-        $(which gvim)
+        command gvim
     else
-        $(which gvim) --remote-tab-silent "$@"
+        command gvim --remote-tab-silent "$@"
     fi
 }
 alias cribbage='cribbage -r'
