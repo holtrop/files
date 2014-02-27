@@ -57,7 +57,11 @@ case "$TERM" in
 [ax]term*|rxvt*)
     function cd_hook_change_terminal_title()
     {
-        echo -ne "\033]0;"$(basename "$PWD")" [${USER}@${HOSTNAME}: ${PWD}]\007"
+        local dirname=""
+        if [[ "${PWD}" =~ .*/(.*) ]]; then
+            dirname="${BASH_REMATCH[1]}"
+        fi
+        echo -ne "\033]0;"$dirname" [${USER}@${HOSTNAME}: ${PWD}]\007"
     }
     ;;
 *)
