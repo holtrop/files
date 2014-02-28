@@ -46,16 +46,12 @@ function prompt_ps1_svn_branch()
 }
 
 ###########################################################################
-# cd hooks
+# PROMPT_COMMAND
 ###########################################################################
-
-function cd() { command cd "$@"; cd_hook; }
-function pushd() { command pushd "$@"; cd_hook; }
-function popd() { command popd "$@"; cd_hook; }
 
 case "$TERM" in
 [ax]term*|rxvt*)
-    function cd_hook_change_terminal_title()
+    function prompt_command_change_terminal_title()
     {
         local dirname=""
         if [[ "${PWD}" =~ .*/(.*) ]]; then
@@ -65,12 +61,23 @@ case "$TERM" in
     }
     ;;
 *)
-    function cd_hook_change_terminal_title()
+    function prompt_command_change_terminal_title()
     {
         :
     }
     ;;
 esac
+
+PROMPT_COMMAND="prompt_command_change_terminal_title"
+
+###########################################################################
+# cd hooks
+###########################################################################
+
+function cd() { command cd "$@"; cd_hook; }
+function pushd() { command pushd "$@"; cd_hook; }
+function popd() { command popd "$@"; cd_hook; }
+
 function cd_hook_cat_todo()
 {
     if [[ -r .todo ]]; then
@@ -89,7 +96,6 @@ function cd_hook()
     if [[ "${cd_hook_last_wd}" != "${PWD}" ]]; then
         cd_hook_cat_todo
         cd_hook_show_git_status
-        cd_hook_change_terminal_title
         cd_hook_last_wd="${PWD}"
     fi
 }
@@ -192,7 +198,6 @@ export EDITOR=vim
 HISTCONTROL='ignoreboth'
 HISTSIZE=5000
 HISTFILESIZE=${HISTSIZE}
-unset PROMPT_COMMAND
 
 ###########################################################################
 # mark
