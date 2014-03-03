@@ -283,7 +283,7 @@ if [[ -e /bin/cygwin1.dll ]]; then
             ${winpython} "$@"
         fi
     }
-    alias winpath="PATH=\"$(echo $PATH | sed -e 's/:/\n/g' | grep cygdrive | tr '\n' ':')\""
+    winpath="$(echo $PATH | sed -e 's/:/\n/g' | grep cygdrive | tr '\n' ':' | sed -e 's/:*$//')"
 fi
 
 # source any machine-local aliases
