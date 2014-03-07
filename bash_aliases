@@ -93,10 +93,13 @@ function cd_hook_show_git_status()
 }
 function cd_hook()
 {
-    if [[ "${cd_hook_last_wd}" != "${PWD}" ]]; then
-        cd_hook_cat_todo
-        cd_hook_show_git_status
-        cd_hook_last_wd="${PWD}"
+    if [[ $BASH_SUBSHELL == 0 ]]; then
+        # do not invoke these CD hooks in subshells
+        if [[ "${cd_hook_last_wd}" != "${PWD}" ]]; then
+            cd_hook_cat_todo
+            cd_hook_show_git_status
+            cd_hook_last_wd="${PWD}"
+        fi
     fi
 }
 # Invoke cd_hook when we're loaded
