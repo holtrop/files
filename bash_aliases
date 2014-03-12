@@ -271,9 +271,13 @@ if [[ -e /bin/cygwin1.dll ]]; then
     {
         while [[ "$1" != "" ]]
         do
-            dn=$(dirname "$1")
-            bn=$(basename "$1")
-            (cd "$dn"; HOME='' cygstart "$bn")
+            if [[ -e "$1" ]]; then
+                dn=$(dirname "$1")
+                bn=$(basename "$1")
+                (cd "$dn"; HOME='' cygstart "$bn")
+            else
+                HOME='' cygstart "$1"
+            fi
             shift
         done
     }
