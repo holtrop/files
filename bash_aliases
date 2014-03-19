@@ -267,6 +267,7 @@ function mark()
 ###########################################################################
 if [[ -e /bin/cygwin1.dll ]]; then
     alias ip="ipconfig | grep -E 'IP(v4)? Address' | sed -e 's/.*: //'"
+
     function cs
     {
         while [[ "$1" != "" ]]
@@ -281,6 +282,7 @@ if [[ -e /bin/cygwin1.dll ]]; then
             shift
         done
     }
+
     function winpython
     {
         local winpython=/c/Python27/python.exe
@@ -290,7 +292,34 @@ if [[ -e /bin/cygwin1.dll ]]; then
             ${winpython} "$@"
         fi
     }
+
     winpath="$(echo $PATH | sed -e 's/:/\n/g' | grep cygdrive | tr '\n' ':' | sed -e 's/:*$//')"
+
+    function ssh_agent_start
+    {
+        # cygwin ssh-agent support, from
+        # http://www.webweavertech.com/ovidiu/weblog/archives/000326.html
+
+        export SSH_AUTH_SOCK=/tmp/.ssh_socket
+
+        ssh-add -l >/dev/null 2>&1
+
+        if [ $? = 2 ]; then
+            # exit status 2 means we couldn't connect to ssh-agent,
+            # so let's start one now
+            rm -f $SSH_AUTH_SOCK
+            ssh-agent -a $SSH_AUTH_SOCK >/tmp/.ssh-script
+            . /tmp/.ssh-script
+            echo $SSH_AGENT_PID >/tmp/.ssh-agent-pid
+            ssh-add ~/.ssh/JoshHoltropGentex
+        fi
+    }
+
+    function ssh_agent_stop
+    {
+        pid=$(cat /tmp/.ssh-agent-pid)
+        kill $pid
+    }
 fi
 
 # source any machine-local aliases
