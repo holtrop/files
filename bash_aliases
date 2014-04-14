@@ -295,12 +295,12 @@ if [[ -e /bin/cygwin1.dll ]]; then
 
     winpath="$(echo $PATH | sed -e 's/:/\n/g' | grep cygdrive | tr '\n' ':' | sed -e 's/:*$//')"
 
+    export SSH_AUTH_SOCK=/tmp/.ssh_socket
+
     function ssh_agent_start
     {
         # cygwin ssh-agent support, from
         # http://www.webweavertech.com/ovidiu/weblog/archives/000326.html
-
-        export SSH_AUTH_SOCK=/tmp/.ssh_socket
 
         ssh-add -l >/dev/null 2>&1
 
