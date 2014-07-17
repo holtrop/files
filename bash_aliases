@@ -74,9 +74,9 @@ PROMPT_COMMAND="prompt_command_change_terminal_title"
 # cd hooks
 ###########################################################################
 
-function cd() { command cd "$@"; cd_hook; }
-function pushd() { command pushd "$@"; cd_hook; }
-function popd() { command popd "$@"; cd_hook; }
+function cd() { builtin cd "$@"; cd_hook; }
+function pushd() { builtin pushd "$@"; cd_hook; }
+function popd() { builtin popd "$@"; cd_hook; }
 
 function cd_hook_cat_todo()
 {
