@@ -1,0 +1,11 @@
+#!/bin/sh
+
+BC="/c/Program Files (x86)/Beyond Compare 3/BComp.exe"
+
+file1=`cygpath -w "$6"`
+file2=`cygpath -w "$7"`
+title1="$3"
+title2="$5"
+
+"${BC}" "$file1" "$file2" /title1="$title1" /title2="$title2" /leftreadonly
+exit 0
