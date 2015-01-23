@@ -18,7 +18,7 @@ COLORS = {
 using_color = sys.stdout.isatty()
 
 def usage(prog_name):
-    sys.stdout.write('Usage: %s <identifier> [location]\n' % prog_name)
+    sys.stdout.write('Usage: %s <identifier> [grep flags/location...]\n' % prog_name)
 
 def ansi_color(out, fg=None, bg=None, bold=False):
     if using_color:
@@ -54,15 +54,15 @@ def main(argv):
     if len(argv) < 2:
         usage(argv[0])
         return 1
-    where = '.'
+    flags = ['.']
     ident = argv[1]
-    if len(argv) == 3:
-        where = argv[2]
+    if len(argv) >= 3:
+        flags = argv[2:]
 
     try:
         process = Popen(['grep', '--exclude-dir=.svn', '--exclude-dir=.git',
             '--exclude=tags',
-            '--color=never', '-HIRn', '\<%s\>' % ident, where], stdout=PIPE)
+            '--color=never', '-HIRn', '\<%s\>' % ident] + flags, stdout=PIPE)
 
         last_file_name = ''
         lines = []
