@@ -54,7 +54,9 @@ case "$TERM" in
     function prompt_command_change_terminal_title()
     {
         local dirname=""
-        if [[ "${PWD}" =~ .*/(.*) ]]; then
+        if [[ "${PWD}" == "${HOME}" ]]; then
+            dirname="~"
+        elif [[ "${PWD}" =~ .*/(.*) ]]; then
             dirname="${BASH_REMATCH[1]}"
         fi
         echo -ne "\033]0;"$dirname" [${USER}@${HOSTNAME}: ${PWD}]\007"
