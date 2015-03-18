@@ -6,17 +6,20 @@ from subprocess import Popen, PIPE
 import getopt
 import re
 
-opts, args = getopt.getopt(sys.argv[1:], 'alt:m:')
+opts, args = getopt.getopt(sys.argv[1:], 'ald:t:m:')
 
 _all = False
 _list = False
 _titlenumber = 0
 _minsize = 0
+_dvddev = "/dev/cdrom"
 for opt, val in opts:
     if opt == '-a':
         _all = True
     elif opt == '-l':
         _list = True
+    elif opt == '-d':
+        _dvddev = val
     elif opt == '-t':
         _titlenumber = val
     elif opt == '-m':
@@ -26,13 +29,14 @@ if (not _list and len(args) != 1) or (not _all and not _list and _titlenumber ==
     sys.stderr.write('''Usage: %s [-l|-a|-t tn] [-m minsize] <name>
     -l          List titles
     -a          rip all titles
+    -d          DVD device (default /dev/cdrom)
     -t tn       rip title number <titlenumber>
     -m minsize  remove produced files less than minsize
     <name>      DVD name
 ''' % sys.argv[0])
     sys.exit(2)
 
-p = Popen(['vobcopy', '-I', '-i', '/dev/dvd'], stderr=PIPE)
+p = Popen(['vobcopy', '-I', '-i', _dvddev], stderr=PIPE)
 vobcopy_out = p.communicate()[1]
 
 if _list:
@@ -58,6 +62,7 @@ except:
 for tn in titles:
     ofname = '%s/title%s.avi' % (dvdname, tn)
     Popen(['mencoder', 'dvd://%s' % tn, '-ovc', 'lavc',
+        '-dvd-device', _dvddev,
         '-af', 'volnorm=1', '-alang', 'en', '-oac', 'mp3lame',
         '-lameopts', 'cbr:preset=128',
         '-lavcopts', 'threads=4:vbitrate=2000:v4mv:vhq:vcodec=mpeg4',
