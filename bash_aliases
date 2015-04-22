@@ -184,6 +184,8 @@ function git-config-local-personal()
     git config user.email 'jholtrop@'${domain}
 }
 alias git-find-lost-commit='git fsck --lost-found'
+git_empty_commit='4b825dc642cb6eb9a060e54bf8d69288fbee4904'
+
 if [[ "$(which jsvn 2>/dev/null)" != "" ]]; then
     alias svn='jsvn'
 fi
