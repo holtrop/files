@@ -114,15 +114,15 @@ cd_hook
 alias grep='grep --color=auto'
 alias grepnosvn='grep --color=auto --exclude-dir=".svn" --exclude-dir=".git"'
 alias egrepnosvn='egrep --color=auto --exclude-dir=".svn" --exclude-dir=".git"'
-function gvim()
-{
-    arg="$1"
-    if [ "${arg}" = "" ]; then
-        command gvim
-    else
-        command gvim --remote-tab-silent "$@"
-    fi
-}
+#function gvim()
+#{
+#    arg="$1"
+#    if [ "${arg}" = "" ]; then
+#        command gvim
+#    else
+#        command gvim --remote-tab-silent "$@"
+#    fi
+#}
 alias cribbage='cribbage -r'
 alias backgammon='backgammon -r -pb'
 alias ls='ls --color=auto'
