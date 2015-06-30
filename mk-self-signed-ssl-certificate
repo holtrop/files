@@ -1,0 +1,12 @@
+#!/bin/sh
+
+name="$1"
+if [ "x$name" = "x" ]; then
+  name="server"
+fi
+
+openssl genrsa -des3 -passout pass:x -out ${name}.pass.key 2048
+openssl rsa -passin pass:x -in ${name}.pass.key -out ${name}.key
+rm ${name}.pass.key
+openssl req -new -key ${name}.key -out ${name}.csr
+openssl x509 -req -days 365 -in ${name}.csr -signkey ${name}.key -out ${name}.crt
