@@ -1,6 +1,9 @@
 # If not running interactively, don't do anything
 [[ "$-" != *i* ]] && return
 
+# make [a-z] and [A-Z] work correctly
+shopt -s globasciiranges
+
 # Aliases
 if [ -f "${HOME}/.bash_aliases" ]; then
     source "${HOME}/.bash_aliases"
