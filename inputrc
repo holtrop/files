@@ -46,3 +46,4 @@ $endif
 
 set mark-directories On
 set mark-symlinked-directories On
+set revert-all-at-newline on
