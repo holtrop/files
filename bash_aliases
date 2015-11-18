@@ -191,6 +191,7 @@ if [[ "$(which jsvn 2>/dev/null)" != "" ]]; then
     alias svn='jsvn'
 fi
 alias jindent='indent -bbo -bl -blf -bli0 -bls -i4 -npcs -nut -ts8'
+alias rsync-vfat='rsync -rtv --stats --modify-window=2'
 
 ###########################################################################
 # environment configuration
