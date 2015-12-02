@@ -1,0 +1,4 @@
+#!/bin/sh
+# Clear LD_PRELOAD to avoid Steam trying to load its overlay which won't work with UT2004 in 32-bit mode on Linux
+export LD_PRELOAD=
+exec /usr/bin/linux32 padsp $HOME/ut2004/ut2004 >/home/josh/ut2004.log 2>&1
