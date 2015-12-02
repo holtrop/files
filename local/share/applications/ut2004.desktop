@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Unreal Tournament 2004
+Comment=Play Unreal Tournament 2004
+Exec=/home/josh/bin/ut2004
+Icon=/home/josh/ut2004/ut2004.xpm
+Terminal=false
+Type=Application
+Categories=Game;
