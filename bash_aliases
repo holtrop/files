@@ -199,6 +199,7 @@ alias rsync-vfat='rsync -rtv --stats --modify-window=2'
 
 export LESS='Ri'
 export EDITOR=vim
+export LC_COLLATE=C
 
 ###########################################################################
 # bash configuration
