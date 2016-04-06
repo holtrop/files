@@ -14,20 +14,24 @@ fi
 
 function prompt_ps1_git_branch()
 {
+    local git_branch_out
+    local git_branch_out_line
     if [ -e .git ]; then
-        branch_out=$(command git branch -vv 2>/dev/null | grep '^\*')
-        if [[ "$branch_out" == "" ]]; then
+        git_branch_out=$(command git branch -vv 2>/dev/null)
+        if [[ "$git_branch_out" == "" ]]; then
             return
         fi
-        re="^\\* (\\((detached|no.branch)[^)]*\\)|[^ ]*)"
-        if [[ "$branch_out" =~ $re ]]; then
-            current_branch="${BASH_REMATCH[1]}"
-            re="((ahead|behind)[^]]*)\\]"
-            if [[ "$branch_out" =~ $re ]]; then
-                current_branch="$current_branch: ${BASH_REMATCH[1]}"
+        local re="^\\* (\\(([^)]*)\\)|([^ ]*))"
+        while read -r git_branch_out_line; do
+            if [[ "$git_branch_out_line" =~ $re ]]; then
+                local current_branch="${BASH_REMATCH[2]:-${BASH_REMATCH[3]}}"
+                re="((ahead|behind)[^]]*)\\]"
+                if [[ "$git_branch_out" =~ $re ]]; then
+                    current_branch="$current_branch: ${BASH_REMATCH[1]}"
+                fi
+                echo " [${current_branch}${ahead_behind}]"
             fi
-            echo " [${current_branch}${ahead_behind}]"
-        fi
+        done <<< "$git_branch_out"
     fi
 }
 
