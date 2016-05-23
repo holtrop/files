@@ -1,0 +1,23 @@
+#!/usr/bin/env ruby
+
+TERM_SIZES = %w[
+  3840,0,829,576
+  4671,0,829,576
+  3840,599,829,576
+  4671,599,829,576
+]
+
+term_idx = 0
+wmctrl_out = IO.popen(%w[wmctrl -Gl]) {|io| io.read}
+wmctrl_out.each_line do |line|
+  if line =~ /^(\S+)\s+((?:\d+\s+){5})(\S.*)$/
+    id, geom, title = $1, $2, $3.strip
+    _, x, y, width, height = geom.split(/\s+/).map(&:to_i)
+    if title =~ /josh@/i
+      if term_idx < TERM_SIZES.size
+        system(*%W[wmctrl -ir #{id} -e 0,#{TERM_SIZES[term_idx]}])
+        term_idx += 1
+      end
+    end
+  end
+end
