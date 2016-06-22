@@ -172,6 +172,7 @@ function git-config-joshs()
   git config --global alias.wdiff 'diff --word-diff=color'
   git config --global alias.mktar '!function f { name="$1"; pos="$2"; if [ "$pos" == "" ]; then pos=HEAD; fi; git archive --prefix="$name"/ "$pos" | bzip2 > ../"$name".tar.bz2; }; f'
   git config --global alias.mktarxz '!function f { name="$1"; pos="$2"; if [ "$pos" == "" ]; then pos=HEAD; fi; git archive --prefix="$name"/ "$pos" | xz > ../"$name".tar.xz; }; f'
+  git config --global alias.amd 'am --committer-date-is-author-date'
   git config --global push.default upstream
   if [ -e /bin/cygwin1.dll ]; then
     git config --global alias.bcdiff 'difftool -y -t bc3'
