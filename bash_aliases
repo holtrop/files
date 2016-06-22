@@ -97,6 +97,12 @@ function cd_hook_show_git_status()
     git status
   fi
 }
+function cd_hook_show_svn_status()
+{
+    if [[ -e .svn ]]; then
+        jsvn status
+    fi
+}
 function cd_hook()
 {
   if [[ $BASH_SUBSHELL == 0 ]]; then
