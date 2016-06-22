@@ -6,7 +6,8 @@ def get_server_name(path)
     while path != "/"
       dirname = File.dirname(path)
       if File.exists?(File.join(dirname, "project.vim"))
-        return File.basename(dirname)
+        sn = File.basename(dirname) + "1"
+        return sn
       end
       path = dirname
     end
