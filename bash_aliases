@@ -25,11 +25,12 @@ function prompt_ps1_git_branch()
     while read -r git_branch_out_line; do
       if [[ "$git_branch_out_line" =~ $re ]]; then
         local current_branch="${BASH_REMATCH[2]:-${BASH_REMATCH[3]}}"
-        re="((ahead|behind)[^]]*)\\]"
-        if [[ "$git_branch_out" =~ $re ]]; then
+        local re2="((ahead|behind)[^]]*)\\]"
+        if [[ "$git_branch_out_line" =~ $re2 ]]; then
           current_branch="$current_branch: ${BASH_REMATCH[1]}"
         fi
         echo " [${current_branch}${ahead_behind}]"
+        break
       fi
     done <<< "$git_branch_out"
   fi
