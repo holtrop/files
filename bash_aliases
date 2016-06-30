@@ -111,6 +111,7 @@ function cd_hook()
     if [[ "${cd_hook_last_wd}" != "${PWD}" ]]; then
       cd_hook_cat_todo
       cd_hook_show_git_status
+      cd_hook_show_svn_status
       cd_hook_last_wd="${PWD}"
     fi
   fi
