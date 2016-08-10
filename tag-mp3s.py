@@ -8,6 +8,7 @@ import os
 import sys
 
 min_mp3s_for_album = 4
+dry_run = False
 
 def walk_tree(base_dir, visit_function):
     visit_function(base_dir)
@@ -48,14 +49,17 @@ def add_artwork(mp3_path, jpg_path):
     jpg_data = read_file(jpg_path)
     apic = mutagen.id3.APIC(0, "image/jpeg", 0, "", jpg_data)
     mp3.tags.add(apic)
-    mp3.save()
+    if not dry_run:
+        mp3.save()
 
 def main(argv):
     base_dir = "."
-    opts, args = getopt.getopt(argv, 'd:')
+    opts, args = getopt.getopt(argv, 'd:n')
     for opt, val in opts:
         if opt == '-d':
             base_dir = val
+        elif opt == '-n':
+            dry_run = True
     walk_tree(base_dir, process_dir)
 
 if __name__ == "__main__":
