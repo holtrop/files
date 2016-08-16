@@ -182,15 +182,13 @@ function git-config-joshs()
   git config --global alias.mktarxz '!function f { name="$1"; pos="$2"; if [ "$pos" == "" ]; then pos=HEAD; fi; git archive --prefix="$name"/ "$pos" | xz > ../"$name".tar.xz; }; f'
   git config --global alias.amd 'am --committer-date-is-author-date'
   git config --global push.default upstream
-  if [ -e /bin/cygwin1.dll ]; then
-    git config --global alias.bcdiff 'difftool -y -t bc3'
-    git config --global alias.bcdiffc 'difftool -y -t bc3 --cached'
-    git config --global difftool.bc3.cmd 'git_bc3diff "$LOCAL" "$REMOTE"'
-    git config --global alias.bcmerge 'mergetool -y -t bc3'
-    git config --global mergetool.bc3.cmd \
-      'git_bc3merge "$LOCAL" "$REMOTE" "$MERGED"'
-    git config --global mergetool.bc3.trustExitCode false
-  fi
+  git config --global alias.bcdiff 'difftool -y -t bc3'
+  git config --global alias.bcdiffc 'difftool -y -t bc3 --cached'
+  git config --global difftool.bc3.cmd 'git_bc3diff "$LOCAL" "$REMOTE"'
+  git config --global alias.bcmerge 'mergetool -y -t bc3'
+  git config --global mergetool.bc3.cmd \
+    'git_bc3merge "$LOCAL" "$REMOTE" "$MERGED"'
+  git config --global mergetool.bc3.trustExitCode false
 }
 function git-config-local-personal()
 {

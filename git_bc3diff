@@ -1,5 +1,14 @@
-#!/bin/sh
+#!/bin/bash
 
-path1=$(cygpath -w "$1")
-path2=$(cygpath -w "$2")
-'/cygdrive/c/Program Files (x86)/Beyond Compare 3/BComp.exe' "$path1" "$path2" /title1=Base /leftreadonly
+if [[ $(uname) =~ CYGWIN ]]; then
+  path1=$(cygpath -w "$1")
+  path2=$(cygpath -w "$2")
+  '/cygdrive/c/apps/Beyond Compare 3/BCompare.exe' "$path1" "$path2" /title1=Base /leftreadonly &
+else
+  bcompare "$1" "$2" -title1=Base -leftreadonly &
+fi
+
+# git will remove the temporary file as soon as the difftool command exits;
+# sleep to give Beyond Compare a chance to load the file and display the diff
+# before the file is removed.
+sleep 1

@@ -1,6 +1,10 @@
-#!/bin/sh
+#!/bin/bash
 
-local=$(cygpath -w "$1")
-remote=$(cygpath -w "$2")
-merged=$(cygpath -w "$3")
-'/cygdrive/c/Program Files (x86)/Beyond Compare 3/BComp.exe' "$local" "$remote" /title1=Local /title2=Remote /savetarget="$merged"
+if [[ $(uname) =~ CYGWIN ]]; then
+  local=$(cygpath -w "$1")
+  remote=$(cygpath -w "$2")
+  merged=$(cygpath -w "$3")
+  '/cygdrive/c/apps/Beyond Compare 3/BCompare.exe' "$local" "$remote" /title1=Local /title2=Remote /savetarget="$merged"
+else
+  bcompare "$1" "$2" -title1=Local -title2=Remote -savetarget="$3"
+fi
