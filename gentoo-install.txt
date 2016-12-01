@@ -1,53 +1,59 @@
 # Josh's Gentoo Install Guide
-# Last Updated 2011-04-12; last run April 2011
+# Last Updated 2016-11-30; last run November 2016
 
-network: [modprobe], [pcmcia start], [/etc/init.d/net.eth0 start]
+network: [modprobe], [/etc/init.d/net.eth0 start]
 date MMDDhhmmYYYY
 [/etc/init.d/sshd start; passwd; screen] # ssh in, screen -xr to remote setup
 fdisk, mkfs.ext4, mkswap, swapon
 mount root [,boot] [,home]
 cd /mnt/gentoo
 links2 http://www.gentoo.org/main/en/mirrors.xml; #get stage3*bz2
-tar -xvjpf stage?-*.tar.bz2
-[cd /mnt/gentoo/usr]                    # speed up first rsync with
-[tar -xvjpf portage-*.tar.bz2]          # snapshot if slow connection
-nano /mnt/gentoo/etc/make.conf          # FEATURES="parallel-fetch"
+tar -xvjpf stage?-*.tar.bz2 --xattrs
+vim /mnt/gentoo/etc/make.conf
+mkdir /mnt/gentoo/etc/portage/repos.conf
 cp -L /etc/resolv.conf /mnt/gentoo/etc
-mount -t proc none /mnt/gentoo/proc
+mount -t proc proc /mnt/gentoo/proc
+mount --rbind /sys /mnt/gentoo/sys      # also for /dev
 cd /; chroot /mnt/gentoo /bin/bash
-env-update
 source /etc/profile
-emerge --sync
+emerge-webrsync
+emerge --sync                           # optional
 [emerge ufed; ufed]                     # optional
-ln -sf /usr/share/zoneinfo/America/Detroit /etc/localtime
-emerge -av gentoo-sources syslog-ng vixie-cron grub [slocate] [dhcpcd] [vim]
-cd /usr/src/linux
-make menuconfig
-make && make modules_install
-cp arch/x86_64/boot/bzImage .config /boot
+echo "America/Detroit" > /etc/timezone
+emerge --config sys-libs/timezone-data
+vim /etc/locale.gen                     # uncomment en_US*
+locale-gen
+env-update && source /etc/profile
+emerge -av gentoo-sources [genkernel]
+[genkernel all]
+# cd /usr/src/linux
+# make menuconfig
+# make && make modules_install
+# cp arch/x86_64/boot/bzImage .config /boot
 vim /etc/fstab
 vim /etc/conf.d/hostname
 vim /etc/conf.d/net                     # config_eth0=("dhcp")
 vim /etc/hosts                          # add hostname after localhost
 vim /etc/rc.conf
 vim /etc/modules.autoload.d/kernel-2.6
+emerge -av syslog-ng cronie grub [slocate] [dhcpcd] [vim]
 vim /etc/conf.d/clock
-vim /etc/locale.gen                     # uncomment en_US*
 vim /etc/etc-update.conf                # remove those pesky -i's
 [cd /etc/init.d; ln -s net.lo net.eth1] # if you have a second NIC
 rc-update show -v
-rc-update add net.eth0 default          # [net.eth1] also for a second NIC
+rc-update add net.eno1 default
 rc-update add syslog-ng default
-rc-update add vixie-cron default
-rc-update add numlock default           # unless you're on a laptop :)
+rc-update add cronie default
+[rc-update add numlock default]
 [rc-update add sshd default]            # if you want remote access
 vim /boot/grub/grub.conf
-grub                                    # root (hd0,0) \n setup (hd0) \n quit
-useradd -m -s /bin/bash john
+grub-install /dev/sda
+grub-mkconfig -o /boot/grub/grub.conf
+useradd john
 passwd
 passwd john
 vim /etc/group
 [emerge -auvDN world; etc-update]       # or update later
 exit
-cd /; umount /mnt/gentoo{/proc,/boot,}
+cd /; umount -R /mnt/gentoo
 reboot
