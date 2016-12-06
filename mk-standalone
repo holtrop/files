@@ -1,0 +1,24 @@
+#!/usr/bin/env python3
+
+import re
+import sys
+import os
+from subprocess import *
+
+def main(args):
+    if len(args) < 3:
+        sys.stderr.write("Usage: %s binary dest\n" % args[0])
+        return 1
+    binary = args[1]
+    dest = args[2]
+    os.mkdir(dest)
+    for line in Popen(["ldd", binary], stdout = PIPE).communicate()[0].decode().split("\n"):
+        m = re.search(r'=>\s*(/\S*)', line)
+        if m is not None:
+            lib = m.group(1)
+            os.spawnlp(os.P_WAIT, "cp", "cp", "-L", lib, dest)
+    os.spawnlp(os.P_WAIT, "cp", "cp", "-L", binary, dest)
+    os.spawnlp(os.P_WAIT, "patchelf", "patchelf", "--set-rpath", "$ORIGIN", os.path.join(dest, os.path.basename(binary)))
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv))
