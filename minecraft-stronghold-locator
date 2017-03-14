@@ -1,0 +1,45 @@
+#!/usr/bin/env ruby
+
+def prompt(message)
+  $stdout.write(message)
+  $stdout.flush
+  $stdin.readline.chomp
+end
+
+if ARGV.size == 6
+  args = ARGV
+else
+  args = []
+  args = prompt("Throw 1 X: ")
+  args = prompt("Throw 1 Z: ")
+  args = prompt("Throw 1 Angle: ")
+  args = prompt("Throw 2 X: ")
+  args = prompt("Throw 2 Z: ")
+  args = prompt("Throw 2 Angle: ")
+end
+x_1, z_1, a_1, x_2, z_2, a_2 = *(args.map {|a| a.to_f})
+
+a_1 = Math::PI * a_1 / 180.0
+a_2 = Math::PI * a_2 / 180.0
+
+# Angle 0 is +Z, so Z = cos(a)
+# Angle 90 is -X, so X = -sin(a)
+
+# x = mz + b
+m_1 = -Math.sin(a_1) / Math.cos(a_1)
+m_2 = -Math.sin(a_2) / Math.cos(a_2)
+b_1 = x_1 - m_1 * z_1
+b_2 = x_2 - m_2 * z_2
+
+# x = (m1)z + (b1)
+# x = (m2)z + (b2)
+# (m1)z + (b1) = (m2)z + (b2)
+# (m1 - m2)z = b2 - b1
+# z = (b2 - b1) / (m1 - m2)
+
+z = (b_2 - b_1) / (m_1 - m_2)
+x = m_1 * z + b_1
+
+puts("Approx location: #{x.round(1)}, #{z.round(1)}")
+d = Math.sqrt(x * x + z * z)
+puts("Distance from origin: #{d}")
