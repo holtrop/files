@@ -14,6 +14,8 @@ def main(args):
     os.mkdir(dest)
     for line in Popen(["ldd", binary], stdout = PIPE).communicate()[0].decode().split("\n"):
         m = re.search(r'=>\s*(/\S*)', line)
+        if m is None:
+            m = re.search(r'(/lib\S+)\s\(', line)
         if m is not None:
             lib = m.group(1)
             os.spawnlp(os.P_WAIT, "cp", "cp", "-L", lib, dest)
