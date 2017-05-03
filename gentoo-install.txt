@@ -1,15 +1,15 @@
 # Josh's Gentoo Install Guide
-# Last Updated 2016-11-30; last run November 2016
+# Last Updated 2017-05-03; last run May 2017
 
 network: [modprobe], [/etc/init.d/net.eth0 start]
 date MMDDhhmmYYYY
 [/etc/init.d/sshd start; passwd; screen] # ssh in, screen -xr to remote setup
-fdisk, mkfs.ext4, mkswap, swapon
+fdisk/parted, mkfs.ext4, mkswap, swapon
 mount root [,boot] [,home]
 cd /mnt/gentoo
-links2 http://www.gentoo.org/main/en/mirrors.xml; #get stage3*bz2
-tar -xvjpf stage?-*.tar.bz2 --xattrs
-vim /mnt/gentoo/etc/make.conf
+links http://www.gentoo.org/main/en/mirrors.xml; #get stage3*bz2
+tar -xvjpf stage3-*.tar.bz2 --xattrs --numeric-owner
+vim /mnt/gentoo/etc/portage/make.conf
 mkdir /mnt/gentoo/etc/portage/repos.conf
 cp -L /etc/resolv.conf /mnt/gentoo/etc
 mount -t proc proc /mnt/gentoo/proc
@@ -17,12 +17,14 @@ mount --rbind /sys /mnt/gentoo/sys      # also for /dev
 cd /; chroot /mnt/gentoo /bin/bash
 source /etc/profile
 emerge-webrsync
-emerge --sync                           # optional
-[emerge ufed; ufed]                     # optional
+[emerge --sync]
+eselect profile list; eselect profile set N
+[emerge --ask --update --newuse @world]
 echo "America/Detroit" > /etc/timezone
 emerge --config sys-libs/timezone-data
 vim /etc/locale.gen                     # uncomment en_US*
 locale-gen
+eselect locale list; eselect locale set N
 env-update && source /etc/profile
 emerge -av gentoo-sources [genkernel]
 [genkernel all]
@@ -32,12 +34,12 @@ emerge -av gentoo-sources [genkernel]
 # cp arch/x86_64/boot/bzImage .config /boot
 vim /etc/fstab
 vim /etc/conf.d/hostname
-vim /etc/conf.d/net                     # config_eth0=("dhcp")
+vim /etc/conf.d/net                     # config_eth0="dhcp"
+cd /etc/init.d; ln -s net.lo net.eth0
 vim /etc/hosts                          # add hostname after localhost
 vim /etc/rc.conf
-vim /etc/modules.autoload.d/kernel-2.6
-emerge -av syslog-ng cronie grub [slocate] [dhcpcd] [vim]
-vim /etc/conf.d/clock
+vim /etc/conf.d/hwclock
+emerge -av syslog-ng cronie grub [mlocate] [dhcpcd] [vim]
 vim /etc/etc-update.conf                # remove those pesky -i's
 [cd /etc/init.d; ln -s net.lo net.eth1] # if you have a second NIC
 rc-update show -v
@@ -46,9 +48,8 @@ rc-update add syslog-ng default
 rc-update add cronie default
 [rc-update add numlock default]
 [rc-update add sshd default]            # if you want remote access
-vim /boot/grub/grub.conf
 grub-install /dev/sda
-grub-mkconfig -o /boot/grub/grub.conf
+grub-mkconfig -o /boot/grub/grub.cfg
 useradd john
 passwd
 passwd john
