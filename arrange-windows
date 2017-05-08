@@ -1,21 +1,85 @@
 #!/usr/bin/env ruby
 
-TERM_SIZES = %w[
-  3840,0,829,576
-  4671,0,829,576
-  3840,599,829,576
-  4671,599,829,576
-]
+laptop_mode = `xrandr` =~ /DP-0\s+disconnected/
+
+wmctrl_out = IO.popen(%w[wmctrl -Gl]) {|io| io.read}
 
 term_idx = 0
-wmctrl_out = IO.popen(%w[wmctrl -Gl]) {|io| io.read}
 wmctrl_out.each_line do |line|
-  if line =~ /^(\S+)\s+((?:\d+\s+){5})(\S.*)$/
+  if line =~ /^(\S+)\s+((?:-?\d+\s+){5})(\S.*)$/
     id, geom, title = $1, $2, $3.strip
     _, x, y, width, height = geom.split(/\s+/).map(&:to_i)
-    if title =~ /josh@/i
-      if term_idx < TERM_SIZES.size
-        system(*%W[wmctrl -ir #{id} -e 0,#{TERM_SIZES[term_idx]}])
+    #if title =~ /\s-\slilyterm$/i
+    #if title =~ /\s:\sbash$/i
+    if title =~ /josh@jamba/i
+      # lilyterm in fluxbox:
+      #3840,0,834,580
+      #4676,0,834,580
+      #3840,607,834,563
+      #4676,607,834,563
+
+      # konsole in KDE:
+      #3844,29,827,567
+      #4678,29,827,567
+      #3844,629,827,567
+      #4678,629,827,567
+
+      # xfce4-terminal in xfce4:
+      #term_sizes = %w[
+      #  3840,0,825,567
+      #  4671,0,825,567
+      #  3840,599,825,567
+      #  4671,599,825,567
+      #]
+
+      ## xfce4-terminal in xfce4:
+      #term_sizes = %w[
+      #  3840,0,829,576
+      #  4671,0,829,576
+      #  3840,599,829,576
+      #  4671,599,829,576
+      #]
+
+      ## gnome-terminal in xfce4:
+      #term_sizes = %w[
+      #  3840,0,827,578
+      #  4671,0,827,578
+      #  3840,603,827,560
+      #  4671,603,827,560
+      #]
+
+      ## konsole in kde5 on arch:
+      #term_sizes = %w[
+      #  3844,29,824,578
+      #  4676,29,824,578
+      #  3844,640,824,560
+      #  4676,640,824,560
+      #]
+
+      ## gnome-terminal in KDE5 on arch:
+      #term_sizes = %w[
+      #  3840,0,827,578
+      #  4671,0,827,578
+      #  3840,605,827,560
+      #  4671,605,827,560
+      #]
+
+      # xfce4-terminal in KDE5 on Kubuntu 17.04:
+      term_sizes = %w[
+        3840,0,826,578
+        4671,0,826,578
+        3840,611,826,560
+        4674,611,826,560
+      ]
+
+      if term_idx < term_sizes.size
+        geom_line = term_sizes[term_idx]
+        if laptop_mode
+          parts = geom_line.split(",")
+          parts[0] = (parts[0].to_i - 1920 * 2).to_s
+          geom_line = parts.join(",")
+        end
+        system(*%W[wmctrl -ir #{id} -e 0,#{geom_line}])
         term_idx += 1
       end
     end
