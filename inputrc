@@ -30,10 +30,14 @@ $include /etc/inputrc
 # mintty control-backspace
 "\x1f": backward-kill-word
 
+# Control+Backspace
+"\010": backward-kill-word
+# Control+Delete
+"\e[3;5~": kill-word
+
 # puttycyg
 "\eOC": forward-word
 "\eOD": backward-word
-#"\010": backward-kill-word
 # allow the use of the Home/End keys
 "\e[1~": beginning-of-line
 "\e[4~": end-of-line
