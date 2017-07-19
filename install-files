@@ -26,6 +26,7 @@ files = [
         ('gitignore', '.gitignore'),
         ('colordiffrc', '.colordiffrc'),
         ('rvmrc', '.rvmrc'),
+        ('toprc', '.toprc'),
         ]
 
 for s, d in files:
