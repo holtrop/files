@@ -31,10 +31,10 @@ def choose_artwork(mp3s, jpgs):
     if len(mp3s) < min_mp3s_for_album:
         return None
     if len(jpgs) == 0:
-        sys.stderr.write("No album artwork found in %s\n" % path)
+        sys.stderr.write("No .jpg files found\n")
         return None
     if len(jpgs) > 1:
-        sys.stderr.write("Multiple album artwork files found in %s\n" % path)
+        sys.stderr.write("Multiple .jpg album artwork files found\n")
         return None
     return jpgs[0]
 
