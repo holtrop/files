@@ -1,5 +1,8 @@
 #!/usr/bin/env ruby
 
+# Use HighContrast GTK2 theme for gvim.
+ENV["GTK2_RC_FILES"] = "/usr/share/themes/HighContrast/gtk-2.0/gtkrc"
+
 def get_server_name(path)
   if path
     path = File.expand_path(path)
