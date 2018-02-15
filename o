@@ -1,4 +1,8 @@
 #!/bin/sh
 for f in "$@"; do
-  xdg-open "$f"
+  if [ -e "$f" ]; then
+    xdg-open "$f"
+  else
+    echo "Skipping $f" > /dev/stderr
+  fi
 done
