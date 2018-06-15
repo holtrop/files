@@ -31,6 +31,11 @@ function ps-color() {
   echo "\[\033[${codes}m\]"
 }
 
+#function prompt_preexec()
+#{
+#  false
+#}
+
 function prompt_ps1_git_branch()
 {
   local git_branch_out
@@ -69,7 +74,13 @@ function prompt_ps1_svn_branch()
   fi
 }
 
-# Set PS1 to use the above functions
+# Catch an enter keypress and call our preexec function.
+#bind -x '"\M-\C-h1": prompt_preexec'
+#bind '"\M-\C-h2": accept-line'
+#bind '"\C-j": "\M-\C-h1\M-\C-h2"'
+#bind '"\C-m": "\M-\C-h1\M-\C-h2"'
+
+# Set PS1 to use the above functions.
 if [[ "${USER}" == "root" ]]; then
   PS1="$(ps-color bold red)\u@\H$(ps-color bold green) [\w]$(ps-color bold magenta) \d \t $(ps-color bold blue)(\j)\n\$ $(ps-color reset)"
 else
