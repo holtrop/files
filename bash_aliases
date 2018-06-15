@@ -1,13 +1,40 @@
 #!/bin/bash
 
 ###########################################################################
-# PS1
+# PSx
 ###########################################################################
 
+function ps-color() {
+  local codes=''
+  for arg in "$@"; do
+    case "$arg" in
+      reset)      codes="$codes;0";;
+      black)      codes="$codes;30";;
+      red)        codes="$codes;31";;
+      green)      codes="$codes;32";;
+      yellow)     codes="$codes;33";;
+      blue)       codes="$codes;34";;
+      magenta)    codes="$codes;35";;
+      cyan)       codes="$codes;36";;
+      white)      codes="$codes;37";;
+      onblack)    codes="$codes;40";;
+      onred)      codes="$codes;41";;
+      ongreen)    codes="$codes;42";;
+      onyellow)   codes="$codes;43";;
+      onblue)     codes="$codes;44";;
+      onmagenta)  codes="$codes;45";;
+      oncyan)     codes="$codes;46";;
+      onwhite)    codes="$codes;47";;
+      bold)       codes="$codes;1";;
+    esac
+  done
+  echo "\[\033[${codes}m\]"
+}
+
 if [[ "${USER}" == "root" ]]; then
-  PS1='\[\033[31;1m\]\u@\H\[\033[32;1m\] [\w]\[\033[35;1m\] \d \t \[\033[34;1m\](\j)\n\$ \[\033[0m\]'
+  PS1="$(ps-color bold red)\u@\H$(ps-color bold green) [\w]$(ps-color bold magenta) \d \t $(ps-color bold blue)(\j)\n\$ $(ps-color reset)"
 else
-  PS1='\[\033[32;1m\]\u@\H\[\033[31;1m\] [\w]\[\033[35;1m\] \d \t \[\033[34;1m\](\j)\[\033[33;1m\]$(prompt_ps1_git_branch)$(prompt_ps1_svn_branch)\[\033[34;1m\]\n\$ \[\033[0m\]'
+  PS1="$(ps-color bold green)\u@\H$(ps-color bold red) [\w]$(ps-color bold magenta) \d \t $(ps-color bold blue)(\j)$(ps-color bold yellow)\$(prompt_ps1_git_branch)\$(prompt_ps1_svn_branch)$(ps-color bold blue)\n\$ $(ps-color reset)"
 fi
 # alternate PS1:
 # PS1='[\[\033[31;1m\]\u@\H\[\033[34;1m\] \w\[\033[0m\]]\$ \[\033[0m\]'
