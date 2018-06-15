@@ -31,14 +31,6 @@ function ps-color() {
   echo "\[\033[${codes}m\]"
 }
 
-if [[ "${USER}" == "root" ]]; then
-  PS1="$(ps-color bold red)\u@\H$(ps-color bold green) [\w]$(ps-color bold magenta) \d \t $(ps-color bold blue)(\j)\n\$ $(ps-color reset)"
-else
-  PS1="$(ps-color bold green)\u@\H$(ps-color bold red) [\w]$(ps-color bold magenta) \d \t $(ps-color bold blue)(\j)$(ps-color bold yellow)\$(prompt_ps1_git_branch)\$(prompt_ps1_svn_branch)$(ps-color bold blue)\n\$ $(ps-color reset)"
-fi
-# alternate PS1:
-# PS1='[\[\033[31;1m\]\u@\H\[\033[34;1m\] \w\[\033[0m\]]\$ \[\033[0m\]'
-
 function prompt_ps1_git_branch()
 {
   local git_branch_out
@@ -76,6 +68,15 @@ function prompt_ps1_svn_branch()
     fi
   fi
 }
+
+# Set PS1 to use the above functions
+if [[ "${USER}" == "root" ]]; then
+  PS1="$(ps-color bold red)\u@\H$(ps-color bold green) [\w]$(ps-color bold magenta) \d \t $(ps-color bold blue)(\j)\n\$ $(ps-color reset)"
+else
+  PS1="$(ps-color bold green)\u@\H$(ps-color bold red) [\w]$(ps-color bold magenta) \d \t $(ps-color bold blue)(\j)$(ps-color bold yellow)\$(prompt_ps1_git_branch)\$(prompt_ps1_svn_branch)$(ps-color bold blue)\n\$ $(ps-color reset)"
+fi
+
+unset -f ps-color
 
 ###########################################################################
 # PROMPT_COMMAND
