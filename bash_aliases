@@ -36,6 +36,16 @@ function ps-color() {
 #  false
 #}
 
+eval "
+function prompt_ps1_exit_status()
+{
+  local exit_status=\$?
+  if [ \$exit_status -ne 0 ]; then
+    echo \"$(ps-color bold on-red)\$exit_status$(ps-color reset) \"
+  fi
+}
+"
+
 function prompt_ps1_job_count()
 {
   local job_count="$1"
@@ -96,7 +106,7 @@ if [[ "${USER}" == "root" ]]; then
 else
   eval "function prompt_command_set_ps1()
   {
-    PS1=\"$(ps-color bold green)\u@\H$(ps-color bold red) [\w]$(ps-color bold magenta) \d \t$(ps-color bold blue)\\\$(prompt_ps1_job_count \\j)$(ps-color bold yellow)\$(prompt_ps1_git_branch)\$(prompt_ps1_svn_branch)$(ps-color bold blue)\n\$ $(ps-color reset)\"
+    PS1=\"\$(prompt_ps1_exit_status)$(ps-color bold green)\u@\H$(ps-color bold red) [\w]$(ps-color bold magenta) \d \t$(ps-color bold blue)\\\$(prompt_ps1_job_count \\j)$(ps-color bold yellow)\$(prompt_ps1_git_branch)\$(prompt_ps1_svn_branch)$(ps-color bold blue)\n\$ $(ps-color reset)\"
   }"
 fi
 
