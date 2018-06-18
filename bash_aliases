@@ -66,6 +66,13 @@ function prompt_ps1_job_count()
   fi
 }
 
+function prompt_ps1_shlvl()
+{
+  if [ "$SHLVL" -ne 1 ]; then
+    echo " *$SHLVL"
+  fi
+}
+
 function prompt_ps1_git_branch()
 {
   local git_branch_out
@@ -105,9 +112,9 @@ function prompt_ps1_svn_branch()
 }
 
 if [[ "${USER}" == "root" ]]; then
-  PS1="$(ps-color bold white on-red)\$(prompt_ps1_exit_status_1)$(ps-color reset)\$(prompt_ps1_exit_status_2)$(ps-color bold red)\u@\H$(ps-color bold green) [\w]$(ps-color bold magenta) \d \t$(ps-color bold blue)\$(prompt_ps1_job_count \\j)\n\$ $(ps-color reset)"
+  PS1="$(ps-color bold white on-red)\$(prompt_ps1_exit_status_1)$(ps-color reset)\$(prompt_ps1_exit_status_2)$(ps-color bold red)\u@\H$(ps-color bold green) [\w]$(ps-color bold magenta) \d \t$(ps-color bold blue)\$(prompt_ps1_job_count \\j)$(ps-color bold cyan)\$(prompt_ps1_shlvl)$(ps-color reset)\n\$ "
 else
-  PS1="$(ps-color bold white on-red)\$(prompt_ps1_exit_status_1)$(ps-color reset)\$(prompt_ps1_exit_status_2)$(ps-color bold green)\u@\H$(ps-color bold red) [\w]$(ps-color bold magenta) \d \t$(ps-color bold blue)\$(prompt_ps1_job_count \\j)$(ps-color bold yellow)\$(prompt_ps1_git_branch)\$(prompt_ps1_svn_branch)$(ps-color bold blue)\n\$ $(ps-color reset)"
+  PS1="$(ps-color bold white on-red)\$(prompt_ps1_exit_status_1)$(ps-color reset)\$(prompt_ps1_exit_status_2)$(ps-color bold green)\u@\H$(ps-color bold red) [\w]$(ps-color bold magenta) \d \t$(ps-color bold blue)\$(prompt_ps1_job_count \\j)$(ps-color bold cyan)\$(prompt_ps1_shlvl)$(ps-color bold yellow)\$(prompt_ps1_git_branch)\$(prompt_ps1_svn_branch)$(ps-color reset)\n\$ "
 fi
 
 PROMPT_COMMAND="_last_exit_status=\$?"
