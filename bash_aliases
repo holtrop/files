@@ -36,6 +36,14 @@ function ps-color() {
 #  false
 #}
 
+function prompt_ps1_job_count()
+{
+  local job_count="$1"
+  if [ "$job_count" -ne 0 ]; then
+    echo " ($job_count)"
+  fi
+}
+
 function prompt_ps1_git_branch()
 {
   local git_branch_out
@@ -82,9 +90,9 @@ function prompt_ps1_svn_branch()
 
 # Set PS1 to use the above functions.
 if [[ "${USER}" == "root" ]]; then
-  PS1="$(ps-color bold red)\u@\H$(ps-color bold green) [\w]$(ps-color bold magenta) \d \t $(ps-color bold blue)(\j)\n\$ $(ps-color reset)"
+  PS1="$(ps-color bold red)\u@\H$(ps-color bold green) [\w]$(ps-color bold magenta) \d \t$(ps-color bold blue)\$(prompt_ps1_job_count \j)\n\$ $(ps-color reset)"
 else
-  PS1="$(ps-color bold green)\u@\H$(ps-color bold red) [\w]$(ps-color bold magenta) \d \t $(ps-color bold blue)(\j)$(ps-color bold yellow)\$(prompt_ps1_git_branch)\$(prompt_ps1_svn_branch)$(ps-color bold blue)\n\$ $(ps-color reset)"
+  PS1="$(ps-color bold green)\u@\H$(ps-color bold red) [\w]$(ps-color bold magenta) \d \t$(ps-color bold blue)\$(prompt_ps1_job_count \j)$(ps-color bold yellow)\$(prompt_ps1_git_branch)\$(prompt_ps1_svn_branch)$(ps-color bold blue)\n\$ $(ps-color reset)"
 fi
 
 unset -f ps-color
