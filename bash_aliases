@@ -17,14 +17,14 @@ function ps-color() {
       magenta)    codes="$codes;35";;
       cyan)       codes="$codes;36";;
       white)      codes="$codes;37";;
-      onblack)    codes="$codes;40";;
-      onred)      codes="$codes;41";;
-      ongreen)    codes="$codes;42";;
-      onyellow)   codes="$codes;43";;
-      onblue)     codes="$codes;44";;
-      onmagenta)  codes="$codes;45";;
-      oncyan)     codes="$codes;46";;
-      onwhite)    codes="$codes;47";;
+      on-black)   codes="$codes;40";;
+      on-red)     codes="$codes;41";;
+      on-green)   codes="$codes;42";;
+      on-yellow)  codes="$codes;43";;
+      on-blue)    codes="$codes;44";;
+      on-magenta) codes="$codes;45";;
+      on-cyan)    codes="$codes;46";;
+      on-white)   codes="$codes;47";;
       bold)       codes="$codes;1";;
     esac
   done
