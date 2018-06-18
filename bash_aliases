@@ -42,15 +42,21 @@ function ps-color() {
 #bind '"\C-j": "\M-\C-h1\M-\C-h2"'
 #bind '"\C-m": "\M-\C-h1\M-\C-h2"'
 
-eval "
-function prompt_ps1_exit_status()
+_last_exit_status=0
+
+function prompt_ps1_exit_status_1()
 {
-  local exit_status=\$?
-  if [ \$exit_status -ne 0 ]; then
-    echo \"$(ps-color bold on-red)\$exit_status$(ps-color reset) \"
+  if [ $_last_exit_status -ne 0 ]; then
+    echo $_last_exit_status
   fi
 }
-"
+
+function prompt_ps1_exit_status_2()
+{
+  if [ $_last_exit_status -ne 0 ]; then
+    echo " "
+  fi
+}
 
 function prompt_ps1_job_count()
 {
@@ -99,18 +105,12 @@ function prompt_ps1_svn_branch()
 }
 
 if [[ "${USER}" == "root" ]]; then
-  eval "function prompt_command_set_ps1()
-  {
-    PS1=\"$(ps-color bold red)\u@\H$(ps-color bold green) [\w]$(ps-color bold magenta) \d \t$(ps-color bold blue)\\\$(prompt_ps1_job_count \\j)\n\$ $(ps-color reset)\"
-  }"
+  PS1="$(ps-color bold white on-red)\$(prompt_ps1_exit_status_1)$(ps-color reset)\$(prompt_ps1_exit_status_2)$(ps-color bold red)\u@\H$(ps-color bold green) [\w]$(ps-color bold magenta) \d \t$(ps-color bold blue)\$(prompt_ps1_job_count \\j)\n\$ $(ps-color reset)"
 else
-  eval "function prompt_command_set_ps1()
-  {
-    PS1=\"\$(prompt_ps1_exit_status)$(ps-color bold green)\u@\H$(ps-color bold red) [\w]$(ps-color bold magenta) \d \t$(ps-color bold blue)\\\$(prompt_ps1_job_count \\j)$(ps-color bold yellow)\$(prompt_ps1_git_branch)\$(prompt_ps1_svn_branch)$(ps-color bold blue)\n\$ $(ps-color reset)\"
-  }"
+  PS1="$(ps-color bold white on-red)\$(prompt_ps1_exit_status_1)$(ps-color reset)\$(prompt_ps1_exit_status_2)$(ps-color bold green)\u@\H$(ps-color bold red) [\w]$(ps-color bold magenta) \d \t$(ps-color bold blue)\$(prompt_ps1_job_count \\j)$(ps-color bold yellow)\$(prompt_ps1_git_branch)\$(prompt_ps1_svn_branch)$(ps-color bold blue)\n\$ $(ps-color reset)"
 fi
 
-PROMPT_COMMAND="prompt_command_set_ps1"
+PROMPT_COMMAND="_last_exit_status=\$?"
 
 case "$TERM" in
 [ax]term*|rxvt*)
