@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ###########################################################################
-# PSx
+# Prompt Settings
 ###########################################################################
 
 function ps-color() {
@@ -88,18 +88,19 @@ function prompt_ps1_svn_branch()
 #bind '"\C-j": "\M-\C-h1\M-\C-h2"'
 #bind '"\C-m": "\M-\C-h1\M-\C-h2"'
 
-# Set PS1 to use the above functions.
 if [[ "${USER}" == "root" ]]; then
-  PS1="$(ps-color bold red)\u@\H$(ps-color bold green) [\w]$(ps-color bold magenta) \d \t$(ps-color bold blue)\$(prompt_ps1_job_count \j)\n\$ $(ps-color reset)"
+  eval "function prompt_command_set_ps1()
+  {
+    PS1=\"$(ps-color bold red)\u@\H$(ps-color bold green) [\w]$(ps-color bold magenta) \d \t$(ps-color bold blue)\\\$(prompt_ps1_job_count \\j)\n\$ $(ps-color reset)\"
+  }"
 else
-  PS1="$(ps-color bold green)\u@\H$(ps-color bold red) [\w]$(ps-color bold magenta) \d \t$(ps-color bold blue)\$(prompt_ps1_job_count \j)$(ps-color bold yellow)\$(prompt_ps1_git_branch)\$(prompt_ps1_svn_branch)$(ps-color bold blue)\n\$ $(ps-color reset)"
+  eval "function prompt_command_set_ps1()
+  {
+    PS1=\"$(ps-color bold green)\u@\H$(ps-color bold red) [\w]$(ps-color bold magenta) \d \t$(ps-color bold blue)\\\$(prompt_ps1_job_count \\j)$(ps-color bold yellow)\$(prompt_ps1_git_branch)\$(prompt_ps1_svn_branch)$(ps-color bold blue)\n\$ $(ps-color reset)\"
+  }"
 fi
 
-unset -f ps-color
-
-###########################################################################
-# PROMPT_COMMAND
-###########################################################################
+PROMPT_COMMAND="prompt_command_set_ps1"
 
 case "$TERM" in
 [ax]term*|rxvt*)
@@ -113,16 +114,16 @@ case "$TERM" in
     fi
     echo -ne "\033]0;"$dirname" [${USER}@${HOSTNAME}: ${PWD}]\007"
   }
+  PROMPT_COMMAND="$PROMPT_COMMAND;prompt_command_change_terminal_title"
   ;;
 *)
-  function prompt_command_change_terminal_title()
-  {
-    :
-  }
+  :
   ;;
 esac
 
-PROMPT_COMMAND="prompt_command_change_terminal_title"
+# I intend ps-color to only be used at initialization time so as to not slow
+# prompt string generation at runtime. This is my double-check.
+unset -f ps-color
 
 ###########################################################################
 # cd hooks
