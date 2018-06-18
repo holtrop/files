@@ -36,6 +36,12 @@ function ps-color() {
 #  false
 #}
 
+# Catch an enter keypress and call our preexec function.
+#bind -x '"\M-\C-h1": prompt_preexec'
+#bind '"\M-\C-h2": accept-line'
+#bind '"\C-j": "\M-\C-h1\M-\C-h2"'
+#bind '"\C-m": "\M-\C-h1\M-\C-h2"'
+
 eval "
 function prompt_ps1_exit_status()
 {
@@ -91,12 +97,6 @@ function prompt_ps1_svn_branch()
     fi
   fi
 }
-
-# Catch an enter keypress and call our preexec function.
-#bind -x '"\M-\C-h1": prompt_preexec'
-#bind '"\M-\C-h2": accept-line'
-#bind '"\C-j": "\M-\C-h1\M-\C-h2"'
-#bind '"\C-m": "\M-\C-h1\M-\C-h2"'
 
 if [[ "${USER}" == "root" ]]; then
   eval "function prompt_command_set_ps1()
