@@ -31,18 +31,37 @@ function ps-color() {
   echo "\[\033[${codes}m\]"
 }
 
-#function prompt_preexec()
-#{
-#  false
-#}
+function prompt_preexec()
+{
+  _command_start_time=$(date +%s)
+}
+prompt_preexec
 
 # Catch an enter keypress and call our preexec function.
-#bind -x '"\M-\C-h1": prompt_preexec'
-#bind '"\M-\C-h2": accept-line'
-#bind '"\C-j": "\M-\C-h1\M-\C-h2"'
-#bind '"\C-m": "\M-\C-h1\M-\C-h2"'
+bind -x '"\M-\C-h1": prompt_preexec'
+bind '"\M-\C-h2": accept-line'
+bind '"\C-j": "\M-\C-h1\M-\C-h2"'
+bind '"\C-m": "\M-\C-h1\M-\C-h2"'
 
 _last_exit_status=0
+
+function prompt_ps1_elapsed_time()
+{
+  local time="$1"
+  local elapsed=$(($time - $_command_start_time))
+  if [ $elapsed -gt 3600 ]; then
+    local hours=$(($elapsed / 3600))
+    local minutes=$((($elapsed % 3600) / 60))
+    local seconds=$(($elapsed % 60))
+    echo "${hours}h${minutes}m${seconds}s "
+  elif [ $elapsed -gt 60 ]; then
+    local minutes=$(($elapsed / 60))
+    local seconds=$(($elapsed % 60))
+    echo "${minutes}m${seconds}s "
+  elif [ $elapsed -gt 1 ]; then
+    echo "${elapsed}s "
+  fi
+}
 
 function prompt_ps1_exit_status_1()
 {
@@ -111,8 +130,10 @@ function prompt_ps1_svn_branch()
   fi
 }
 
+# elapsed time
+PS1="$(ps-color bold blue)\$(prompt_ps1_elapsed_time \D{%s})"
 # exit status
-PS1="$(ps-color bold white on-red)\$(prompt_ps1_exit_status_1)$(ps-color reset)\$(prompt_ps1_exit_status_2)"
+PS1="${PS1}$(ps-color bold white on-red)\$(prompt_ps1_exit_status_1)$(ps-color reset)\$(prompt_ps1_exit_status_2)"
 # user name and host name
 if [ "$USER" = "root" ]; then
   PS1="${PS1}$(ps-color bold red)"
