@@ -90,7 +90,7 @@ function prompt_ps1_git_branch()
         if [[ "$git_branch_out_line" =~ $re2 ]]; then
           current_branch="$current_branch: ${BASH_REMATCH[1]}"
         fi
-        echo " [${current_branch}${ahead_behind}]"
+        echo " ${current_branch}${ahead_behind}"
         break
       fi
     done <<< "$git_branch_out"
@@ -104,17 +104,17 @@ function prompt_ps1_svn_branch()
     re_branch="\\<(tags|branches)/([^/]*)\\>"
     re_trunk="\\<trunk\\>"
     if [[ "$url_out" =~ $re_branch ]]; then
-      echo " [${BASH_REMATCH[2]}]"
+      echo " ${BASH_REMATCH[2]}"
     elif [[ "$url_out" =~ $re_trunk ]]; then
-      echo " [${BASH_REMATCH[0]}]"
+      echo " ${BASH_REMATCH[0]}"
     fi
   fi
 }
 
 if [[ "${USER}" == "root" ]]; then
-  PS1="$(ps-color bold white on-red)\$(prompt_ps1_exit_status_1)$(ps-color reset)\$(prompt_ps1_exit_status_2)$(ps-color bold red)\u@\H$(ps-color bold green) [\w]$(ps-color bold magenta) \d \t$(ps-color bold blue)\$(prompt_ps1_job_count \\j)$(ps-color bold cyan)\$(prompt_ps1_shlvl)$(ps-color reset)\n\$ "
+  PS1="$(ps-color bold white on-red)\$(prompt_ps1_exit_status_1)$(ps-color reset)\$(prompt_ps1_exit_status_2)$(ps-color bold red)\u@\H$(ps-color bold green) \w$(ps-color bold magenta) \d \t$(ps-color bold blue)\$(prompt_ps1_job_count \\j)$(ps-color bold cyan)\$(prompt_ps1_shlvl)$(ps-color reset)\n\$ "
 else
-  PS1="$(ps-color bold white on-red)\$(prompt_ps1_exit_status_1)$(ps-color reset)\$(prompt_ps1_exit_status_2)$(ps-color bold green)\u@\H$(ps-color bold red) [\w]$(ps-color bold magenta) \d \t$(ps-color bold blue)\$(prompt_ps1_job_count \\j)$(ps-color bold cyan)\$(prompt_ps1_shlvl)$(ps-color bold yellow)\$(prompt_ps1_git_branch)\$(prompt_ps1_svn_branch)$(ps-color reset)\n\$ "
+  PS1="$(ps-color bold white on-red)\$(prompt_ps1_exit_status_1)$(ps-color reset)\$(prompt_ps1_exit_status_2)$(ps-color bold green)\u@\H$(ps-color bold cyan) \w$(ps-color bold magenta) \d \t$(ps-color bold blue)\$(prompt_ps1_job_count \\j)$(ps-color bold cyan)\$(prompt_ps1_shlvl)$(ps-color bold yellow)\$(prompt_ps1_git_branch)\$(prompt_ps1_svn_branch)$(ps-color reset)\n\$ "
 fi
 
 PROMPT_COMMAND="_last_exit_status=\$?"
