@@ -291,6 +291,7 @@ function git-config-joshs()
   git config --global mergetool.bc3.cmd \
     'git_bc3merge "$LOCAL" "$REMOTE" "$MERGED"'
   git config --global mergetool.bc3.trustExitCode false
+  git config --global alias.authors '!git log --pretty="%an" | sort | uniq -c | sort -n'
 }
 function git-config-local-personal()
 {
