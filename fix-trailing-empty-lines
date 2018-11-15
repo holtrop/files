@@ -1,0 +1,17 @@
+#!/usr/bin/env ruby
+
+def rm_trailing_empty_lines(fname)
+  file = File.read(fname, mode: "rb")
+  new_file = file.sub(%r{(?:(\r\n)(?:\r\n)*|(\n)\n*)\z}, '\1\2')
+  if file != new_file
+    File.open(fname, "wb") do |fh|
+      fh.write(new_file)
+    end
+  end
+end
+
+ARGV.each do |arg|
+  if File.file?(arg)
+    rm_trailing_empty_lines(arg)
+  end
+end
