@@ -11,7 +11,7 @@ wmctrl_out.each_line do |line|
     _, x, y, width, height = geom.split(/\s+/).map(&:to_i)
     #if title =~ /\s-\slilyterm$/i
     #if title =~ /\s:\sbash$/i
-    if title =~ /josh@jamba/i
+    if title =~ /josh@/i
       # lilyterm in fluxbox:
       #3840,0,834,580
       #4676,0,834,580
@@ -65,23 +65,39 @@ wmctrl_out.each_line do |line|
       #]
 
       # xfce4-terminal in KDE5 on Kubuntu 17.04:
-      term_sizes = %w[
-        3840,0,826,578
-        4671,0,826,578
-        3840,611,826,560
-        4674,611,826,560
-      ]
+      #term_sizes = %w[
+      #  3840,0,826,578
+      #  4674,0,826,578
+      #  3840,611,826,560
+      #  4674,611,826,560
+      #]
 
-      if term_idx < term_sizes.size
-        geom_line = term_sizes[term_idx]
-        if laptop_mode
-          parts = geom_line.split(",")
-          parts[0] = (parts[0].to_i - 1920 * 2).to_s
-          geom_line = parts.join(",")
-        end
-        system(*%W[wmctrl -ir #{id} -e 0,#{geom_line}])
-        term_idx += 1
+      #if term_idx < term_sizes.size
+      #  geom_line = term_sizes[term_idx]
+      #  if laptop_mode
+      #    parts = geom_line.split(",")
+      #    parts[0] = (parts[0].to_i - 1920 * 2).to_s
+      #    geom_line = parts.join(",")
+      #  end
+      #  system(*%W[wmctrl -ir #{id} -e 0,#{geom_line}])
+      #end
+
+      # Activate the Window
+      sleep 0.1
+      system(*%W[wmctrl -i -a #{id}])
+      sleep 0.1
+      case term_idx
+      when 0
+        system("xte", "keydown Super_L", "keydown Shift_L", "key Left", "keyup Shift_L", "keyup Super_L")
+      when 1
+        system("xte", "keydown Super_L", "keydown Shift_L", "key Right", "keyup Shift_L", "keyup Super_L")
+      when 2
+        system("xte", "keydown Super_L", "keydown Control_L", "key Left", "keyup Control_L", "keyup Super_L")
+      when 3
+        system("xte", "keydown Super_L", "keydown Control_L", "key Right", "keyup Control_L", "keyup Super_L")
       end
+
+      term_idx += 1
     end
   end
 end
