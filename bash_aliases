@@ -265,41 +265,6 @@ function cco()
   fi
   catch_compare_output="$catch_compare_output_new"
 }
-function git-config-joshs()
-{
-  git config --global user.name 'Josh Holtrop'
-  git config --global color.ui true
-  git config --global color.diff.meta yellow
-  git config --global core.excludesfile ${HOME}/.gitignore
-  git config --global core.pager 'less -FRXi'
-  git config --global alias.dc 'diff --cached'
-  # from http://stackoverflow.com/questions/1057564/pretty-git-branch-graphs/9074343#9074343
-  git config --global alias.lg 'log --graph --abbrev-commit --decorate --format=format:"%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset) - %C(magenta)%an%C(reset)%C(bold yellow)%d%C(reset)%n          %C(white)%s%C(reset)" --all'
-  git config --global alias.lg1 'log --graph --abbrev-commit --decorate --format=format:"%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset) - %C(magenta)%an%C(reset)%C(bold yellow)%d%C(reset)%n          %C(white)%s%C(reset)"'
-  git config --global alias.mergef 'merge FETCH_HEAD'
-  git config --global alias.gdiff 'difftool -y -t gvimdiff'
-  git config --global alias.gdiffc 'difftool -y -t gvimdiff --cached'
-  git config --global alias.wdiff 'diff --word-diff=color'
-  git config --global alias.mktar '!function f { name="$1"; pos="$2"; if [ "$pos" == "" ]; then pos=HEAD; fi; git archive --prefix="$name"/ "$pos" | bzip2 > ../"$name".tar.bz2; }; f'
-  git config --global alias.mktarxz '!function f { name="$1"; pos="$2"; if [ "$pos" == "" ]; then pos=HEAD; fi; git archive --prefix="$name"/ "$pos" | xz > ../"$name".tar.xz; }; f'
-  git config --global alias.amd 'am --committer-date-is-author-date'
-  git config --global push.default upstream
-  git config --global alias.bcdiff 'difftool -y -t bc3'
-  git config --global alias.bcdiffc 'difftool -y -t bc3 --cached'
-  git config --global difftool.bc3.cmd 'git_bc3diff "$LOCAL" "$REMOTE"'
-  git config --global alias.bcmerge 'mergetool -y -t bc3'
-  git config --global mergetool.bc3.cmd \
-    'git_bc3merge "$LOCAL" "$REMOTE" "$MERGED"'
-  git config --global mergetool.bc3.trustExitCode false
-  git config --global alias.authors '!git log --pretty="%an" | sort | uniq -c | sort -n'
-}
-function git-config-local-personal()
-{
-  local domain='gmail.com'
-  git config user.email 'jholtrop@'${domain}
-}
-alias git-find-lost-commit='git fsck --lost-found'
-git_empty_commit='4b825dc642cb6eb9a060e54bf8d69288fbee4904'
 
 if [[ "$(which jsvn 2>/dev/null)" != "" ]]; then
   alias svn='jsvn'
