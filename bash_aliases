@@ -119,14 +119,22 @@ function prompt_ps1_git_branch()
 function prompt_ps1_svn_branch()
 {
   if [ -e .svn ]; then
-    url_out=$(command svn info 2>/dev/null | grep '^URL:')
-    re_branch="\\<(tags|branches)/([^/]*)\\>"
-    re_trunk="\\<trunk\\>"
+    local url_out=$(command svn info 2>/dev/null | grep '^URL:')
+    local re_branch="\\<(tags|branches)/([^/]*)\\>"
+    local re_trunk="\\<trunk\\>"
     if [[ "$url_out" =~ $re_branch ]]; then
       echo "${BASH_REMATCH[2]} "
     elif [[ "$url_out" =~ $re_trunk ]]; then
       echo "${BASH_REMATCH[0]} "
     fi
+  fi
+}
+
+function prompt_ps1_rvm_gemset()
+{
+  local re="rvm.*@(.*)"
+  if [[ "$GEM_HOME" =~ $re ]]; then
+    echo "${BASH_REMATCH[1]} "
   fi
 }
 
@@ -149,6 +157,8 @@ PS1="${PS1}$(ps-color bold blue)\$(prompt_ps1_job_count \\j)"
 PS1="${PS1}$(ps-color bold green)\$(prompt_ps1_shlvl)"
 # \n
 PS1="${PS1}$(ps-color reset)\n"
+# rvm gemset
+PS1="${PS1}$(ps-color bold green)\$(prompt_ps1_rvm_gemset)"
 # git/svn info
 PS1="${PS1}$(ps-color bold yellow)\$(prompt_ps1_git_branch)\$(prompt_ps1_svn_branch)"
 # dollar
