@@ -8,8 +8,8 @@ $include /etc/inputrc
 "\e[6~": history-search-forward
 
 # F1 -> clear screen
-"\eOP": "clear\n"
-"\e[11~": "clear\n"
+"\eOP": " clear\n"
+"\e[11~": " clear\n"
 # F2 -> take a quick note
 "\eOQ": "cat >/dev/null\n"
 "\e[12~": "cat > /dev/null\n"
