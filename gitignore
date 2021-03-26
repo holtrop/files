@@ -6,3 +6,7 @@
 tags
 /.todo
 /.bundle/
+/.issues
+/.ruby-version
+/.ruby-gemset
+/_local/

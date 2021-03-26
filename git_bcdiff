@@ -1,0 +1,12 @@
+#!/bin/bash
+
+local_fname="$1"
+remote_fname="$2"
+merged_fname="$3"
+
+bcompare "$local_fname" "$remote_fname" -title1="$merged_fname" -title2="$merged_fname" -leftreadonly &
+
+# git will remove the temporary file as soon as the difftool command exits;
+# sleep to give Beyond Compare a chance to load the file and display the diff
+# before the file is removed.
+sleep 0.5

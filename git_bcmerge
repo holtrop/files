@@ -1,0 +1,8 @@
+#!/bin/bash
+
+local_fname="$1"
+remote_fname="$2"
+base_fname="$3"
+merged_fname="$4"
+
+exec bcompare "$local_fname" "$remote_fname" "$base_fname" "$merged_fname" -title1="$merged_fname : local" -title2="$merged_fname : remote" -savetarget="$merged_fname"
