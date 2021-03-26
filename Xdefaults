@@ -1,8 +1,0 @@
-!URxvt.font: xft:DejaVu Sans Mono:antialias=true:pixelsize=10
-!URxvt.boldFont: xft:DejaVu Sans Mono:style=bold:antialias=true:pixelsize=10
-URxvt.font: xft:Ubuntu Mono:antialias=true:pixelsize=12
-URxvt.boldFont: xft:Ubuntu Mono:style=bold:antialias=true:pixelsize=12
-URxvt.scrollBar_right: true
-URxvt.background: black
-URxvt.foreground: white
-!URxvt.borderLess: true
