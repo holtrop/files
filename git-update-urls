@@ -1,0 +1,21 @@
+#!/usr/bin/env ruby
+
+require "set"
+
+remotes = Set.new
+
+`git remote -v`.each_line do |line|
+  if line =~ /^(\S+)\s+(\S+)\s+\(/
+    remote_name, url = $1, $2
+    unless remotes.include?(remote_name)
+      new_url = url.sub(%r{^ssh://gitp?@holtrop\.mooo\.com/}, "git@git.jholtrop.com:josh/")
+      new_url = new_url.sub(%r{^gitp?@holtrop\.mooo\.com:}, "git@git.jholtrop.com:josh/")
+      if new_url != url
+        command = %W[git remote set-url #{remote_name} #{new_url}]
+        puts command.join(" ")
+        system(*command)
+      end
+      remotes << remote_name
+    end
+  end
+end
