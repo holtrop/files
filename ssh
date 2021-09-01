@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [[ "$(ssh-add -l)" == "" ]]; then
+if [[ "$(ssh-add -l)" =~ "no identities" ]]; then
   ssh-add $HOME/.ssh/joshs_key </dev/null
 fi
 
