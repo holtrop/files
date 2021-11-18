@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 
+# Dependencies:
+# - python3 command
+# - python3-mutagen package
+
 import getopt
 import glob
 import mutagen.id3
