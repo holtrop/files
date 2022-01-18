@@ -1,0 +1,9 @@
+#!/usr/bin/env ruby
+
+o = `xdotool getmouselocation`
+if o =~ /x:(\d+) y:(\d+)/
+  x, y = $1, $2
+  File.open("#{ENV["HOME"]}/aclicky-points", "a") do |fh|
+    fh.puts("#{x},#{y}")
+  end
+end

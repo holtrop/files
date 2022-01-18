@@ -1,0 +1,13 @@
+#!/usr/bin/env ruby
+
+require "open3"
+
+points = File.read("#{ENV["HOME"]}/aclicky-points")
+points.each_line do |line|
+  if line =~ /^(\d+),(\d+)$/
+    x, y = $1, $2
+    Open3.capture3("xdotool mousemove #{x} #{y}")
+    Open3.capture3("xdotool click 1")
+    sleep(0.2)
+  end
+end
