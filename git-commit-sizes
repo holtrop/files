@@ -1,0 +1,38 @@
+#!/usr/bin/env ruby
+
+output = `git log --stat`
+commit = nil
+date = nil
+commit_sizes = []
+message = nil
+to_message = 0
+output.lines.each do |line|
+  if to_message > 0
+    to_message -= 1
+    if to_message == 0
+      message = line.chomp.strip
+    end
+  elsif line =~ /^commit (\S+)/
+    commit = $1
+  elsif line =~ /^Date:\s*(.*)$/
+    date = $1
+    to_message = 2
+  else
+    size = 0
+    if line =~ /(\d+) insertion/
+      size += $1.to_i
+    end
+    if line =~ /(\d+) deletion/
+      size += $1.to_i
+    end
+    if size != 0
+      commit_sizes << [size, commit[0..6], date, message]
+    end
+  end
+end
+
+commit_sizes.sort!
+
+commit_sizes.each do |size, commit, date, message|
+  puts "#{size} #{commit} #{date} #{message}"
+end
