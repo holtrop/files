@@ -8,6 +8,6 @@ points.each_line do |line|
     x, y = $1, $2
     Open3.capture3("xdotool mousemove #{x} #{y}")
     Open3.capture3("xdotool click 1")
-    sleep(0.2)
+    sleep(0.1)
   end
 end
