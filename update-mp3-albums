@@ -1,0 +1,12 @@
+#!/usr/bin/ruby
+
+base = "/pegasus/pub/music/artists"
+mp3s = `find #{base} -name '*.mp3' -print0`.split("\0")
+
+mp3s.each do |mp3|
+  path = mp3.split("/")
+  album = path[-2]
+  command = %W[id3tag -A #{album} #{mp3}]
+  puts "#{mp3} ==> '#{album}'"
+  system(*command)
+end
