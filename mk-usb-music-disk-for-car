@@ -1,0 +1,58 @@
+#!/usr/bin/env ruby
+
+BASE = "/pegasus/pub/music/artists"
+
+DEST = "/media/josh/JoshMusic"
+
+ARTISTS = <<EOF
+Avenged Sevenfold
+Collective Soul
+DevilDriver
+Falling in Reverse
+Fear Factory
+Fuel
+Godsmack
+Incubus
+Lamb of God
+Machine Head
+Mudvayne
+POD
+Staind
+Static-X
+System of a Down
+Tantric
+Taproot
+The Goo Goo Dolls
+The Offspring
+Tool
+Trans-Siberian Orchestra
+Trivium
+Volbeat
+EOF
+
+EXCLUDE = <<EOF.split("\n").map(&:chomp)
+L02 Machine Fucking Head Live
+EOF
+
+require "fileutils"
+
+unless Dir.exist?(DEST)
+  $stderr.puts "#{DEST} does not exist"
+end
+
+ARTISTS.lines.each do |artist|
+  artist = artist.chomp
+  Dir.glob("#{BASE}/#{artist}/*").sort.each do |album_dir|
+    next if album_dir.split("/").any? {|part| EXCLUDE.include?(part)}
+    album = File.basename(album_dir)
+    mp3_files = Dir.glob("#{album_dir}/*.mp3").sort
+    dest = "#{DEST}/#{artist}/#{album}"
+    puts "Creating #{dest}"
+    FileUtils.mkdir_p(dest)
+    mp3_files.each do |mp3_file|
+      puts "Copying #{mp3_file} -> #{dest}"
+      FileUtils.cp(mp3_file, dest)
+      system("sync", DEST)
+    end
+  end
+end
