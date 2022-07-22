@@ -1,0 +1,51 @@
+#!/usr/bin/env ruby
+
+require "open3"
+
+DEFAULT_DIR = "/pegasus/pub/music/artists"
+
+def process_mp3(mp3_path)
+  mp3_path = File.expand_path(mp3_path)
+  dirname = File.dirname(mp3_path)
+  current_info, stderr, status = Open3.capture3("id3info", mp3_path)
+  current_info.force_encoding("ASCII-8BIT")
+  if current_info =~ /TIT2\s.*: (.*)/
+    title = $1
+  else
+    title = File.basename(mp3_path).sub(/\.mp3$/, "")
+  end
+  artist = File.basename(File.dirname(File.dirname(mp3_path)))
+  album = File.basename(File.dirname(mp3_path))
+  if current_info =~ /TYER\s.*: (.*)/
+    year = $1
+  end
+  if File.basename(mp3_path) =~ /^(\d+)/
+    track_number = $1.to_i
+  end
+  arts = Dir.glob("#{File.dirname(mp3_path)}/*.jpg")
+  if arts.size >= 1
+    album_art = arts.first
+  end
+  args = []
+  args += %W[--artist=#{artist}]
+  args += %W[--album=#{album}]
+  args += %W[--title=#{title}]
+  args += %W[--track=#{track_number}] if track_number
+  args += %W[--release-year=#{year}] if year
+  args += %W[--add-image=#{album_art}:FRONT_COVER] if album_art
+  args += [mp3_path]
+  system("eyeD3", *args)
+end
+
+def main
+  args = ARGV.dup
+
+  dir = args[0] || DEFAULT_DIR
+
+  mp3_paths = Dir.glob("#{dir}/**/*.mp3")
+  mp3_paths.each do |mp3_path|
+    process_mp3(mp3_path)
+  end
+end
+
+main
