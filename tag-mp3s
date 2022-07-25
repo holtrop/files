@@ -32,7 +32,8 @@ def process_mp3(mp3_path)
   args += %W[--title=#{title}]
   args += %W[--track=#{track_number}] if track_number
   args += %W[--release-year=#{year}] if year
-  args += %W[--add-image=#{album_art}:FRONT_COVER] if album_art
+  # 2017 Outback likes to show picture for OTHER but not FRONT_COVER...
+  args += %W[--add-image=#{album_art}:OTHER] if album_art
   args += [mp3_path]
   system("eyeD3", *args)
 end
