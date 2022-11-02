@@ -1,0 +1,3 @@
+#!/bin/sh
+where="$1"
+find "$where" -perm +111 -a -type f -exec xattr -d com.apple.quarantine {} \;
