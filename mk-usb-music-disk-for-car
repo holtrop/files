@@ -50,9 +50,11 @@ ARTISTS.lines.each do |artist|
     puts "Creating #{dest}"
     FileUtils.mkdir_p(dest)
     mp3_files.each do |mp3_file|
-      puts "Copying #{mp3_file} -> #{dest}"
-      FileUtils.cp(mp3_file, dest)
-      system("sync", DEST)
+      unless File.exist?("#{dest}/#{File.basename(mp3_file)}")
+        puts "Copying #{mp3_file} -> #{dest}"
+        FileUtils.cp(mp3_file, dest)
+        system("sync", DEST)
+      end
     end
   end
 end
