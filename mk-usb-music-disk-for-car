@@ -70,7 +70,7 @@ artists.each do |artist|
     album = File.basename(album_dir)
     mp3_files = Dir.glob("#{album_dir}/*.mp3").sort
     dest = "#{DEST}/#{artist}/#{album}"
-    puts "Creating #{dest}"
+    puts "Creating #{dest}" unless Dir.exist?(dest)
     FileUtils.mkdir_p(dest)
     mp3_files.each do |mp3_file|
       unless File.exist?("#{dest}/#{File.basename(mp3_file)}")
