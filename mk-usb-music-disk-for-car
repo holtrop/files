@@ -5,29 +5,41 @@ BASE = "/pegasus/pub/music/artists"
 DEST = "/media/josh/JoshMusic"
 
 ARTISTS = <<EOF
-Avenged Sevenfold
+A Perfect Circle
+All That Remains
+#Avenged Sevenfold
 Collective Soul
-DevilDriver
-Falling in Reverse
+Dave Matthews Band
+Days Of The New
+#DevilDriver
+#Falling in Reverse
+Eluveitie
 Fear Factory
 Fuel
-Godsmack
+#Godsmack
+Hans Zimmer
 Incubus
 Lamb of God
-Machine Head
+London Symphony Orchestra
+#Machine Head
+Matchbox Twenty
 Mudvayne
+Our Lady Peace
 POD
-Staind
-Static-X
-System of a Down
+Ra
+Rush
+#Staind
+#Static-X
+#System of a Down
 Tantric
 Taproot
 The Goo Goo Dolls
 The Offspring
-Tool
+#Tool
 Trans-Siberian Orchestra
 Trivium
 Volbeat
+Weezer
 EOF
 
 EXCLUDE = <<EOF.split("\n").map(&:chomp)
@@ -36,12 +48,23 @@ EOF
 
 require "fileutils"
 
+artists = ARTISTS.lines.map do |artist|
+  if artist !~ /#/
+    artist.chomp
+  end
+end.compact
+
+if ARGV[0] == "-s"
+  cmd = %w[du -shc] + artists.map {|a| "#{BASE}/#{a}"}
+  system(*cmd)
+  exit 0
+end
+
 unless Dir.exist?(DEST)
   $stderr.puts "#{DEST} does not exist"
 end
 
-ARTISTS.lines.each do |artist|
-  artist = artist.chomp
+artists.each do |artist|
   Dir.glob("#{BASE}/#{artist}/*").sort.each do |album_dir|
     next if album_dir.split("/").any? {|part| EXCLUDE.include?(part)}
     album = File.basename(album_dir)
