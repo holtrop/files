@@ -35,7 +35,7 @@ def choose_artwork(mp3s, jpgs):
     if len(mp3s) < min_mp3s_for_album:
         return None
     if len(jpgs) == 0:
-        sys.stderr.write("No .jpg files found\n")
+        sys.stderr.write("No .jpg files found in %s\n" % (os.path.dirname(mp3s[0])))
         return None
     if len(jpgs) > 1:
         sys.stderr.write("Multiple .jpg album artwork files found\n")
@@ -61,7 +61,7 @@ def clean_tag(mp3, tagname):
             orig_text = tag.text[0]
             new_text = clean_title(orig_text)
             if new_text != orig_text:
-                sys.stdout.write("Changing %s from \"%s\" to \"%s\"\n" % (tagname, orig_text, new_text))
+                sys.stdout.write("Changing %s from \"%s\" to \"%s\" for %s\n" % (tagname, orig_text, new_text, mp3.filename))
                 tag.text = [new_text]
                 return True
     return False
@@ -69,20 +69,23 @@ def clean_tag(mp3, tagname):
 def process_mp3(mp3_path, artwork_path):
     mp3 = mutagen.mp3.MP3(mp3_path)
     current_tags = mp3.tags
-    changed = False
-    changed = clean_tag(mp3, "TIT2") or changed
-    changed = clean_tag(mp3, "TALB") or changed
-    if artwork_path is not None:
-        apic_tags = [tag for tag in current_tags if tag == "APIC" or tag.startswith("APIC:")]
-        if len(apic_tags) < 1:
-            print("Adding APIC tag to %s..." % mp3_path)
-            jpg_data = read_file(artwork_path)
-            apic = mutagen.id3.APIC(0, "image/jpeg", 0, "", jpg_data)
-            mp3.tags.add(apic)
-            changed = True
-    if changed and not dry_run:
-        sys.stdout.write("Writing %s\n" % mp3_path)
-        mp3.save()
+    if current_tags is not None:
+        changed = False
+        changed = clean_tag(mp3, "TIT2") or changed
+        changed = clean_tag(mp3, "TALB") or changed
+        if artwork_path is not None:
+            apic_tags = [tag for tag in current_tags if tag == "APIC" or tag.startswith("APIC:")]
+            if len(apic_tags) < 1:
+                print("Adding APIC tag to %s..." % mp3_path)
+                jpg_data = read_file(artwork_path)
+                apic = mutagen.id3.APIC(0, "image/jpeg", 0, "", jpg_data)
+                mp3.tags.add(apic)
+                changed = True
+        if changed and not dry_run:
+            sys.stdout.write("Writing %s\n" % mp3_path)
+            mp3.save()
+    else:
+        sys.stdout.write("Warning: no tags found for %s\n" % (mp3_path))
 
 def main(argv):
     base_dir = "."
