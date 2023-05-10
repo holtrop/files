@@ -1,0 +1,10 @@
+#!/usr/bin/env ruby
+
+# I edited the global keyboard shortcuts and turned on Mission Control > Switch
+# to Desktop 1 with shortcut set to Control + Alt + Command + Tab
+
+require "open3"
+
+script = 'tell application "System Events" to keystroke tab using {option down, command down, control down}'
+
+stdout, status = Open3.capture2("osascript", stdin_data: script)
