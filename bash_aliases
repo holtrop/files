@@ -155,8 +155,8 @@ PS1="${PS1} $(ps-color bold cyan)\w"
 PS1="${PS1}$(ps-color bold blue)\$(prompt_ps1_job_count \\j)"
 # shell level
 PS1="${PS1}$(ps-color bold green)\$(prompt_ps1_shlvl)"
-# \n
-PS1="${PS1}$(ps-color reset)\n"
+# \n: \012 used instead to avoid errors on Windows
+PS1="${PS1}$(ps-color reset)\012"
 # rvm gemset
 PS1="${PS1}$(ps-color bold green)\$(prompt_ps1_rvm_gemset)"
 # git/svn info
