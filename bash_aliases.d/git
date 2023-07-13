@@ -26,6 +26,8 @@ function git-config-joshs()
     'git_bcmerge "$LOCAL" "$REMOTE" "$BASE" "$MERGED"'
   git config --global alias.authors '!git log --pretty="%an" | sort | uniq -c | sort -n'
   git config --global init.defaultBranch master
+  # Only use configured user.name/user.email; do not guess them
+  git config --global user.useConfigOnly true
 }
 function git-config-local-personal()
 {
