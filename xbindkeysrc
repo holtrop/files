@@ -1,0 +1,5 @@
+# Set mouse button 8 to send "Back" key
+# Bind "Back" to "Toggle Present Windows (Current desktop)" to expose windows from mouse button!
+# Install 'xautomation' and 'xbindkeys' packages to use.
+"xte 'key XF86Back'"
+  b:8
