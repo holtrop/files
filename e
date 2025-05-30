@@ -8,7 +8,7 @@ def get_server_name(path)
     path = File.expand_path(path)
     while path != "/"
       dirname = File.dirname(path)
-      if File.exists?(File.join(dirname, "project.vim"))
+      if File.exist?(File.join(dirname, "project.vim"))
         if dirname =~ %r{([^/]+)/([^/]+)/*$}
           sn = "#{$2}(#{$1})"
         else
