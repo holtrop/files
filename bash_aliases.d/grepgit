@@ -1,0 +1,1 @@
+alias grepgit='git ls-files -z | xargs -0 grep --color=auto -H'
