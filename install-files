@@ -21,6 +21,9 @@ def install_file(src, dst):
 
 files = [
         ('bash_aliases', '.bash_aliases'),
+        ('bash_aliases.d', '.bash_aliases.d'),
+        ('bash_profile', '.bash_profile'),
+        ('profile', '.profile'),
         ('inputrc', '.inputrc'),
         ('screenrc', '.screenrc'),
         ('gitignore', '.gitignore'),
