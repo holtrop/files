@@ -28,6 +28,9 @@ function git-config-joshs()
   git config --global init.defaultBranch master
   # Only use configured user.name/user.email; do not guess them
   git config --global user.useConfigOnly true
+  # Do not automatically mark my branch as tracking the remote branch that I
+  # happened to use as the starting point.
+  git config --global branch.autoSetupMerge false
 }
 function git-config-local-personal()
 {
