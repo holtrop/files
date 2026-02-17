@@ -27,6 +27,7 @@ files = [
         ('colordiffrc', '.colordiffrc'),
         ('rvmrc', '.rvmrc'),
         ('toprc', '.toprc'),
+        ('ctags', '.ctags'),
         ]
 
 for s, d in files:
