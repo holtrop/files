@@ -31,6 +31,8 @@ function git-config-joshs()
   # Do not automatically mark my branch as tracking the remote branch that I
   # happened to use as the starting point.
   git config --global branch.autoSetupMerge false
+  # delete all branches that have been merged to HEAD
+  git config --global alias.prunebranches '!git branch --merged | grep -v '^\*' | xargs git branch -d'
 }
 function git-config-local-personal()
 {
