@@ -1,2 +1,2 @@
 #!/bin/sh
-exec gpu-screen-recorder -w screen -o ~/Videos -r 90 -c mp4 -a default_output -ac aac
+exec gpu-screen-recorder -w screen -o ~/Videos -r 90 -c mp4 -a default_output -a default_input -ac aac

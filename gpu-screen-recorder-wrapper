@@ -1,9 +1,10 @@
 #!/bin/bash
 
-DEFAULT_SINK=$(pactl get-default-sink)
-MONITOR_SINK="${DEFAULT_SINK}.monitor"
+#DEFAULT_SINK=$(pactl get-default-sink)
+#MONITOR_SINK="${DEFAULT_SINK}.monitor"
 
-gpu-screen-recorder -w screen -o ~/Videos -r 90 -c mp4 -a "$MONITOR_SINK" -ac aac & >> $HOME/.gpu-screen-recorder.log
+#gpu-screen-recorder -w screen -o ~/Videos -r 90 -c mp4 -a "$MONITOR_SINK" -a default_input -ac aac >> $HOME/.gpu-screen-recorder.log &
+gpu-screen-recorder -w screen -o ~/Videos -r 90 -c mp4 -a default_output -a default_input -ac aac >> $HOME/.gpu-screen-recorder.log &
 PID=$!
 
 "$@"
