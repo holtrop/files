@@ -46,7 +46,7 @@ else
       puts tabedits
       exec("nvim", "--headless", "--server", socket_path, "--remote-send", "<Esc>#{tabedits}:call GuiForeground()<CR><C-l>")
     else
-      exec(EDITOR, "--", "--listen", socket_path, "-p", *ARGV)
+      exec(EDITOR, "--", "--listen", socket_path, "--cmd", "let g:project_name = '#{pretty_name}'", "-p", *ARGV)
     end
   else
     exec(EDITOR, "--", "-p", *ARGV)
