@@ -39,12 +39,12 @@ else
   if socket_name
     socket_path = "#{run_dir}/e-#{socket_name}.sock"
     if File.exist?(socket_path)
-      tabedits = ARGV.map do |path|
+      opencmds = ARGV.map do |path|
         path = File.expand_path(path).gsub(" ", "\\ ")
-        %[:tabe #{path}<CR>]
+        %[:tab drop #{path}<CR>]
       end.join
-      puts tabedits
-      exec("nvim", "--headless", "--server", socket_path, "--remote-send", "<Esc>#{tabedits}:call GuiForeground()<CR><C-l>")
+      puts opencmds
+      exec("nvim", "--headless", "--server", socket_path, "--remote-send", "<Esc>#{opencmds}:call GuiForeground()<CR><C-l>")
     else
       exec(EDITOR, "--", "--listen", socket_path, "--cmd", "let g:project_name = '#{pretty_name}'", "-p", *ARGV)
     end
