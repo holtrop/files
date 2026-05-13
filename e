@@ -1,39 +1,67 @@
 #!/usr/bin/env ruby
 
-# Use HighContrast GTK2 theme for gvim.
-ENV["GTK2_RC_FILES"] = "/usr/share/themes/HighContrast/gtk-2.0/gtkrc"
+require "open3"
 
-def get_server_name(path)
-  if path
-    path = File.expand_path(path)
-    while path != "/"
-      dirname = File.dirname(path)
-      if File.exist?(File.join(dirname, "project.vim"))
-        if dirname =~ %r{([^/]+)/([^/]+)/*$}
-          sn = "#{$2}(#{$1})"
-        else
-          sn = File.basename(dirname)
-        end
-        return sn
+SEARCH = %w[.git project.vim]
+EDITOR = "nvim-qt"
+
+def find_proj_root(path)
+  path = File.expand_path(path)
+  loop do
+    dirname = File.dirname(path)
+    if SEARCH.any? {|s| File.exist?(File.join(dirname, s))}
+      if dirname =~ %r{([^/]+)/([^/]+)/*$}
+        pretty_name = "#{$2}(#{$1})"
+      else
+        pretty_name = File.basename(dirname)
       end
-      path = dirname
+      stdout, stderr, status = Open3.capture3("xxh32sum", stdin_data: dirname)
+      socket_name = stdout.sub(/\s.*/m, "")
+      return [socket_name, pretty_name]
+    end
+    path = dirname
+    if path == "/"
+      return nil
     end
   end
 
-  return "GVIM"
+  nil
 end
 
-def server_running?(server_name)
-  `gvim --serverlist`.lines.map(&:chomp).include?(server_name.upcase)
+def run_dir
+  ENV["XDG_RUNTIME_DIR"] || "/tmp"
+end
+
+def launch(socket_path, pretty_name, path)
+  if File.exist?(socket_path)
+    # Server running, send it remote command
+    system("nvim", "--headless", "--server", socket_path, "--remote-tab-silent", path)
+  else
+    # Start the server
+    $started_server = true
+    system(EDITOR, path, "--", "--listen", socket_path)
+  end
 end
 
 if ARGV.empty?
-  server_name = get_server_name('local_file')
-  exec("/usr/bin/gvim", "--servername", server_name, err: "/dev/null")
+  exec(EDITOR)
 else
   ARGV.each_with_index do |path, i|
-    server_name = get_server_name(path)
-    sleep(0.2) if i > 0
-    system("/usr/bin/gvim", "--servername", server_name, "--remote-tab-silent", path, err: "/dev/null")
+    socket_name, pretty_name = find_proj_root(path)
+    socket_path = "#{run_dir}/e-#{socket_name}.sock"
+    if i == 1
+      20.times do
+        sleep(0.01)
+        break if File.exist?(socket_path)
+      end
+    end
+    launch(socket_path, pretty_name, path)
+    if i == ARGV.length - 1
+      # This is the last argument. If the server was not started for any paths,
+      # then request that the window take focus.
+      unless $server_started
+        system("nvim", "--headless", "--server", socket_path, "--remote-send", "<Esc>:call GuiForeground()<CR><C-l>")
+      end
+    end
   end
 end
