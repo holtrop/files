@@ -32,36 +32,23 @@ def run_dir
   ENV["XDG_RUNTIME_DIR"] || "/tmp"
 end
 
-def launch(socket_path, pretty_name, path)
-  if File.exist?(socket_path)
-    # Server running, send it remote command
-    system("nvim", "--headless", "--server", socket_path, "--remote-tab-silent", path)
-  else
-    # Start the server
-    $started_server = true
-    system(EDITOR, path, "--", "--listen", socket_path)
-  end
-end
-
 if ARGV.empty?
   exec(EDITOR)
 else
-  ARGV.each_with_index do |path, i|
-    socket_name, pretty_name = find_proj_root(path)
+  socket_name, pretty_name = find_proj_root(ARGV[0])
+  if socket_name
     socket_path = "#{run_dir}/e-#{socket_name}.sock"
-    if i == 1
-      20.times do
-        sleep(0.01)
-        break if File.exist?(socket_path)
-      end
+    if File.exist?(socket_path)
+      tabedits = ARGV.map do |path|
+        path = File.expand_path(path).gsub(" ", "\\ ")
+        %[:tabe #{path}<CR>]
+      end.join
+      puts tabedits
+      exec("nvim", "--headless", "--server", socket_path, "--remote-send", "<Esc>#{tabedits}:call GuiForeground()<CR><C-l>")
+    else
+      exec(EDITOR, "--", "--listen", socket_path, "-p", *ARGV)
     end
-    launch(socket_path, pretty_name, path)
-    if i == ARGV.length - 1
-      # This is the last argument. If the server was not started for any paths,
-      # then request that the window take focus.
-      unless $server_started
-        system("nvim", "--headless", "--server", socket_path, "--remote-send", "<Esc>:call GuiForeground()<CR><C-l>")
-      end
-    end
+  else
+    exec(EDITOR, "--", "-p", *ARGV)
   end
 end
