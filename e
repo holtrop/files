@@ -43,10 +43,12 @@ else
         path = File.expand_path(path).gsub(" ", "\\ ")
         %[:tab drop #{path}<CR>]
       end.join
-      puts opencmds
       exec("nvim", "--headless", "--server", socket_path, "--remote-send", "<Esc>#{opencmds}:call GuiForeground()<CR><C-l>")
     else
-      exec(EDITOR, "--", "--listen", socket_path, "--cmd", "let g:project_name = '#{pretty_name}'", "-p", *ARGV)
+      paths = ARGV.map do |path|
+        File.expand_path(path)
+      end
+      exec(EDITOR, "--", "--listen", socket_path, "--cmd", "let g:project_name = '#{pretty_name}'", "-p", *paths)
     end
   else
     exec(EDITOR, "--", "-p", *ARGV)
