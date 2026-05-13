@@ -25,7 +25,7 @@ function git-config-joshs()
   git config --global mergetool.bc.cmd \
     'git_bcmerge "$LOCAL" "$REMOTE" "$BASE" "$MERGED"'
   git config --global alias.authors '!git log --pretty="%an" | sort | uniq -c | sort -n'
-  git config --global init.defaultBranch master
+  git config --global init.defaultBranch main
   # Only use configured user.name/user.email; do not guess them
   git config --global user.useConfigOnly true
   # Do not automatically mark my branch as tracking the remote branch that I
